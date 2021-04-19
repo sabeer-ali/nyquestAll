@@ -1,0 +1,63 @@
+const primaryColor = '#243A5E';
+const secondaryColor = '#F5F8FF';
+const color = {black: '#212121', grey: '#757575'};
+
+const CommonStyles = {
+  halfmodalButton: {
+    height: 44,
+    width: '47%',
+    marginVertical: 25,
+    backgroundColor: '#E28534',
+    borderRadius: 10,
+  },
+  halfmodalButtonLabel: {
+    fontFamily: primaryFont,
+    fontWeight: '500',
+    fontSize: 16,
+  },
+  modalwrapper: {
+    flex: 2,
+    backgroundColor: '#fff',
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+  },
+  modalClose: {
+    position: 'absolute',
+    top: 10,
+    right: 20,
+    padding: 15,
+  },
+  buttonBgStyle: {
+    justifyContent: 'center',
+    backgroundColor: '#E28534',
+    borderRadius: 10,
+    height: 44,
+
+    shadowColor: '#243A5E',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 2.84,
+    elevation: 3,
+  },
+  buttonTextStyle: {
+    color: '#fff',
+    textAlign: 'center',
+    fontSize: 16,
+    fontWeight: '500',
+    fontFamily: primaryFont,
+  },
+  buttonWrapper: {
+    marginTop: 36,
+  },
+  buttonWrapperWithtwo: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingHorizontal: 20,
+  },
+};
+const primaryFont = 'Montserrat-Regular';
+
+export {primaryColor, secondaryColor, primaryFont, color, CommonStyles};
