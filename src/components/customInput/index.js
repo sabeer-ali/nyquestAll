@@ -1,10 +1,10 @@
 import React from 'react';
-import { View, Text, TextInput, Image } from 'react-native';
+import {View, Text, TextInput, Image} from 'react-native';
 import Styles from './styles';
-import { searchIcon } from '../../assets';
-import { color } from '../../utils/CommonStyles';
+import {searchIcon} from '../../assets';
+import {color} from '../../utils/CommonStyles';
 
-export default CustomInput = (props) => {
+export default CustomInput = props => {
   return (
     <View style={{}}>
       {props.form && props.labelValuePair ? (
@@ -15,7 +15,7 @@ export default CustomInput = (props) => {
             style={Styles.formInput}
             placeholderTextColor={color.black}
             value={props.value && props.value}
-            onChangeText={(text) => props.onChange && props.onChange(text)}
+            onChangeText={text => props.onChange && props.onChange(text)}
           />
           <Text style={Styles.validation}>
             {props.validation && props.validation}
@@ -27,7 +27,7 @@ export default CustomInput = (props) => {
           style={Styles.formInput}
           placeholderTextColor={color.black}
           value={props.value && props.value}
-          onChangeText={(text) => props.onChange && props.onChange(text)}
+          onChangeText={text => props.onChange && props.onChange(text)}
           keyboardType={props.keyboardType && props.keyboardType}
         />
       ) : (
@@ -38,7 +38,7 @@ export default CustomInput = (props) => {
             style={Styles.input}
             editable={false}
             value={props.value && props.value}
-            onChangeText={(text) => props.onChange && props.onChange(text)}
+            onChangeText={text => props.onChange && props.onChange(text)}
           />
         </View>
       )}

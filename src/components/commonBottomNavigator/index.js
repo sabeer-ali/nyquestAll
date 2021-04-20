@@ -13,7 +13,7 @@ export default CommonBottomNavigator = ({navigation, state}) => {
     <View style={Styles.container}>
       <TouchableOpacity
         onPress={() =>
-          navigation.navigate('home', {
+          navigation.navigate('dealerHome', {
             state,
           })
         }>
@@ -28,7 +28,7 @@ export default CommonBottomNavigator = ({navigation, state}) => {
       </TouchableOpacity>
       <TouchableOpacity
         onPress={() =>
-          navigation.navigate('dashboard', {
+          navigation.navigate('dealerDashboard', {
             state,
           })
         }>
@@ -39,7 +39,7 @@ export default CommonBottomNavigator = ({navigation, state}) => {
       </TouchableOpacity>
       <TouchableOpacity
         onPress={() =>
-          navigation.navigate('deviceConfig', {
+          navigation.navigate('dealerDeviceConfig', {
             state,
           })
         }
@@ -49,7 +49,7 @@ export default CommonBottomNavigator = ({navigation, state}) => {
 
       <TouchableOpacity
         onPress={() => {
-          navigation.navigate('support', {
+          navigation.navigate('dealerSupport', {
             state,
           });
         }}>
@@ -60,14 +60,14 @@ export default CommonBottomNavigator = ({navigation, state}) => {
       </TouchableOpacity>
       <TouchableOpacity
         onPress={() => {
-          navigation.navigate('myAccount', {
+          navigation.navigate('dealerMyAccount', {
             state,
           });
         }}>
         <Image
           source={customerIcon}
           style={
-            state === 'myAccount'
+            state === 'dealerMyAccount'
               ? {tintColor: '#243A5E'}
               : {tintColor: '#BDBDBD'}
           }

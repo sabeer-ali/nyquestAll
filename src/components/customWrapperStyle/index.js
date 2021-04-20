@@ -37,6 +37,7 @@ export default function CustomWrapper(props) {
         props.center && {justifyContent: 'center'},
         props.vCenter && {alignItems: 'center'},
         props.vBottom && {alignItems: 'flex-end'},
+        props.bottom && {justifyContent: 'flex-end'},
         props.flex && {flex: props.flex},
         props.bg && {backgroundColor: props.bg},
         props.styles && {...props.styles},

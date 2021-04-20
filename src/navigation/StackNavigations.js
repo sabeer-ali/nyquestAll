@@ -3,23 +3,20 @@ import {View, Text} from 'react-native';
 import {createStackNavigator} from '@react-navigation/stack';
 
 import {
-  LoginScreen,
+  CustomerLoginScreen,
+  DealerMyAccountScreen,
+  DealerSupportDetailsScreen,
+  DealerSupportScreen,
+  DealerDashboardScreen,
+  DealerInstallationDetailsScreen,
+  DealerDeviceInfoScreen,
+  DealerWifiSetupScreen,
+  DealerServerConfigScreen,
+  DealerDeviceConfigMenuScreen,
+  DealerDeviceConfigDeviceInfoScreen,
+  DealerDeviceConfigScreen,
+  DealerHomeScreen,
   DealerLoginScreen,
-  HomeScreen,
-  DeviceInfoScreen,
-  InstallationDetailsScreen,
-  DashboardScreen,
-  SupportScreen,
-  SupportDetailsScreen,
-  DeviceConfigScreen,
-  DeviceConfigDeviceInfoScreen,
-  deviceConfigCustomerDetailsScreen,
-  deviceConfigStepsScreen,
-  deviceConfigMenuScreen,
-  serverConfigScreen,
-  FAQScreen,
-  MyAccountScreen,
-  WifiSetupScreen,
   UserListScreen,
 } from '../screens';
 
@@ -33,16 +30,77 @@ const StackNav = props => {
         component={UserListScreen}
         options={{title: 'Login', headerShown: false}}
       />
-      {/* <Stack.Screen
+      <Stack.Screen
         name="dealerlogin"
-        component={UserListScreen}
+        component={DealerLoginScreen}
         options={{headerShown: false}}
       />
       <Stack.Screen
-        name="customerlogin"
-        component={UserListScreen}
+        name="dealerHome"
+        component={DealerHomeScreen}
         options={{headerShown: false}}
-      /> */}
+      />
+      <Stack.Screen
+        name="dealerDeviceConfig"
+        component={DealerDeviceConfigScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="dealerDeviceConfigDeviceInfo"
+        component={DealerDeviceConfigDeviceInfoScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="dealerDeviceConfigMenu"
+        component={DealerDeviceConfigMenuScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="dealerServerConfig"
+        component={DealerServerConfigScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="dealerWifiSetup"
+        component={DealerWifiSetupScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="dealerDeviceInfo"
+        component={DealerDeviceInfoScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="dealerInstallationDetails"
+        component={DealerInstallationDetailsScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="dealerDashboard"
+        component={DealerDashboardScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="dealerSupport"
+        component={DealerSupportScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="dealerSupportDetails"
+        component={DealerSupportDetailsScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="dealerMyAccount"
+        component={DealerMyAccountScreen}
+        options={{headerShown: false}}
+      />
+      {/* Customer Login */}
+      <Stack.Screen
+        name="customerLogin"
+        component={CustomerLoginScreen}
+        options={{headerShown: false}}
+      />
     </Stack.Navigator>
   );
 };

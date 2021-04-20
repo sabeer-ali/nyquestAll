@@ -31,13 +31,13 @@ const UserListScreen = ({navigation}) => {
           <CustomButton
             text="Dealer"
             icon={dealerIcon}
-            onpress={() => navigation.navigate('dealerLogin')}
+            onpress={() => navigation.navigate('dealerlogin')}
           />
 
           <CustomButton
             text="Customer"
             icon={dealerIcon}
-            onpress={() => navigation.navigate('dealerLogin')}
+            onpress={() => navigation.navigate('customerLogin')}
           />
         </CustomWrapper>
       </View>

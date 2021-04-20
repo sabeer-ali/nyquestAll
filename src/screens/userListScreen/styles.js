@@ -19,7 +19,7 @@ const Styles = StyleSheet.create({
     paddingBottom: 40,
   },
   bottomSection: {
-    flex: 1.5,
+    flex: 0.8,
     backgroundColor: secondaryColor,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
