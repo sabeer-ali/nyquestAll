@@ -16,8 +16,10 @@ import {
   DealerHomeScreen,
   DealerDeviceConfigScreen,
 } from './dealerNavigation';
+import {CustomerBottomNavigator} from './customerNavigation';
 
 export {
+  CustomerBottomNavigator,
   DealerMyAccountScreen,
   DealerSupportDetailsScreen,
   DealerSupportScreen,

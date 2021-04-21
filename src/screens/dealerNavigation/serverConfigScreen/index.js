@@ -493,12 +493,17 @@ const Form3 = ({setStep, deviceCommData, deviceComServerData}) => {
       if (upsVA === '') {
         validate.status = false;
         validate.msg = 'UPS VA -> Field Cannot Be Empty ';
+      } else if (deviceCommData.deviceType === 1) {
+        if (upsVA < 600 && upsVA > 1100) {
+          validate.status = false;
+          validate.msg = 'Please Check the Range in LV 12V ';
+        }
+      } else if (deviceCommData.deviceType === 2) {
+        if (upsVA < 1200 && upsVA > 2000) {
+          validate.status = false;
+          validate.msg = 'Please Check the Range in LV 24V ';
+        }
       }
-      // else if (upsVA > 600 && upsVA < 1100) {
-      // } else {
-      //   validate.status = false;
-      //   validate.msg = 'UPS VA ->Please Check Range';
-      // }
     }
 
     console.log('validate.status', validate, isValid);
@@ -828,13 +833,15 @@ const Form2 = ({setStep, deviceTypeApi, deviceComServerData}) => {
 
   const handleBatteryCapacity = async data => {
     setBatteryCapacity(data);
+  };
 
+  React.useEffect(() => {
     if (deviceTypeApi === 'HV') {
       setTotalBatteryCapacity(numberInParalell * batteryCapacity);
     } else {
       setTotalBatteryCapacity(data * deviceType * batteryCapacity);
     }
-  };
+  }, [batteryCapacity]);
 
   const handleValidation = callback => {
     let validate = {

@@ -60,10 +60,10 @@ const DealerLogin = ({setOtpPage, toaster}) => {
 
   return (
     <View style={Styles.bottomSection}>
-      <View>
+      <CustomWrapper mt3>
         <Text style={Styles.login}>Login</Text>
         <Text style={Styles.loginDescription}>Enter your code to continue</Text>
-      </View>
+      </CustomWrapper>
 
       <View style={Styles.inputContainer}>
         <TextInput

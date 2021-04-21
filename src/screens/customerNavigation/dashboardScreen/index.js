@@ -1,112 +1,113 @@
-import React, {useState} from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  StyleSheet,
-  TouchableOpacity,
-  Image,
-  ScrollView,
-} from 'react-native';
-import Styles from './styles';
-import {CommonBottomNavigator, CustomSecondaryList} from '../../../components';
-import {
-  dashboardIcon,
-  solarIcon,
-  healthIcon,
-  configDeviceIcons,
-  timeIcon,
-  batteryIcon,
-  solarSavingIcon,
-  co2Icon,
-  treeIcon,
-} from '../../../assets';
+// import React from 'react';
+// import {
+//   View,
+//   Modal,
+//   TouchableOpacity,
+//   Image,
+//   Text,
+//   ScrollView,
+// } from 'react-native';
+// import {Button} from 'react-native-paper';
+// import Styles from './styles';
+// import {
+//   PrimaryCommonLayout,
+//   SecondaryCommonLayout,
+//   CommonBottomNavigator,
+//   CustomHeaderWithDesc,
+//   TopBottomLayout,
+//   CustomInput,
+//   RowLine,
+//   ColumnLine,
+//   CustomTopBottomModalLayout,
+//   CustomWrapper,
+//   CustomHeader,
+// } from '../../components';
+// import {color, CommonStyles} from '../../utils/CommonStyles';
+// import {
+//   logoIcon,
+//   plusIcon,
+//   notificationIcon,
+//   dashboardNoDeviceConfigImage,
+// } from '../../assets';
+// import {getLocalDB} from '../../utils/localDB';
 
-export default DashboardScreen = ({navigation}) => {
-  return (
-    <View style={Styles.container}>
-      {/* <ScrollView style={{flex: 1}} showsVerticalScrollIndicator={false}> */}
-      <View style={Styles.topSection}>
-        <View
-          style={{
-            backgroundColor: '#fff',
-            borderRadius: 8,
-            width: 40,
-            height: 40,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
-          <Image source={dashboardIcon} style={{tintColor: '#E28534'}} />
-        </View>
-        <Text style={Styles.welcomeText}>Dashboard</Text>
-        <Text style={Styles.descriptionText}>
-          Here is your overall data overview
-        </Text>
-      </View>
-      <View style={Styles.bottomSection}>
-        <View style={Styles.secondaryListing}>
-          <CustomSecondaryList
-            text1="Solar"
-            text2="Today"
-            image={configDeviceIcons}
-            bgColor="#77C5E4"
-            value="100.97"
-            params="kWh"
-          />
-          <CustomSecondaryList
-            text1="Device"
-            text2="Status"
-            image={healthIcon}
-            bgColor="#7AB78C"
-            value="Live"
-          />
-        </View>
-        <View style={Styles.secondaryListing}>
-          <CustomSecondaryList
-            text1="Last"
-            text2="Update"
-            image={timeIcon}
-            bgColor="#5BBDC0"
-            time="17:00:35"
-            date="31/10/20"
-          />
+// const BottomSection = ({navigation}) => {
+//   return (
+//     <CustomWrapper flex={0.8} ph2>
+//       <CustomWrapper flex={8} center vCenter>
+//         <Image source={dashboardNoDeviceConfigImage} />
+//       </CustomWrapper>
 
-          <CustomSecondaryList
-            text1="Total"
-            text2="Savings"
-            image={solarSavingIcon}
-            bgColor="#F8AB9B"
-            value="100.97"
-            params="kWh"
-          />
-        </View>
-        <View style={Styles.secondaryListing}>
-          <CustomSecondaryList
-            text1="Co2"
-            text2="Savings"
-            image={co2Icon}
-            bgColor="#6F6F6F"
-            value="83.62"
-            params="kg"
-          />
+//       <CustomWrapper flex={4}>
+//         <CustomWrapper vCenter pv3>
+//           <Text
+//             style={[
+//               CommonStyles.primaryFontStyle,
+//               {color: color.grey, width: 150, textAlign: 'center'},
+//             ]}>
+//             Add your device to manage & view savings info
+//           </Text>
+//         </CustomWrapper>
+//         <Button
+//           uppercase={false}
+//           mode="contained"
+//           style={[
+//             CommonStyles.buttonBgStyle,
+//             {
+//               backgroundColor: '#E28534',
+//               width: '100%',
+//               alignSelf: 'center',
+//             },
+//           ]}
+//           labelStyle={CommonStyles.buttonLabel}
+//           onPress={() => {
+//             navigation.navigate('bottom navigator');
+//           }}>
+//           Add Device
+//         </Button>
+//       </CustomWrapper>
+//     </CustomWrapper>
+//   );
+// };
 
-          <CustomSecondaryList
-            text1="Trees"
-            text2="Saved"
-            image={treeIcon}
-            bgColor="#9CD09F"
-            value="04"
-            params="Trees"
-          />
-        </View>
-      </View>
-      {/* </ScrollView> */}
-      <View style={{backgroundColor: '#F5F8FF'}}>
-        <CommonBottomNavigator
-          navigation={navigation}
-          state="dashboardScreen"
-        />
-      </View>
-    </View>
-  );
-};
+// const TopSection = () => {
+//   return (
+//     <ColumnLine>
+//       <RowLine spaceBetween ph2>
+//         <Image source={logoIcon} />
+
+//         <CustomWrapper>
+//           <RowLine width={60} spaceBetween>
+//             <Image source={plusIcon} />
+//             <Image source={notificationIcon} />
+//           </RowLine>
+//         </CustomWrapper>
+//       </RowLine>
+//       <CustomWrapper ph2 mt3>
+//         <CustomHeaderWithDesc
+//           headerText="Welcome"
+//           descText="Add your device"
+//           white
+//         />
+//       </CustomWrapper>
+//     </ColumnLine>
+//   );
+// };
+
+// export default CustomerDashboardScreen = ({navigation}) => {
+//   const [isModal, setModal] = React.useState(false);
+//   const [isForgotPasswdMode, setForgotPasswdMode] = React.useState(false);
+//   const [isOtpMode, setOtpMode] = React.useState(false);
+//   const [isResetPassword, setResetPassword] = React.useState(false);
+
+//   return (
+//     <View style={{flex: 1}}>
+//       <TopBottomLayout
+//         topHeight={2.2}
+//         bottomHeight={9.5}
+//         topSection={<TopSection navigation={navigation} />}
+//         bottomSection={<BottomSection navigation={navigation} />}
+//       />
+//     </View>
+//   );
+// };

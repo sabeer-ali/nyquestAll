@@ -3,7 +3,7 @@ import DealerLoginScreen from './dealerLoginScreen';
 import HomeScreen from './homeScreen';
 import DeviceInfoScreen from './deviceInfoScreen';
 import InstallationDetailsScreen from './installationDetailsScreen';
-import DashboardScreen from './dashboardScreen';
+import CustomerDashboardScreen from './dashboardScreen';
 import SupportScreen from './supportScreen';
 import SupportDetailsScreen from './supportDetailsScreen';
 import DeviceConfigScreen from './deviceConfigScreen';
@@ -14,6 +14,8 @@ import deviceConfigMenuScreen from './deviceConfigMenuScreen';
 import serverConfigScreen from './serverConfigScreen';
 import FAQScreen from './FAQScreen';
 import MyAccountScreen from './myAccounrScreen';
+// import CustomerBottomNavigator from './bottomNavigator';
+// CustomerBottomNavigator,
 
 export {
   MyAccountScreen,
@@ -26,7 +28,7 @@ export {
   DeviceConfigScreen,
   SupportDetailsScreen,
   SupportScreen,
-  DashboardScreen,
+  CustomerDashboardScreen,
   DealerLoginScreen,
   DeviceInfoScreen,
   InstallationDetailsScreen,

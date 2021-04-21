@@ -3,6 +3,7 @@ import {View, Text} from 'react-native';
 import {createStackNavigator} from '@react-navigation/stack';
 
 import {
+  CustomerBottomNavigator,
   CustomerLoginScreen,
   DealerMyAccountScreen,
   DealerSupportDetailsScreen,
@@ -101,6 +102,11 @@ const StackNav = props => {
         component={CustomerLoginScreen}
         options={{headerShown: false}}
       />
+      {/* <Stack.Screen
+        name="CustomerBottomNavigator"
+        component={CustomerBottomNavigator}
+        options={{headerShown: false}}
+      /> */}
     </Stack.Navigator>
   );
 };
