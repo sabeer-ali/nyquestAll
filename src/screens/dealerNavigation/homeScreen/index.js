@@ -55,7 +55,8 @@ const HomeScreen = ({navigation}) => {
   }, []);
 
   const handleGetListAPI = async (isPagination, callback) => {
-    getLocalDB('@loginDetails', resLogin => {
+    getLocalDB('@delaerLoginDetails', resLogin => {
+      console.log('@delaerLoginDetails', resLogin);
       const endPoints =
         DEALER_DEVICE_LIST +
         '/' +

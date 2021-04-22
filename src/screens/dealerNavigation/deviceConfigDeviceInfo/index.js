@@ -242,7 +242,7 @@ const CustomerForm = ({
       }
 
       if (isValid) {
-        getLocalDB('@loginDetails', localData => {
+        getLocalDB('@delaerLoginDetails', localData => {
           const payload = {
             devid: deviceDetails.deviceId,
             email: email,

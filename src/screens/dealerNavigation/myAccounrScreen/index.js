@@ -23,13 +23,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Logout = ({setModal, navigation}) => {
   const handleLogout = async () => {
-    await AsyncStorage.getAllKeys()
-      .then(keys => AsyncStorage.multiRemove(keys))
-      .then(() => {
-        console.log('success');
-        setModal(false);
-        navigation.navigate('logout');
-      });
+    try {
+      await AsyncStorage.removeItem('@delaerLoginDetails');
+      navigation.navigate('login');
+    } catch (exception) {
+      return false;
+    }
   };
   return (
     <View
@@ -70,6 +69,7 @@ const Logout = ({setModal, navigation}) => {
     </View>
   );
 };
+
 const About = ({setModal}) => {
   return (
     <View

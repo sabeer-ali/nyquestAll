@@ -9,8 +9,30 @@ import {
 } from '../../components';
 import {dealerIcon} from '../../assets';
 import {primaryColor} from '../../utils/CommonStyles';
+import {getLocalDB} from '../../utils/commonUtils';
 
 const UserListScreen = ({navigation}) => {
+  const [isDealerLogin, setDealerLogin] = React.useState(false);
+  const [isCustomerLogin, setCustomerLogin] = React.useState(false);
+
+  React.useEffect(() => {
+    getLocalDB('@delaerLoginDetails', dealerLogin => {
+      console.log('11111111111111111', dealerLogin);
+      if (dealerLogin !== null) {
+        setDealerLogin(true);
+      } else {
+        setDealerLogin(false);
+      }
+    });
+    getLocalDB('@customerLoginDetails', customerLogin => {
+      console.log('22222222222222', customerLogin);
+      if (customerLogin !== null) {
+        setCustomerLogin(true);
+      } else {
+        setCustomerLogin(false);
+      }
+    });
+  }, []);
   return (
     <View style={Styles.container}>
       <StatusBar animated={true} backgroundColor={primaryColor} />
@@ -31,13 +53,21 @@ const UserListScreen = ({navigation}) => {
           <CustomButton
             text="Dealer"
             icon={dealerIcon}
-            onpress={() => navigation.navigate('dealerlogin')}
+            onpress={() =>
+              isDealerLogin
+                ? navigation.navigate('dealerHome')
+                : navigation.navigate('dealerlogin')
+            }
           />
 
           <CustomButton
             text="Customer"
             icon={dealerIcon}
-            onpress={() => navigation.navigate('customerLogin')}
+            onpress={() =>
+              isCustomerLogin
+                ? navigation.navigate('CustomerBottomNavigator')
+                : navigation.navigate('customerLogin')
+            }
           />
         </CustomWrapper>
       </View>

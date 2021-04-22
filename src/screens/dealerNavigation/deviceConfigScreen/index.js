@@ -108,7 +108,7 @@ class DeviceConfigScreen extends React.Component {
       console.log('Is connected?', state.isInternetReachable);
       if (state.isInternetReachable) {
         this.setState({isLoading: true, deviceId});
-        getLocalDB('@loginDetails', res => {
+        getLocalDB('@delaerLoginDetails', res => {
           const endPoints =
             VALIDATE_DEVICE +
             '/' +

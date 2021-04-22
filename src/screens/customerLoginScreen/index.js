@@ -257,7 +257,7 @@ const LoginForm = ({setModal, setForgotPasswdMode, navigation}) => {
 
             if (res.data.code == 10) {
               if (data) {
-                StoreLocalDB('@loginDetails', data.msg);
+                StoreLocalDB('@customerLoginDetails', data.msg);
                 setLoader(false);
                 navigation.navigate('CustomerBottomNavigator');
               }

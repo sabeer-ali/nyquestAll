@@ -28,7 +28,7 @@ export default InstallationDetailsScreen = ({route, navigation}) => {
     setLoader(true);
     let deviceId = route.params.deviceDetails.deviceDetails.dev_id;
 
-    getLocalDB('@loginDetails', res => {
+    getLocalDB('@delaerLoginDetails', res => {
       let endPoints =
         '/getdevicestatusdtls/' +
         res.cust_id +

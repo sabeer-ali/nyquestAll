@@ -1,6 +1,7 @@
 import React from 'react';
 import {View, Text, Image, TouchableOpacity, Modal} from 'react-native';
 import {Button} from 'react-native-paper';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Styles from './styles';
 import {
   CommonBottomNavigator,
@@ -20,7 +21,16 @@ import {
 } from '../../../assets';
 import {CommonStyles} from '../../../utils/CommonStyles';
 
-const Logout = ({setModal}) => {
+const Logout = ({setModal, navigation}) => {
+  const handleLogout = async () => {
+    try {
+      await AsyncStorage.removeItem('@customerLoginDetails');
+      navigation.navigate('login');
+      setModal(false);
+    } catch (exception) {
+      console.error(exception);
+    }
+  };
   return (
     <View
       style={{
@@ -53,13 +63,14 @@ const Logout = ({setModal}) => {
           mode="contained"
           style={Styles.halfmodalButton}
           labelStyle={Styles.modalButtonLabel}
-          onPress={() => setModal(false)}>
+          onPress={() => handleLogout()}>
           Yes
         </Button>
       </View>
     </View>
   );
 };
+
 const About = ({setModal}) => {
   return (
     <View
@@ -182,6 +193,7 @@ const ModalContents = ({
   setAbout,
   setChangePasswd,
   setLogout,
+  navigation,
 }) => {
   return (
     <Modal visible={isModal} animationType="slide" transparent={true}>
@@ -199,7 +211,7 @@ const ModalContents = ({
           {isAbout ? (
             <About setModal={setModal} />
           ) : isLogout ? (
-            <Logout setModal={setModal} />
+            <Logout setModal={setModal} navigation={navigation} />
           ) : (
             <View
               style={{
@@ -302,6 +314,7 @@ export default function MyAccountScreen({navigation}) {
           setChangePasswd={setChangePasswd}
           setAbout={setAbout}
           setLogout={setLogout}
+          navigation={navigation}
         />
       ) : null}
 

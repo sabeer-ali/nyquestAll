@@ -54,7 +54,7 @@ export default function DeviceInfoScreen({
     let deviceId = route.params.deviceDetails.dev_id;
     console.log('101', deviceId);
 
-    getLocalDB('@loginDetails', res => {
+    getLocalDB('@delaerLoginDetails', res => {
       let endPoints =
         '/getdevicestatusdtls/' +
         res.cust_id +
@@ -93,7 +93,7 @@ export default function DeviceInfoScreen({
     let deviceId = route.params.deviceDetails.dev_id;
     console.log('101', deviceId);
 
-    getLocalDB('@loginDetails', res => {
+    getLocalDB('@delaerLoginDetails', res => {
       let endPoints =
         '/graphdatadealer_term/' +
         res.cust_id +

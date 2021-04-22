@@ -109,7 +109,7 @@ const DealerOTP = ({navigation, toaster}) => {
           if (err === null) {
             if (res !== null && res.data) {
               if (res.data.code === '10') {
-                StoreLocalDB('@loginDetails', res.data.msg, res => {
+                StoreLocalDB('@delaerLoginDetails', res.data.msg, res => {
                   navigation();
                 });
               } else {
