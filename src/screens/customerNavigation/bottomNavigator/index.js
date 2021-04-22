@@ -1,12 +1,12 @@
-// import React from 'react';
-// import {View, Text} from 'react-native';
-// import {BottomNavigation} from 'react-native-paper';
-// import {color, CommonStyles} from '../../../utils/CommonStyles';
-// import {
-//   dashboardIcon,
-//   singleSettingsIcon,
-//   customer2Icon,
-// } from '../../../assets';
+import React from 'react';
+import {View, Text} from 'react-native';
+import {BottomNavigation} from 'react-native-paper';
+import {color, CommonStyles} from '../../../utils/CommonStyles';
+import {
+  dashboardIcon,
+  singleSettingsIcon,
+  customer2Icon,
+} from '../../../assets';
 
 // import {
 //   CustomerDashboardScreen,
@@ -14,45 +14,49 @@
 //   MyAccountScreen,
 // } from '../index';
 
-// const AlbumsRoute = () => <Text>Albums</Text>;
+import CustomerDashboardScreen from '../dashboardScreen';
+import SupportScreen from '../supportScreen';
+import MyAccountScreen from '../myAccounrScreen';
 
-// const RecentsRoute = () => <Text>Recents</Text>;
+const AlbumsRoute = () => <Text>Albums</Text>;
 
-// BottomNavigator = ({navigation}) => {
-//   const [index, setIndex] = React.useState(0);
-//   const [routes] = React.useState([
-//     {key: 'dashboard', icon: dashboardIcon},
-//     // {key: 'settings', icon: singleSettingsIcon},
-//     // {key: 'myAccount', icon: customer2Icon},
-//   ]);
+const RecentsRoute = () => <Text>Recents</Text>;
 
-//   const renderScene = BottomNavigation.SceneMap({
-//     dashboard: CustomerDashboardScreen,
-//     // settings: SupportScreen,
-//     // myAccount: MyAccountScreen,
-//   });
+const BottomNavigator = ({navigation}) => {
+  const [index, setIndex] = React.useState(0);
+  const [routes] = React.useState([
+    {key: 'dashboard', icon: dashboardIcon},
+    {key: 'settings', icon: singleSettingsIcon},
+    {key: 'myAccount', icon: customer2Icon},
+  ]);
 
-//   return (
-//     <BottomNavigation
-//       navigationState={{index, routes}}
-//       onIndexChange={setIndex}
-//       renderScene={renderScene}
-//       activeColor={'#51648B'}
-//       inactiveColor="#BDBDBD"
-//       barStyle={{
-//         backgroundColor: '#fff',
-//         borderColor: '#fff',
-//         borderTopLeftRadius: 15,
-//         borderLeftWidth: 10,
-//         borderRightWidth: 10,
-//         borderTopRightRadius: 15,
-//         height: 60,
-//         alignItems: 'center',
-//         justifyContent: 'center',
-//       }}
-//       style={{}}
-//     />
-//   );
-// };
+  const renderScene = BottomNavigation.SceneMap({
+    dashboard: CustomerDashboardScreen,
+    settings: SupportScreen,
+    myAccount: MyAccountScreen,
+  });
 
-// export default BottomNavigator;
+  return (
+    <BottomNavigation
+      navigationState={{index, routes}}
+      onIndexChange={setIndex}
+      renderScene={renderScene}
+      activeColor={'#51648B'}
+      inactiveColor="#BDBDBD"
+      barStyle={{
+        backgroundColor: '#fff',
+        borderColor: '#fff',
+        borderTopLeftRadius: 15,
+        borderLeftWidth: 10,
+        borderRightWidth: 10,
+        borderTopRightRadius: 15,
+        height: 60,
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+      style={{}}
+    />
+  );
+};
+
+export default BottomNavigator;

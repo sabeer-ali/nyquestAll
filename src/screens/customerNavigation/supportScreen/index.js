@@ -99,9 +99,9 @@ export default SupportScreen = ({navigation}) => {
         ) : null}
       </SecondaryCommonLayout>
 
-      <View style={{backgroundColor: '#F5F8FF'}}>
+      {/* <View style={{backgroundColor: '#F5F8FF'}}>
         <CommonBottomNavigator navigation={navigation} state="supportScreen" />
-      </View>
+      </View> */}
     </View>
   );
 };

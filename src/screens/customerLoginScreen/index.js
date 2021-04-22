@@ -228,8 +228,6 @@ const LoginForm = ({setModal, setForgotPasswdMode, navigation}) => {
       }
     };
     getData();
-
-    console.log('sha512=============>', sha512('stick'));
   }, []);
 
   const handleLoggedIn = () => {
@@ -294,8 +292,6 @@ const LoginForm = ({setModal, setForgotPasswdMode, navigation}) => {
     }
   };
 
-  console.log('userName', userName);
-
   return (
     <ScrollView contentContainerStyle={{flex: 1}}>
       {isLoading ? (
@@ -314,8 +310,6 @@ const LoginForm = ({setModal, setForgotPasswdMode, navigation}) => {
               placeholder="Mobile/ Email"
               value={userName}
               onChange={userName => setUserName(userName)}
-              // onBlur={() => setFocusedInput(false)}
-              // onFocus={() => setFocusedInput(true)}
             />
             <CustomInput
               form
@@ -325,8 +319,6 @@ const LoginForm = ({setModal, setForgotPasswdMode, navigation}) => {
               showSecure
               secure={isSecureInput}
               handleSecure={() => setSecureInput(!isSecureInput)}
-              // onBlur={() => setFocusedInput(false)}
-              // onFocus={() => setFocusedInput(true)}
             />
           </CustomWrapper>
 
@@ -398,33 +390,13 @@ export default CustomerLoginScreen = ({navigation}) => {
   const [isOtpMode, setOtpMode] = React.useState(false);
   const [isResetPassword, setResetPassword] = React.useState(false);
 
-  React.useEffect(() => {
-    const backAction = () => {
-      Alert.alert('Hold on!', 'Are you sure you want to go back?', [
-        {
-          text: 'Cancel',
-          onPress: () => null,
-          style: 'cancel',
-        },
-        {text: 'YES', onPress: () => console.log('pling.....')}, //BackHandler.exitApp() }
-      ]);
-      return true;
-    };
-
-    const backHandler = BackHandler.addEventListener(
-      'hardwareBackPress',
-      backAction,
-    );
-
-    return () => backHandler.remove();
-  }, []);
-
   return (
     <View style={{flex: 1}}>
       <TopBottomLayout
         topHeight={3}
         bottomHeight={10}
         backButtonType="backArrow"
+        backButtonAction={() => navigation.goBack()}
         topSection={<TopSection />}
         bottomSection={
           <LoginForm

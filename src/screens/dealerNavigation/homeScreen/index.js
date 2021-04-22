@@ -1,5 +1,13 @@
 import React from 'react';
-import {View, Text, Image, ScrollView, FlatList} from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  ScrollView,
+  FlatList,
+  BackHandler,
+  Alert,
+} from 'react-native';
 import Toast from 'react-native-toast-message';
 import {NativeModules} from 'react-native';
 // const {SocketConnection, WifiConnectivity} = NativeModules;
@@ -26,6 +34,24 @@ const HomeScreen = ({navigation}) => {
 
   React.useEffect(() => {
     handleGetListAPI();
+    const backAction = () => {
+      if (navigation.isFocused()) {
+        Alert.alert('Hold on!', 'Are you sure you want to exit the app?', [
+          {
+            text: 'Cancel',
+            onPress: () => null,
+            style: 'cancel',
+          },
+          {text: 'YES', onPress: () => BackHandler.exitApp()},
+        ]);
+        return true;
+      }
+    };
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+    return () => backHandler.remove();
   }, []);
 
   const handleGetListAPI = async (isPagination, callback) => {
@@ -41,17 +67,14 @@ const HomeScreen = ({navigation}) => {
 
       setLoader(true);
 
-      console.log('endPoints ===>', pageNum);
-
       MiddleWareForAuth('GET', endPoints, null, (res, err) => {
         setLoader(false);
-        console.log('res, err in Home screen', res.data, err);
         if (err === null) {
           if (res !== null && err === null && res.data) {
             if (res.data && res.data.status && res.data.status === 'error') {
               showToaster('error', res.data.message);
             } else {
-              console.log('res.data.devlst', res.data.data);
+              console.log('res.data.devlst', res.data);
 
               if (res && res.data && res.data.data) {
                 let data;
@@ -78,36 +101,29 @@ const HomeScreen = ({navigation}) => {
   const handlePagination = async () => {
     await setPageNum(pageNum + 1);
     handleGetListAPI(true, () => {
-      // if (flatListRef.current && pageNum > 0) {
-      //   flatListRef.current.scrollToIndex({
-      //     animated: true,
-      //     index: 7 * pageNum,
-      //   });
-      // }
+      flatListRef.current.scrollToIndex({
+        animated: true,
+        index: deviceList.length - 5,
+      });
     });
   };
 
-  // React.useEffect(() => {
-  //   if (flatListRef.current && pageNum > 0) {
-  //     flatListRef.current.scrollToIndex({
-  //       animated: true,
-  //       index: 7 * pageNum,
-  //     });
-  //   }
-  // }, [pageNum]);
-
-  const renderItem = ({item, index}) => (
-    <CustomList
-      customerName={item.customer}
-      deviceName={item.dev_category === 'L' ? 'ICON LV' : 'ICON HV'}
-      deviceNickName={item.nick_name}
-      deviceId={item.dev_id}
-      onpress={() => navigation.push('dealerDeviceInfo', {deviceDetails: item})}
-      navigateNext
-      icon={iconLVIcon}
-      iconBgColor={item.dev_category === 'L' ? '#DBD3EB' : '#C4C4C4'}
-    />
-  );
+  const renderItem = ({item, index}) => {
+    return (
+      <CustomList
+        customerName={item.customer}
+        deviceName={item.dev_category === 'L' ? 'ICON LV' : 'ICON HV'}
+        deviceNickName={item.nick_name}
+        deviceId={item.dev_id}
+        onpress={() =>
+          navigation.push('dealerDeviceInfo', {deviceDetails: item})
+        }
+        navigateNext
+        icon={iconLVIcon}
+        iconBgColor={item.dev_category === 'L' ? '#DBD3EB' : '#C4C4C4'}
+      />
+    );
+  };
 
   return (
     <View style={Styles.container}>
@@ -141,21 +157,18 @@ const HomeScreen = ({navigation}) => {
             ref={flatListRef}
             data={deviceList}
             renderItem={renderItem}
-            keyExtractor={item => item.id}
+            keyExtractor={(item, index) => index}
             onEndReached={() => deviceList.length > 8 && handlePagination()}
-            onEndReachedThreshold={1}
-            // initialNumToRender={
-            //   pageNum > 0 ? Number(deviceList.length) - 5 : deviceList.length
-            // }
-            // onScrollToIndexFailed={(info) => {
-            //   const wait = new Promise((resolve) => setTimeout(resolve, 500));
-            //   wait.then(() => {
-            //     flatListRef.current?.scrollToIndex({
-            //       index: pageNum > 0 ? 7 : 0,
-            //       animated: true,
-            //     });
-            //   });
-            // }}
+            onEndReachedThreshold={0}
+            onScrollToIndexFailed={info => {
+              const wait = new Promise(resolve => setTimeout(resolve, 700));
+              wait.then(() => {
+                flatListRef.current?.scrollToIndex({
+                  index: deviceList.length - 5,
+                  animated: true,
+                });
+              });
+            }}
           />
         ) : (
           <View

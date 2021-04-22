@@ -102,11 +102,11 @@ const StackNav = props => {
         component={CustomerLoginScreen}
         options={{headerShown: false}}
       />
-      {/* <Stack.Screen
+      <Stack.Screen
         name="CustomerBottomNavigator"
         component={CustomerBottomNavigator}
         options={{headerShown: false}}
-      /> */}
+      />
     </Stack.Navigator>
   );
 };

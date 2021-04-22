@@ -305,12 +305,12 @@ export default function MyAccountScreen({navigation}) {
         />
       ) : null}
 
-      <View style={{backgroundColor: '#F5F8FF'}}>
+      {/* <View style={{backgroundColor: '#F5F8FF'}}>
         <CommonBottomNavigator
           navigation={navigation}
           state="dealerMyAccount"
         />
-      </View>
+      </View> */}
     </View>
   );
 }

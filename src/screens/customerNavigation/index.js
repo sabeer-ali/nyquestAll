@@ -14,24 +14,22 @@ import deviceConfigMenuScreen from './deviceConfigMenuScreen';
 import serverConfigScreen from './serverConfigScreen';
 import FAQScreen from './FAQScreen';
 import MyAccountScreen from './myAccounrScreen';
-// import CustomerBottomNavigator from './bottomNavigator';
-// CustomerBottomNavigator,
+import CustomerBottomNavigator from './bottomNavigator';
 
-export {
-  MyAccountScreen,
-  FAQScreen,
-  serverConfigScreen,
-  deviceConfigMenuScreen,
-  deviceConfigStepsScreen,
-  deviceConfigCustomerDetailsScreen,
-  DeviceConfigDeviceInfoScreen,
-  DeviceConfigScreen,
-  SupportDetailsScreen,
-  SupportScreen,
-  CustomerDashboardScreen,
-  DealerLoginScreen,
-  DeviceInfoScreen,
-  InstallationDetailsScreen,
-  HomeScreen,
-  LoginScreen,
-};
+export {CustomerBottomNavigator};
+// MyAccountScreen,
+// FAQScreen,
+// serverConfigScreen,
+// deviceConfigMenuScreen,
+// deviceConfigStepsScreen,
+// deviceConfigCustomerDetailsScreen,
+// DeviceConfigDeviceInfoScreen,
+// DeviceConfigScreen,
+// SupportDetailsScreen,
+// SupportScreen,
+// CustomerDashboardScreen,
+// DealerLoginScreen,
+// DeviceInfoScreen,
+// InstallationDetailsScreen,
+// HomeScreen,
+// LoginScreen,

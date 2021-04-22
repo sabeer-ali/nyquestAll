@@ -71,7 +71,12 @@ const NQLogoIcon = require('./commonIcons/NQLogoIcon/NQlogo.png');
 const unselectedBox = require('./commonIcons/plainRectangle/plainSqure.png');
 const wifiIcon = require('./commonIcons/wifiSignalIcon/wifiIcon.png');
 
+const singleSettingsIcon = require('./commonIcons/singleSettingsIcon/Vector.png');
+const customer2Icon = require('./commonIcons/customer2Icon/Vector.png');
+
 export {
+  customer2Icon,
+  singleSettingsIcon,
   wifiIcon,
   unselectedBox,
   logoutIcon,

@@ -813,7 +813,7 @@ const Form2 = ({setStep, deviceTypeApi, deviceComServerData}) => {
     if (deviceTypeApi === 'HV') {
       setTotalBatteryCapacity(numberInParalell * batteryCapacity);
     } else {
-      setTotalBatteryCapacity(numberInParalell * deviceType * batteryCapacity);
+      setTotalBatteryCapacity(batteryCapacity * deviceType * numberInParalell);
     }
   }, [numberInParalell]);
 
@@ -839,7 +839,13 @@ const Form2 = ({setStep, deviceTypeApi, deviceComServerData}) => {
     if (deviceTypeApi === 'HV') {
       setTotalBatteryCapacity(numberInParalell * batteryCapacity);
     } else {
-      setTotalBatteryCapacity(data * deviceType * batteryCapacity);
+      console.log(
+        'batteryCapacity * deviceType * batteryCapacity',
+        batteryCapacity,
+        deviceType,
+        batteryCapacity,
+      );
+      setTotalBatteryCapacity(batteryCapacity * deviceType * numberInParalell);
     }
   }, [batteryCapacity]);
 
