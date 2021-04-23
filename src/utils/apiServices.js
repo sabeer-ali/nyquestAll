@@ -9,6 +9,10 @@ const DEALER_DEVICE_LIST = '/dealeractivedevice';
 const VALIDATE_DEVICE = '/checkDeviceIdExists';
 const SAVED_DEALER_CUSTOMER = '/savedealercustomer';
 const SAVED_DEVICE_DEPLOY = '/savedevicedeploy';
+const EDIT_ACCOUNT = '/editaccount';
+const CHANGE_PASSWORD = '/changepassword';
+// Customer API's
+const GET_DEVICE_FOR_CUSTOMER = '/getdeviceforcust';
 
 const MiddleWareForAuth = async (method, endPont, params, callback) => {
   if (method === 'GET') {
@@ -25,10 +29,10 @@ const GETRequest = async (endPont, params, callback) => {
   console.log('You Call GET ==> ', url);
   axios
     .get(url)
-    .then((res) => {
+    .then(res => {
       callback(res, null);
     })
-    .catch((err) => {
+    .catch(err => {
       console.error('Err in GET API', err);
       callback(null, err);
     });
@@ -39,17 +43,20 @@ const POSTRequest = (endPont, params, callback) => {
   console.log('You Call POST', url, params);
   axios
     .post(url, params)
-    .then((res) => {
+    .then(res => {
       console.log('You Call POST RES ==> ', res.data);
       callback(res, null);
     })
-    .catch((err) => {
+    .catch(err => {
       console.error('Err in POST API', err);
       callback(null, err);
     });
 };
 
 export {
+  CHANGE_PASSWORD,
+  EDIT_ACCOUNT,
+  GET_DEVICE_FOR_CUSTOMER,
   LOGINURL,
   SEND_OTP,
   LOGIN_WITH_OTP,

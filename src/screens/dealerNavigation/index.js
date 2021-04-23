@@ -14,8 +14,10 @@ import DealerServerConfigScreen from './serverConfigScreen';
 import DealerFAQScreen from './FAQScreen';
 import DealerMyAccountScreen from './myAccounrScreen';
 import DealerWifiSetupScreen from './wifiSetup';
+import DealerMyAccountEditScreen from './myAccountEdit';
 
 export {
+  DealerMyAccountEditScreen,
   DealerWifiSetupScreen,
   DealerMyAccountScreen,
   DealerFAQScreen,

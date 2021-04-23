@@ -2,10 +2,10 @@ import React from 'react';
 import {View, Text} from 'react-native';
 import Styles from './styles';
 
-const CustomHeaderWithDesc = ({headerText, descText, white}) => {
+const CustomHeaderWithDesc = ({headerText, descText, white, noStyle}) => {
   console.log('headerText, descText, white', headerText, descText, white);
   return (
-    <View style={{paddingHorizontal: 25}}>
+    <View style={noStyle ? {} : {paddingHorizontal: 25}}>
       {headerText && (
         <Text style={[Styles.header, white && {color: '#fff'}]}>
           {headerText}

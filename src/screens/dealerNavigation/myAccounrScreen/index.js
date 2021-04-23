@@ -1,25 +1,37 @@
 import React from 'react';
-import {View, Text, Image, TouchableOpacity, Modal} from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  Modal,
+  ScrollView,
+  Alert,
+} from 'react-native';
 import {Button} from 'react-native-paper';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import sha512 from 'js-sha512';
 import Styles from './styles';
 import {
   CommonBottomNavigator,
-  SecondaryCommonLayout,
   CustomList,
   CustomHeaderWithDesc,
   CustomInput,
+  CustomWrapper,
+  TopBottomLayout,
 } from '../../../components';
 import {
-  contactSupportIcon,
   editIcon,
   lockIcon,
   NQLogoIcon,
   logoutIcon,
   closeIcon,
   logoIcon,
+  agentIcon,
 } from '../../../assets';
 import {CommonStyles} from '../../../utils/CommonStyles';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import {getLocalDB, Loader} from '../../../utils/commonUtils';
+import {MiddleWareForAuth, CHANGE_PASSWORD} from '../../../utils/apiServices';
 
 const Logout = ({setModal, navigation}) => {
   const handleLogout = async () => {
@@ -129,41 +141,105 @@ const About = ({setModal}) => {
   );
 };
 
-const PasswordComponent = () => {
+const PasswordComponent = ({navigation, setModal}) => {
+  const [isLoading, setLoader] = React.useState(false);
+  const [password, setPassword] = React.useState('');
+  const [cPassword, setConfirmPassword] = React.useState('');
+
+  const changePasswordApi = () => {
+    if (password === cPassword) {
+      getLocalDB('@delaerLoginDetails', resLocalData => {
+        let params = {
+          user_id: resLocalData.cust_id,
+          password: sha512(password),
+          token: resLocalData.token,
+        };
+        setLoader(true);
+        console.log('resLocalData +>', params);
+        MiddleWareForAuth('POST', CHANGE_PASSWORD, params, (res, err) => {
+          setLoader(false);
+          if (err === null) {
+            console.log('res.data. change password', res.data);
+            if (res !== null && err === null && res.data) {
+              if (res.data && res.data.code === '10') {
+                // showToaster('error', res.data.message);
+                Alert.alert('Success', res.data.message, [
+                  {text: 'OK', onPress: () => setModal(false)},
+                ]);
+              } else {
+                Alert.alert('Success', res.data.message, [
+                  {text: 'OK', onPress: () => setModal(false)},
+                ]);
+              }
+            }
+          } else {
+            console.error('Device List in Home API Error', err);
+            // showToaster('error', 'Somthing went wrong');
+          }
+        });
+      });
+    } else {
+      Alert.alert(
+        'Warning',
+        "'New password' and 'Confirm password'  Dosn't not match",
+      );
+    }
+  };
+
   return (
-    <>
+    <ScrollView showsVerticalScrollIndicator={false}>
       <CustomHeaderWithDesc
         headerText="Change Password"
         descText="Choose a unique password to protect your account"
       />
-      <View
-        style={{
-          paddingHorizontal: 25,
-          marginVertical: 20,
-        }}>
+      <CustomWrapper ph25 mv2>
         <CustomInput form placeholder="Current Password" />
-      </View>
+      </CustomWrapper>
 
-      <View
-        style={{
-          paddingHorizontal: 25,
-          marginVertical: 20,
-        }}>
-        <CustomInput form placeholder="New Password" />
-      </View>
+      <CustomWrapper ph25 mv2>
+        <CustomInput
+          form
+          placeholder="New Password"
+          value={password}
+          onChange={text => setPassword(text)}
+        />
+      </CustomWrapper>
 
-      <View
-        style={{
-          paddingHorizontal: 25,
-          marginVertical: 20,
-        }}>
-        <CustomInput form placeholder="Confirm Password" />
-      </View>
-    </>
+      <CustomWrapper ph25 mv2>
+        <CustomInput
+          form
+          placeholder="Confirm Password"
+          value={cPassword}
+          onChange={text => setConfirmPassword(text)}
+        />
+      </CustomWrapper>
+      <CustomWrapper ph25 mv2>
+        {isLoading ? (
+          <Loader />
+        ) : (
+          <Button
+            mode="contained"
+            style={Styles.modalButton}
+            labelStyle={Styles.modalButtonLabel}
+            onPress={() => changePasswordApi()}>
+            Done
+          </Button>
+        )}
+      </CustomWrapper>
+    </ScrollView>
   );
 };
 
-const Header = () => {
+const Header = ({navigation}) => {
+  const [loginData, setLoginData] = React.useState(null);
+
+  React.useEffect(() => {
+    getLocalDB('@delaerLoginDetails', resData => {
+      console.log(resData);
+      setLoginData(resData);
+    });
+  }, []);
+
   return (
     <View
       style={{
@@ -172,11 +248,19 @@ const Header = () => {
         alignItems: 'center',
       }}>
       <View style={{}}>
-        <Text style={Styles.userName}>Username</Text>
-        <Text style={Styles.phNo}>9012 345 678</Text>
-        <Text style={Styles.mailId}>mail@gmail.com</Text>
+        <Text style={Styles.userName}>
+          {loginData !== null ? loginData.name : 'N.A'}
+        </Text>
+        <Text style={Styles.phNo}>
+          {loginData !== null ? loginData.mob_no : 'N.A'}
+        </Text>
+        <Text style={Styles.mailId}>
+          {loginData !== null ? loginData.email : 'N.A'}
+        </Text>
       </View>
-      <TouchableOpacity style={{}}>
+      <TouchableOpacity
+        onPress={() => navigation.navigate('dealerMyAccountEdit')}
+        style={{}}>
         <Image source={editIcon} />
       </TouchableOpacity>
     </View>
@@ -199,12 +283,12 @@ const ModalContents = ({
       <View style={{flex: 1, backgroundColor: '#000000a6'}}>
         <View
           style={{
-            flex: isAbout ? 7 : isLogout ? 8 : 4,
+            flex: isAbout ? 7 : isLogout ? 8 : 3,
             backgroundColor: '#000000a6',
           }}></View>
         <View
           style={{
-            flex: isAbout ? 5 : isLogout ? 4 : 8,
+            flex: isAbout ? 5 : isLogout ? 4 : 9,
             backgroundColor: '#000000a6',
           }}>
           {isAbout ? (
@@ -231,8 +315,13 @@ const ModalContents = ({
                 </TouchableOpacity>
               </View>
               <View style={{flex: 11}}>
-                {isChangePasswd && <PasswordComponent />}
-                <View
+                {isChangePasswd && (
+                  <PasswordComponent
+                    navigation={navigation}
+                    setModal={setModal}
+                  />
+                )}
+                {/* <View
                   style={{
                     paddingHorizontal: 25,
                     marginVertical: 20,
@@ -244,7 +333,7 @@ const ModalContents = ({
                     onPress={() => console.log('Pressed')}>
                     {isAbout ? 'Update' : 'Done'}
                   </Button>
-                </View>
+                </View> */}
               </View>
             </View>
           )}
@@ -254,55 +343,91 @@ const ModalContents = ({
   );
 };
 
+const BottomSection = ({
+  navigation,
+  setModal,
+  setChangePasswd,
+  setAbout,
+  setLogout,
+}) => {
+  return (
+    <CustomWrapper>
+      <Header navigation={navigation} />
+
+      <CustomList
+        defaultList
+        onpress={() => {
+          setModal(true);
+          setAbout(false);
+          setChangePasswd(true);
+        }}
+        navigateNext
+        icon={lockIcon}
+        defaultText="Change Password"
+      />
+      <CustomList
+        defaultList
+        onpress={() => {
+          setModal(true);
+          setChangePasswd(false);
+          setAbout(true);
+        }}
+        navigateNext
+        icon={NQLogoIcon}
+        defaultText="About"
+      />
+      <CustomList
+        defaultList
+        onpress={() => {
+          setModal(true);
+          setChangePasswd(false);
+          setAbout(false);
+          setLogout(true);
+        }}
+        navigateNext
+        icon={logoutIcon}
+        defaultText="Logout"
+      />
+    </CustomWrapper>
+  );
+};
+
+const TopSection = ({navigation}) => {
+  return (
+    <CustomWrapper>
+      <CustomWrapper ml2 pv1>
+        <Image source={agentIcon} style={{width: 45, height: 45}} />
+      </CustomWrapper>
+      <CustomHeaderWithDesc
+        white
+        headerText="My Account"
+        descText="Manage your device & account here"
+      />
+    </CustomWrapper>
+  );
+};
+
 export default function MyAccountScreen({navigation}) {
   const [isModal, setModal] = React.useState(false);
   const [isChangePasswd, setChangePasswd] = React.useState(false);
   const [isAbout, setAbout] = React.useState(false);
   const [isLogout, setLogout] = React.useState(false);
   return (
-    <View style={{flex: 1, backgroundColor: 'red'}}>
-      <SecondaryCommonLayout
-        topHeaderIcon={contactSupportIcon}
-        headerText="My Account"
-        headerDes="Manage your device & account here">
-        <Header />
-
-        <CustomList
-          defaultList
-          onpress={() => {
-            setModal(true);
-            setChangePasswd(false);
-            setAbout(false);
-            setChangePasswd(true);
-          }}
-          navigateNext
-          icon={lockIcon}
-          defaultText="Change Password"
-        />
-        <CustomList
-          defaultList
-          onpress={() => {
-            setModal(true);
-            setChangePasswd(false);
-            setAbout(true);
-          }}
-          navigateNext
-          icon={NQLogoIcon}
-          defaultText="About"
-        />
-        <CustomList
-          defaultList
-          onpress={() => {
-            setModal(true);
-            setChangePasswd(false);
-            setAbout(false);
-            setLogout(true);
-          }}
-          navigateNext
-          icon={logoutIcon}
-          defaultText="Logout"
-        />
-      </SecondaryCommonLayout>
+    <CustomWrapper flex={1}>
+      <TopBottomLayout
+        topHeight={3}
+        bottomHeight={9}
+        topSection={<TopSection navigation={navigation} />}
+        bottomSection={
+          <BottomSection
+            navigation={navigation}
+            setModal={setModal}
+            setChangePasswd={setChangePasswd}
+            setAbout={setAbout}
+            setLogout={setLogout}
+          />
+        }
+      />
       {isModal ? (
         <ModalContents
           isModal={isModal}
@@ -323,6 +448,6 @@ export default function MyAccountScreen({navigation}) {
           state="dealerMyAccount"
         />
       </View>
-    </View>
+    </CustomWrapper>
   );
 }

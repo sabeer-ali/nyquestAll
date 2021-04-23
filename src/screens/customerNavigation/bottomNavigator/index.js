@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text} from 'react-native';
+import {View, Text, Image} from 'react-native';
 import {BottomNavigation} from 'react-native-paper';
 import {color, CommonStyles} from '../../../utils/CommonStyles';
 import {
@@ -8,32 +8,27 @@ import {
   customer2Icon,
 } from '../../../assets';
 
-// import {
-//   CustomerDashboardScreen,
-//   SupportScreen,
-//   MyAccountScreen,
-// } from '../index';
-
-import CustomerDashboardScreen from '../dashboardScreen';
-import SupportScreen from '../supportScreen';
-import MyAccountScreen from '../myAccounrScreen';
-
-const AlbumsRoute = () => <Text>Albums</Text>;
-
-const RecentsRoute = () => <Text>Recents</Text>;
+import {
+  CustomerSupportScreen,
+  CustomerMyAccountScreen,
+  CustomerDashboardScreen,
+} from '../index';
 
 const BottomNavigator = ({navigation}) => {
   const [index, setIndex] = React.useState(0);
   const [routes] = React.useState([
-    {key: 'dashboard', icon: dashboardIcon},
+    {
+      key: 'dashboard',
+      icon: dashboardIcon,
+    },
     {key: 'settings', icon: singleSettingsIcon},
     {key: 'myAccount', icon: customer2Icon},
   ]);
 
   const renderScene = BottomNavigation.SceneMap({
     dashboard: CustomerDashboardScreen,
-    settings: SupportScreen,
-    myAccount: MyAccountScreen,
+    settings: CustomerSupportScreen,
+    myAccount: CustomerMyAccountScreen,
   });
 
   return (
@@ -50,8 +45,8 @@ const BottomNavigator = ({navigation}) => {
         borderLeftWidth: 10,
         borderRightWidth: 10,
         borderTopRightRadius: 15,
-        height: 60,
-        alignItems: 'center',
+        height: 50,
+        width: '100%',
         justifyContent: 'center',
       }}
       style={{}}

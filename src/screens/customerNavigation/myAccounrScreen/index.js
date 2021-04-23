@@ -2,6 +2,7 @@ import React from 'react';
 import {View, Text, Image, TouchableOpacity, Modal} from 'react-native';
 import {Button} from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useNavigation} from '@react-navigation/native';
 import Styles from './styles';
 import {
   CommonBottomNavigator,
@@ -122,7 +123,7 @@ const About = ({setModal}) => {
           mode="contained"
           style={Styles.modalButton}
           labelStyle={Styles.modalButtonLabel}
-          onPress={() => console.log('Pressed')}>
+          onPress={() => setModal(false)}>
           Update
         </Button>
       </View>
@@ -198,11 +199,12 @@ const ModalContents = ({
   return (
     <Modal visible={isModal} animationType="slide" transparent={true}>
       <View style={{flex: 1, backgroundColor: '#000000a6'}}>
-        <View
+        <TouchableOpacity
+          onPress={() => setModal(false)}
           style={{
             flex: isAbout ? 7 : isLogout ? 8 : 4,
             backgroundColor: '#000000a6',
-          }}></View>
+          }}></TouchableOpacity>
         <View
           style={{
             flex: isAbout ? 5 : isLogout ? 4 : 8,
@@ -255,7 +257,8 @@ const ModalContents = ({
   );
 };
 
-export default function MyAccountScreen({navigation}) {
+const MyAccountScreen = () => {
+  const navigation = useNavigation();
   const [isModal, setModal] = React.useState(false);
   const [isChangePasswd, setChangePasswd] = React.useState(false);
   const [isAbout, setAbout] = React.useState(false);
@@ -326,4 +329,6 @@ export default function MyAccountScreen({navigation}) {
       </View> */}
     </View>
   );
-}
+};
+
+export default MyAccountScreen;

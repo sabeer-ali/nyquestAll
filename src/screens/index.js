@@ -3,6 +3,7 @@ import UserListScreen from './userListScreen';
 import CustomerLoginScreen from './customerLoginScreen';
 import DealerLoginScreen from './dealerLoginScreen';
 import {
+  DealerMyAccountEditScreen,
   DealerMyAccountScreen,
   DealerSupportDetailsScreen,
   DealerSupportScreen,
@@ -16,9 +17,25 @@ import {
   DealerHomeScreen,
   DealerDeviceConfigScreen,
 } from './dealerNavigation';
-import {CustomerBottomNavigator} from './customerNavigation';
+import {
+  CustomerMyAccountScreen,
+  CustomerBottomNavigator,
+} from './customerNavigation';
+
+import {
+  WifiSetupScreen,
+  DeviceConfigDeviceInfoScreen,
+  DeviceConfigScreen,
+  NotificationScreen,
+} from './commonScreens';
 
 export {
+  WifiSetupScreen,
+  DeviceConfigDeviceInfoScreen,
+  DeviceConfigScreen,
+  NotificationScreen,
+  DealerMyAccountEditScreen,
+  CustomerMyAccountScreen,
   CustomerBottomNavigator,
   DealerMyAccountScreen,
   DealerSupportDetailsScreen,

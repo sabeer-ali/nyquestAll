@@ -12,27 +12,26 @@ import {primaryColor} from '../../utils/CommonStyles';
 import {getLocalDB} from '../../utils/commonUtils';
 
 const UserListScreen = ({navigation}) => {
-  const [isDealerLogin, setDealerLogin] = React.useState(false);
-  const [isCustomerLogin, setCustomerLogin] = React.useState(false);
-
-  React.useEffect(() => {
+  const handleDealerLogin = () => {
     getLocalDB('@delaerLoginDetails', dealerLogin => {
-      console.log('11111111111111111', dealerLogin);
       if (dealerLogin !== null) {
-        setDealerLogin(true);
+        navigation.navigate('dealerHome');
       } else {
-        setDealerLogin(false);
+        navigation.navigate('dealerlogin');
       }
     });
+  };
+
+  const handleCustomerLogin = () => {
     getLocalDB('@customerLoginDetails', customerLogin => {
-      console.log('22222222222222', customerLogin);
       if (customerLogin !== null) {
-        setCustomerLogin(true);
+        navigation.navigate('CustomerBottomNavigator');
       } else {
-        setCustomerLogin(false);
+        navigation.navigate('customerLogin');
       }
     });
-  }, []);
+  };
+
   return (
     <View style={Styles.container}>
       <StatusBar animated={true} backgroundColor={primaryColor} />
@@ -49,25 +48,19 @@ const UserListScreen = ({navigation}) => {
           </Text>
         </CustomWrapper>
 
-        <CustomWrapper style={Styles.buttonContainer} mt3>
+        <CustomWrapper
+          style={[Styles.buttonContainer, {backgroundColor: 'red'}]}
+          mt3>
           <CustomButton
             text="Dealer"
             icon={dealerIcon}
-            onpress={() =>
-              isDealerLogin
-                ? navigation.navigate('dealerHome')
-                : navigation.navigate('dealerlogin')
-            }
+            onpress={() => handleDealerLogin()}
           />
 
           <CustomButton
             text="Customer"
             icon={dealerIcon}
-            onpress={() =>
-              isCustomerLogin
-                ? navigation.navigate('CustomerBottomNavigator')
-                : navigation.navigate('customerLogin')
-            }
+            onpress={() => handleCustomerLogin()}
           />
         </CustomWrapper>
       </View>

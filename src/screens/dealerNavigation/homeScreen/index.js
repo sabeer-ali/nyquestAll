@@ -130,7 +130,11 @@ const HomeScreen = ({navigation}) => {
     <View style={Styles.container}>
       <Toast ref={ref => Toast.setRef(ref)} />
       <View style={Styles.topSection}>
-        <CustomHeader leftIcon={logoIcon} rightIcon={notificationIcon} />
+        <CustomHeader
+          leftIcon={logoIcon}
+          rightIcon={notificationIcon}
+          rightIconAction={() => navigation.navigate('notification')}
+        />
         <Text style={Styles.welcomeText}>Welcome</Text>
         <Text style={Styles.descriptionText}>Here is your device list</Text>
         <View style={Styles.inputContainer}>

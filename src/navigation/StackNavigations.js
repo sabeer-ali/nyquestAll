@@ -3,6 +3,12 @@ import {View, Text} from 'react-native';
 import {createStackNavigator} from '@react-navigation/stack';
 
 import {
+  WifiSetupScreen,
+  DeviceConfigDeviceInfoScreen,
+  DeviceConfigScreen,
+  NotificationScreen,
+  DealerMyAccountEditScreen,
+  CustomerMyAccountScreen,
   CustomerBottomNavigator,
   CustomerLoginScreen,
   DealerMyAccountScreen,
@@ -96,6 +102,11 @@ const StackNav = props => {
         component={DealerMyAccountScreen}
         options={{headerShown: false}}
       />
+      <Stack.Screen
+        name="dealerMyAccountEdit"
+        component={DealerMyAccountEditScreen}
+        options={{headerShown: false}}
+      />
       {/* Customer Login */}
       <Stack.Screen
         name="customerLogin"
@@ -105,6 +116,32 @@ const StackNav = props => {
       <Stack.Screen
         name="CustomerBottomNavigator"
         component={CustomerBottomNavigator}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="customerMyAccount"
+        component={CustomerMyAccountScreen}
+        options={{headerShown: false}}
+      />
+      {/* Common Screen */}
+      <Stack.Screen
+        name="notification"
+        component={NotificationScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="deviceConfig"
+        component={DeviceConfigScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="deviceConfigDeviceInfo"
+        component={DeviceConfigDeviceInfoScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="wifiSetup"
+        component={WifiSetupScreen}
         options={{headerShown: false}}
       />
     </Stack.Navigator>

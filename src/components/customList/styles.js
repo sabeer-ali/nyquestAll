@@ -148,6 +148,7 @@ const Styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '500',
     color: '#212121',
+    paddingLeft: 15,
   },
   deviceInfoName: {
     fontFamily: primaryFont,

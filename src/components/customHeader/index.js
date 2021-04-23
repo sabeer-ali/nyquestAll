@@ -25,7 +25,7 @@ export default CustomHeader = ({
           </TouchableOpacity>
         )}
       </View>
-      <View>
+      <View style={{left: -30}}>
         {centerText && <Text style={Styles.centerText}>{centerText}</Text>}
       </View>
       {/* <View>

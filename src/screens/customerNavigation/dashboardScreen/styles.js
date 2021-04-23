@@ -59,6 +59,26 @@ const Styles = StyleSheet.create({
 
     elevation: 7,
   },
+  configDeviceContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginVertical: 14,
+  },
+  configDevice: {
+    fontFamily: primaryFont,
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#757575',
+  },
+  deviceCountContainer: {
+    backgroundColor: '#fff',
+    borderRadius: 38,
+    width: 99,
+    height: 31,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
 
 export default Styles;

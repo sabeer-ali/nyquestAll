@@ -4,7 +4,6 @@ import HomeScreen from './homeScreen';
 import DeviceInfoScreen from './deviceInfoScreen';
 import InstallationDetailsScreen from './installationDetailsScreen';
 import CustomerDashboardScreen from './dashboardScreen';
-import SupportScreen from './supportScreen';
 import SupportDetailsScreen from './supportDetailsScreen';
 import DeviceConfigScreen from './deviceConfigScreen';
 import DeviceConfigDeviceInfoScreen from './deviceConfigDeviceInfo';
@@ -13,11 +12,16 @@ import deviceConfigStepsScreen from './deviceConfigStepsScreen';
 import deviceConfigMenuScreen from './deviceConfigMenuScreen';
 import serverConfigScreen from './serverConfigScreen';
 import FAQScreen from './FAQScreen';
-import MyAccountScreen from './myAccounrScreen';
+import CustomerSupportScreen from './supportScreen';
+import CustomerMyAccountScreen from './myAccounrScreen';
 import CustomerBottomNavigator from './bottomNavigator';
 
-export {CustomerBottomNavigator};
-// MyAccountScreen,
+export {
+  CustomerDashboardScreen,
+  CustomerSupportScreen,
+  CustomerMyAccountScreen,
+  CustomerBottomNavigator,
+};
 // FAQScreen,
 // serverConfigScreen,
 // deviceConfigMenuScreen,
