@@ -13,6 +13,7 @@ export const EEPROM = 'FC00';
 export const BATTERY_EEPROM = 'FC6A';
 export const BATTERY_EEPROM_HV = 'FC62';
 export const UPS_EEPROM = 'FC62';
+export const SOLAR_EEPROM = 'FC79';
 export const THRESHOLD_EEPROM = 'FC85';
 export const WIFI_EEPROM = 'FC22';
 

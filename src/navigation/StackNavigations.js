@@ -3,6 +3,7 @@ import {View, Text} from 'react-native';
 import {createStackNavigator} from '@react-navigation/stack';
 
 import {
+  MyAccountEditScreen,
   WifiSetupScreen,
   DeviceConfigDeviceInfoScreen,
   DeviceConfigScreen,
@@ -142,6 +143,11 @@ const StackNav = props => {
       <Stack.Screen
         name="wifiSetup"
         component={WifiSetupScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="myAccountEdit"
+        component={MyAccountEditScreen}
         options={{headerShown: false}}
       />
     </Stack.Navigator>

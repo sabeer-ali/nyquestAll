@@ -8,11 +8,16 @@ export default CustomButton = ({
   onpress,
   backgroundStyle,
   textStyle,
+  width100,
 }) => {
   return (
     <TouchableOpacity
       activeOpacity={1}
-      style={backgroundStyle ? backgroundStyle : Styles.buttonBackground}
+      style={
+        backgroundStyle
+          ? backgroundStyle
+          : [Styles.buttonBackground, width100 && {width: '100%'}]
+      }
       onPress={() => onpress && onpress()}>
       {icon && (
         <View>

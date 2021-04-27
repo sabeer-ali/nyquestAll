@@ -238,8 +238,7 @@ const LoginForm = ({setModal, setForgotPasswdMode, navigation}) => {
         LOGINURL,
         {
           user_name: userName,
-          pwd:
-            'da2ce07871891ec3091701ce6d01fd08e63c175956c6d11dc640ce5de54d04d4179270d78c0b0880a2e8c8af3371b02c82de3c6250e698d84db7eb10278d2110', //sha512(password),
+          pwd: sha512(password),
           platform: 'app',
           version_code: 'v1',
         },

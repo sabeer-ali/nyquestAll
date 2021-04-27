@@ -40,7 +40,7 @@ const UserListScreen = ({navigation}) => {
         <LogoWithTextComponent />
       </View>
 
-      <View style={Styles.bottomSection}>
+      <View style={[Styles.bottomSection]}>
         <CustomWrapper ph2>
           <Text style={Styles.login}>Login</Text>
           <Text style={Styles.loginDescription}>
@@ -48,16 +48,16 @@ const UserListScreen = ({navigation}) => {
           </Text>
         </CustomWrapper>
 
-        <CustomWrapper
-          style={[Styles.buttonContainer, {backgroundColor: 'red'}]}
-          mt3>
+        <CustomWrapper style={Styles.buttonContainer} mt3 ph1>
           <CustomButton
+            width100
             text="Dealer"
             icon={dealerIcon}
             onpress={() => handleDealerLogin()}
           />
 
           <CustomButton
+            width100
             text="Customer"
             icon={dealerIcon}
             onpress={() => handleCustomerLogin()}

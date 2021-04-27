@@ -38,7 +38,7 @@ const BottomSection = ({navigation, loginData}) => {
   const [phone, setPhone] = React.useState('');
 
   React.useEffect(() => {
-    getLocalDB('@delaerLoginDetails', resLocalData => {
+    getLocalDB('@customerLoginDetails', resLocalData => {
       setName(resLocalData.name);
       setEmail(resLocalData.email);
       setPhone(resLocalData.mob_no);
@@ -46,7 +46,7 @@ const BottomSection = ({navigation, loginData}) => {
   }, []);
 
   const editAccountApi = () => {
-    getLocalDB('@delaerLoginDetails', resLocalData => {
+    getLocalDB('@customerLoginDetails', resLocalData => {
       let params = {
         user_id: resLocalData.cust_id,
         phoneno: phone,

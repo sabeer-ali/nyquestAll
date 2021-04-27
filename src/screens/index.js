@@ -23,6 +23,7 @@ import {
 } from './customerNavigation';
 
 import {
+  MyAccountEditScreen,
   WifiSetupScreen,
   DeviceConfigDeviceInfoScreen,
   DeviceConfigScreen,
@@ -30,6 +31,7 @@ import {
 } from './commonScreens';
 
 export {
+  MyAccountEditScreen,
   WifiSetupScreen,
   DeviceConfigDeviceInfoScreen,
   DeviceConfigScreen,

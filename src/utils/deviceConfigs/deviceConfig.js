@@ -21,6 +21,7 @@ import {
   BATTERY_EEPROM_HV,
   DEVICE_PORT_HV,
   WIFI_EEPROM,
+  SOLAR_EEPROM,
 } from './constants';
 
 export const decToHex = data => {
@@ -184,9 +185,9 @@ export const THRESHOLD_Config_Stage_6 = async (type, data, callback) => {
                 dataLength1,
                 DATA_CONSTANT2,
                 DATA_CONSTANT3,
+                ai,
                 ei,
                 ed,
-                ai,
               );
 
               let strCombineResult = stringCombine([
@@ -198,9 +199,9 @@ export const THRESHOLD_Config_Stage_6 = async (type, data, callback) => {
                 dataLength1,
                 DATA_CONSTANT2,
                 DATA_CONSTANT3,
+                ai,
                 ei,
                 ed,
-                ai,
               ]);
 
               console.log('str combine', strCombineResult);
@@ -360,7 +361,7 @@ export const SOLAR_Config_Stage_5 = async (type, data, callback) => {
   const DATA_CONSTANT1 = CONSTANT2;
   const reqSessionId = data.sessionId;
   const packetLength = decToHex(15);
-  const eepRom = reverseData(UPS_EEPROM);
+  const eepRom = reverseData(SOLAR_EEPROM);
   const dataLength = decToHex(12);
   const solarCapacity = reverseData(floatToHex(data.solarCapacity));
   const mainChargeIn = reverseData(floatToHex(data.mainChargeIN));
@@ -425,6 +426,7 @@ export const SOLAR_Config_Stage_5 = async (type, data, callback) => {
 };
 
 export const UPS_Config_Stage_4 = async (type, data, callback) => {
+  console.log('Connection....Battery_Config_Stage_4');
   const device = type === 'LV' ? SYNC_WORD_LV : SYNC_WORD_HV;
   const syncWord = device;
   const DATA_CONSTANT1 = CONSTANT2;
@@ -496,6 +498,7 @@ export const UPS_Config_Stage_4 = async (type, data, callback) => {
 };
 
 export const Battery_Config_Stage_3 = async (type, data, callback) => {
+  console.log('Connection....Battery_Config_Stage_3');
   const device = type === 'LV' ? SYNC_WORD_LV : SYNC_WORD_HV;
   const syncWord = device;
   const DATA_CONSTANT1 = CONSTANT2;

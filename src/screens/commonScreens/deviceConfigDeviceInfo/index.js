@@ -556,6 +556,53 @@ const DeviceInfo = ({
   deviceDetails,
   setStepsDetsils,
 }) => {
+  const [geoLocationDetails, setGeoLocationDetails] = React.useState('');
+  const [locationAdd, setLocationAdd] = React.useState(false);
+  const requestGpsPermission = async () => {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        {
+          title: 'Location Permission',
+          message: 'Access Your Location using GPS',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+      );
+      console.log(
+        'PermissionsAndroid.RESULTS.GRANTED',
+        PermissionsAndroid.RESULTS.GRANTED,
+        granted,
+      );
+
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log('You can use the GPS', PermissionsAndroid.RESULTS.GRANTED);
+        Geolocation.getCurrentPosition(
+          position => {
+            console.log(position);
+            setGeoLocationDetails(position.coords);
+            setLocationAdd(true);
+            setStepsDetsils(true);
+            setModal(true);
+          },
+          error => {
+            // See error code charts below.
+            console.log(error.code, error.message);
+            setLocationAdd(false);
+          },
+          {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+        );
+        // Geolocation.getCurrentPosition((info) =>
+        // );
+      } else {
+        Alert.alert('Warning', 'GPS permission denied');
+        console.log('GPS permission denied');
+      }
+    } catch (err) {
+      console.warn('Permissions ', err);
+    }
+  };
+
   return (
     <View>
       <View style={Styles.deviceInfoContainer}>
@@ -627,9 +674,10 @@ const DeviceInfo = ({
             backgroundStyle={CommonStyles.buttonBgStyle}
             textStyle={CommonStyles.buttonTextStyle}
             onpress={() => {
+              requestGpsPermission();
               // setCustomerDetails(true);
-              setStepsDetsils(true);
-              setModal(true);
+              // setStepsDetsils(true);
+              // setModal(true);
             }}
           />
         )}

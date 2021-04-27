@@ -516,6 +516,7 @@ const Form3 = ({setStep, deviceCommData, deviceComServerData}) => {
   };
 
   const handleContinue = () => {
+    console.log('deviceCommData ---------->', deviceCommData);
     handleValidation(isValid => {
       if (isValid) {
         setLoader(true);
@@ -564,6 +565,21 @@ const Form3 = ({setStep, deviceCommData, deviceComServerData}) => {
         } else {
           if (upsVA >= 1200 && upsVA <= 2000) {
             setValidate(true);
+            setTimeout(() => {
+              UPS_Config_Stage_4(
+                'LV',
+                {
+                  sessionId: deviceCommData.sessionId,
+                  dcOverload,
+                  acOverload,
+                },
+                res => {
+                  console.log('res in dtg 4 UPS Config ', res);
+                  setStep(4);
+                },
+              );
+              setLoader(false);
+            }, 5000);
           } else {
             setValidate(false);
           }
@@ -576,7 +592,7 @@ const Form3 = ({setStep, deviceCommData, deviceComServerData}) => {
   };
 
   const DcOverload = () => {
-    let result = (upsVA * 0.8) / deviceCommData.deviceType;
+    let result = (upsVA * 0.8) / (12 * deviceCommData.deviceType);
     return result;
   };
 

@@ -21,6 +21,7 @@ import {
   logoIcon,
 } from '../../../assets';
 import {CommonStyles} from '../../../utils/CommonStyles';
+import {getLocalDB} from '../../../utils/commonUtils';
 
 const Logout = ({setModal, navigation}) => {
   const handleLogout = async () => {
@@ -165,7 +166,16 @@ const PasswordComponent = () => {
   );
 };
 
-const Header = () => {
+const Header = ({navigation}) => {
+  const [loginData, setLoginData] = React.useState(null);
+
+  React.useEffect(() => {
+    getLocalDB('@customerLoginDetails', resData => {
+      console.log(resData);
+      setLoginData(resData);
+    });
+  }, []);
+
   return (
     <View
       style={{
@@ -174,11 +184,18 @@ const Header = () => {
         alignItems: 'center',
       }}>
       <View style={{}}>
-        <Text style={Styles.userName}>Username</Text>
-        <Text style={Styles.phNo}>9012 345 678</Text>
-        <Text style={Styles.mailId}>mail@gmail.com</Text>
+        <Text style={Styles.userName}>
+          {loginData !== null ? loginData.name : 'N.A'}
+        </Text>
+        <Text style={Styles.phNo}>
+          {loginData !== null ? loginData.mob_no : 'N.A'}
+        </Text>
+        <Text style={Styles.mailId}>
+          {loginData !== null ? loginData.email : 'N.A'}
+        </Text>
       </View>
-      <TouchableOpacity style={{}}>
+      <TouchableOpacity
+        onPress={() => navigation.navigate('myAccountEdit', {loginData})}>
         <Image source={editIcon} />
       </TouchableOpacity>
     </View>
@@ -269,7 +286,7 @@ const MyAccountScreen = () => {
         topHeaderIcon={contactSupportIcon}
         headerText="My Account"
         headerDes="Manage your device & account here">
-        <Header />
+        <Header navigation={navigation} />
 
         <CustomList
           defaultList
