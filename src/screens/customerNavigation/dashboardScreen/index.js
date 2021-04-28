@@ -226,6 +226,7 @@ const TopSection = ({navigation}) => {
         <CustomWrapper>
           <RowLine width={60} spaceBetween>
             <TouchableOpacity
+              style={{padding: 8}}
               onPress={() => navigation.navigate('deviceConfig')}>
               <Image source={plusIcon} />
             </TouchableOpacity>

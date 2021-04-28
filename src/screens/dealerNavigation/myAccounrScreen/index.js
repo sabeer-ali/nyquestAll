@@ -283,12 +283,12 @@ const ModalContents = ({
       <View style={{flex: 1, backgroundColor: '#000000a6'}}>
         <View
           style={{
-            flex: isAbout ? 7 : isLogout ? 8 : 3,
+            flex: isAbout ? 7 : isLogout ? 8 : 2,
             backgroundColor: '#000000a6',
           }}></View>
         <View
           style={{
-            flex: isAbout ? 5 : isLogout ? 4 : 9,
+            flex: isAbout ? 5 : isLogout ? 4 : 10,
             backgroundColor: '#000000a6',
           }}>
           {isAbout ? (

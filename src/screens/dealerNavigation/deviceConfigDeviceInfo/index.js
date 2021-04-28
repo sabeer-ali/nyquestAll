@@ -176,7 +176,9 @@ const CustomerForm = ({
 
   const saveDeviceComDatas = (localdata, callback) => {
     let data = {
-      nickname: name,
+      email: email,
+      custname: name,
+      mobno: mobileNumber,
       batage: '',
       battype: '',
       battotalcap: '',
@@ -253,45 +255,50 @@ const CustomerForm = ({
           };
           console.log('Payload ==>', payload);
 
+          saveDeviceComDatas(localData, () => {
+            setCustomerDetails(false);
+            setStepsDetsils(true);
+          });
+
           NetInfo.fetch().then(state => {
             console.log('Connection type', state.type);
             console.log('Is connected?', state.isInternetReachable);
             if (state.isInternetReachable) {
               setLoader(true);
-              MiddleWareForAuth(
-                'POST',
-                SAVED_DEALER_CUSTOMER,
-                payload,
-                (res, err) => {
-                  setLoader(false);
-                  setLoader(false);
-                  if (err === null) {
-                    if (res !== null && res.data) {
-                      if (res.data.status === 'success') {
-                        console.log(
-                          'customer details submit RES=>',
-                          res.data,
-                          err,
-                        );
-                        saveDeviceComDatas(localData, () => {
-                          setCustomerDetails(false);
-                          setStepsDetsils(true);
-                        });
-                      } else {
-                        if (res.data && res.data.message) {
-                          showToaster('error', res.data.message);
-                        }
-                      }
-                    }
-                  } else {
-                    console.error(
-                      'Device Connection Csutomer Details Save  Error',
-                      err,
-                    );
-                    showToaster('error', 'Something went wrong');
-                  }
-                },
-              );
+              // MiddleWareForAuth(
+              //   'POST',
+              //   SAVED_DEALER_CUSTOMER,
+              //   payload,
+              //   (res, err) => {
+              //     setLoader(false);
+              //     setLoader(false);
+              //     if (err === null) {
+              //       if (res !== null && res.data) {
+              //         if (res.data.status === 'success') {
+              //           console.log(
+              //             'customer details submit RES=>',
+              //             res.data,
+              //             err,
+              //           );
+              //           saveDeviceComDatas(localData, () => {
+              //             setCustomerDetails(false);
+              //             setStepsDetsils(true);
+              //           });
+              //         } else {
+              //           if (res.data && res.data.message) {
+              //             showToaster('error', res.data.message);
+              //           }
+              //         }
+              //       }
+              //     } else {
+              //       console.error(
+              //         'Device Connection Csutomer Details Save  Error',
+              //         err,
+              //       );
+              //       showToaster('error', 'Something went wrong');
+              //     }
+              //   },
+              // );
             } else {
               Alert.alert('Warning', 'No Internet Connection');
             }

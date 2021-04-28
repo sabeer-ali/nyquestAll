@@ -1,8 +1,17 @@
 import React from 'react';
-import {View, Text, Image, TouchableOpacity, Modal} from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  Modal,
+  ScrollView,
+  Alert,
+} from 'react-native';
 import {Button} from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useNavigation} from '@react-navigation/native';
+import sha512 from 'js-sha512';
 import Styles from './styles';
 import {
   CommonBottomNavigator,
@@ -10,6 +19,7 @@ import {
   CustomList,
   CustomHeaderWithDesc,
   CustomInput,
+  CustomWrapper,
 } from '../../../components';
 import {
   contactSupportIcon,
@@ -21,7 +31,8 @@ import {
   logoIcon,
 } from '../../../assets';
 import {CommonStyles} from '../../../utils/CommonStyles';
-import {getLocalDB} from '../../../utils/commonUtils';
+import {getLocalDB, Loader} from '../../../utils/commonUtils';
+import {MiddleWareForAuth, CHANGE_PASSWORD} from '../../../utils/apiServices';
 
 const Logout = ({setModal, navigation}) => {
   const handleLogout = async () => {
@@ -132,9 +143,53 @@ const About = ({setModal}) => {
   );
 };
 
-const PasswordComponent = () => {
+const PasswordComponent = ({setModal}) => {
+  const [isLoading, setLoader] = React.useState(false);
+  const [password, setPassword] = React.useState('');
+  const [cPassword, setConfirmPassword] = React.useState('');
+
+  const changePasswordApi = () => {
+    if (password === cPassword) {
+      getLocalDB('@customerLoginDetails', resLocalData => {
+        let params = {
+          user_id: resLocalData.cust_id,
+          password: sha512(password),
+          token: resLocalData.token,
+        };
+        setLoader(true);
+        console.log('resLocalData +>', params);
+        MiddleWareForAuth('POST', CHANGE_PASSWORD, params, (res, err) => {
+          setLoader(false);
+          if (err === null) {
+            console.log('res.data. change password', res.data);
+            if (res !== null && err === null && res.data) {
+              if (res.data && res.data.code === '10') {
+                // showToaster('error', res.data.message);
+                Alert.alert('Success', res.data.message, [
+                  {text: 'OK', onPress: () => setModal(false)},
+                ]);
+              } else {
+                Alert.alert('Success', res.data.message, [
+                  {text: 'OK', onPress: () => setModal(false)},
+                ]);
+              }
+            }
+          } else {
+            console.error('Device List in Home API Error', err);
+            // showToaster('error', 'Somthing went wrong');
+            setModal(false);
+          }
+        });
+      });
+    } else {
+      Alert.alert(
+        'Warning',
+        "'New password' and 'Confirm password'  Dosn't not match",
+      );
+    }
+  };
   return (
-    <>
+    <ScrollView>
       <CustomHeaderWithDesc
         headerText="Change Password"
         descText="Choose a unique password to protect your account"
@@ -152,7 +207,12 @@ const PasswordComponent = () => {
           paddingHorizontal: 25,
           marginVertical: 20,
         }}>
-        <CustomInput form placeholder="New Password" />
+        <CustomInput
+          form
+          placeholder="New Password"
+          value={password}
+          onChange={text => setPassword(text)}
+        />
       </View>
 
       <View
@@ -160,9 +220,27 @@ const PasswordComponent = () => {
           paddingHorizontal: 25,
           marginVertical: 20,
         }}>
-        <CustomInput form placeholder="Confirm Password" />
+        <CustomInput
+          form
+          placeholder="Confirm Password"
+          value={cPassword}
+          onChange={text => setConfirmPassword(text)}
+        />
       </View>
-    </>
+      <CustomWrapper ph25 mv2>
+        {isLoading ? (
+          <Loader />
+        ) : (
+          <Button
+            mode="contained"
+            style={Styles.modalButton}
+            labelStyle={Styles.modalButtonLabel}
+            onPress={() => changePasswordApi()}>
+            Done
+          </Button>
+        )}
+      </CustomWrapper>
+    </ScrollView>
   );
 };
 
@@ -219,12 +297,12 @@ const ModalContents = ({
         <TouchableOpacity
           onPress={() => setModal(false)}
           style={{
-            flex: isAbout ? 7 : isLogout ? 8 : 4,
+            flex: isAbout ? 7 : isLogout ? 8 : 2,
             backgroundColor: '#000000a6',
           }}></TouchableOpacity>
         <View
           style={{
-            flex: isAbout ? 5 : isLogout ? 4 : 8,
+            flex: isAbout ? 5 : isLogout ? 4 : 10,
             backgroundColor: '#000000a6',
           }}>
           {isAbout ? (
@@ -251,20 +329,7 @@ const ModalContents = ({
                 </TouchableOpacity>
               </View>
               <View style={{flex: 11}}>
-                {isChangePasswd && <PasswordComponent />}
-                <View
-                  style={{
-                    paddingHorizontal: 25,
-                    marginVertical: 20,
-                  }}>
-                  <Button
-                    mode="contained"
-                    style={Styles.modalButton}
-                    labelStyle={Styles.modalButtonLabel}
-                    onPress={() => console.log('Pressed')}>
-                    {isAbout ? 'Update' : 'Done'}
-                  </Button>
-                </View>
+                {isChangePasswd && <PasswordComponent setModal={setModal} />}
               </View>
             </View>
           )}

@@ -163,13 +163,19 @@ const HomeScreen = ({navigation}) => {
             data={deviceList}
             renderItem={renderItem}
             keyExtractor={(item, index) => index}
-            onEndReached={() => deviceList.length > 8 && handlePagination()}
+            onEndReached={() => deviceList.length > 9 && handlePagination()}
             onEndReachedThreshold={0}
             onScrollToIndexFailed={info => {
               const wait = new Promise(resolve => setTimeout(resolve, 700));
               wait.then(() => {
+                console.log(
+                  '100000000000000000000000011111111',
+                  deviceList.length,
+                  pageNum,
+                );
+
                 flatListRef.current?.scrollToIndex({
-                  index: deviceList.length - 5,
+                  index: pageNum * 10,
                   animated: true,
                 });
               });

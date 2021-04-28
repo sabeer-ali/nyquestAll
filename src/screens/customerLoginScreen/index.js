@@ -41,7 +41,7 @@ const ResetPassword = ({
   setResetPassword,
 }) => {
   return (
-    <CustomWrapper ph25>
+    <CustomWrapper ph25 btrr25 btlr25 bg="#fff">
       <CustomHeader
         rightIcon={closeIcon}
         rightIconAction={() => {
@@ -94,7 +94,7 @@ const ForgotPasswordOtp = ({
   setResetPassword,
 }) => {
   return (
-    <CustomWrapper ph25>
+    <CustomWrapper ph25 bg="#fff" btrr25 btlr25>
       <CustomHeader
         rightIcon={closeIcon}
         rightIconAction={() => {
@@ -146,10 +146,8 @@ const ForgotPasswordOtp = ({
             setForgotPasswdMode(false);
             setOtpMode(false);
             setResetPassword(true);
-
-            // navigation.navigate('deviceConfig');
           }}>
-          Get OTP
+          Reset
         </Button>
       </CustomWrapper>
     </CustomWrapper>
@@ -157,8 +155,9 @@ const ForgotPasswordOtp = ({
 };
 
 const ForgotPassword = ({setForgotPasswdMode, setModal, setOtpMode}) => {
+  const [usermailOrPass, setUserMailOrPassword] = React.useState('');
   return (
-    <CustomWrapper ph25>
+    <CustomWrapper ph25 pb1 btlr25 btrr25 bg="#fff">
       <CustomHeader
         rightIcon={closeIcon}
         rightIconAction={() => {
@@ -170,43 +169,51 @@ const ForgotPassword = ({setForgotPasswdMode, setModal, setOtpMode}) => {
         headerText="Forgot Password"
         descText="Enter your registered mobile number or email to continue"
       />
-      <CustomWrapper pv2>
-        <CustomInput form placeholder="Mobile/ Email" />
-      </CustomWrapper>
-      <CustomWrapper pv2>
-        <Text
+      <CustomWrapper ph2>
+        <CustomWrapper pv2>
+          <CustomInput
+            form
+            placeholder="Mobile/ Email"
+            value={usermailOrPass}
+            onChange={value => setUserMailOrPassword(value)}
+          />
+        </CustomWrapper>
+        <CustomWrapper pv2>
+          <Text
+            style={[
+              CommonStyles.primaryFontStyle,
+              {
+                color: color.grey,
+                lineHeight: 20,
+                fontSize: 12,
+                paddingRight: 40,
+              },
+            ]}>
+            We will send an OTP to your registered mobile number & email for
+            password reset.
+          </Text>
+        </CustomWrapper>
+        <Button
+          uppercase={false}
+          mode="contained"
           style={[
-            CommonStyles.primaryFontStyle,
+            CommonStyles.buttonBgStyle,
             {
-              color: color.grey,
-              lineHeight: 20,
-              fontSize: 12,
-              paddingRight: 40,
+              backgroundColor: '#E28534',
+              width: '100%',
+              alignSelf: 'center',
+              marginBottom: 5,
             },
-          ]}>
-          We will send an OTP to your registered mobile number & email for
-          password reset.
-        </Text>
+          ]}
+          labelStyle={Styles.modalButtonLabel}
+          onPress={() => {
+            setForgotPasswdMode(false);
+            setOtpMode(true);
+            // navigation.navigate('deviceConfig');
+          }}>
+          Get OTP
+        </Button>
       </CustomWrapper>
-      <Button
-        uppercase={false}
-        mode="contained"
-        style={[
-          CommonStyles.buttonBgStyle,
-          {
-            backgroundColor: '#E28534',
-            width: '100%',
-            alignSelf: 'center',
-          },
-        ]}
-        labelStyle={Styles.modalButtonLabel}
-        onPress={() => {
-          setForgotPasswdMode(false);
-          setOtpMode(true);
-          // navigation.navigate('deviceConfig');
-        }}>
-        Get OTP
-      </Button>
     </CustomWrapper>
   );
 };
@@ -389,11 +396,11 @@ export default CustomerLoginScreen = ({navigation}) => {
   const [isForgotPasswdMode, setForgotPasswdMode] = React.useState(false);
   const [isOtpMode, setOtpMode] = React.useState(false);
   const [isResetPassword, setResetPassword] = React.useState(false);
-
+  console.log('isForgotPasswdMode', isForgotPasswdMode);
   return (
     <View style={{flex: 1}}>
       <TopBottomLayout
-        topHeight={3}
+        topHeight={2}
         bottomHeight={10}
         backButtonType="backArrow"
         backButtonAction={() => navigation.goBack()}
@@ -407,33 +414,45 @@ export default CustomerLoginScreen = ({navigation}) => {
         }
       />
       {isModal && (
-        <CustomTopBottomModalLayout
-          topStyle={{flex: isOtpMode ? 2 : isResetPassword ? 2.4 : 1.8}}
-          bottomStyle={{flex: 1}}>
-          {isForgotPasswdMode && (
-            <ForgotPassword
-              setForgotPasswdMode={setForgotPasswdMode}
-              setModal={setModal}
-              setOtpMode={setOtpMode}
+        // <CustomTopBottomModalLayout
+        //   topStyle={{flex: isOtpMode ? 2 : isResetPassword ? 2.4 : 1.8}}
+        //   bottomStyle={{flex: 1}}>
+        <Modal visible={isModal} animationType="slide" transparent={true}>
+          <View style={{flex: 1}}>
+            <TouchableOpacity
+              style={{
+                flex: 1,
+                backgroundColor: '#000000a6',
+              }}
             />
-          )}
-          {isOtpMode && (
-            <ForgotPasswordOtp
-              setForgotPasswdMode={setForgotPasswdMode}
-              setModal={setModal}
-              setOtpMode={setOtpMode}
-              setResetPassword={setResetPassword}
-            />
-          )}
-          {isResetPassword && (
-            <ResetPassword
-              setForgotPasswdMode={setForgotPasswdMode}
-              setModal={setModal}
-              setOtpMode={setOtpMode}
-              setResetPassword={setResetPassword}
-            />
-          )}
-        </CustomTopBottomModalLayout>
+            <View style={{backgroundColor: '#000000a6'}}>
+              {isForgotPasswdMode && !isOtpMode && !isResetPassword && (
+                <ForgotPassword
+                  setForgotPasswdMode={setForgotPasswdMode}
+                  setModal={setModal}
+                  setOtpMode={setOtpMode}
+                />
+              )}
+              {isOtpMode && (
+                <ForgotPasswordOtp
+                  setForgotPasswdMode={setForgotPasswdMode}
+                  setModal={setModal}
+                  setOtpMode={setOtpMode}
+                  setResetPassword={setResetPassword}
+                />
+              )}
+              {isResetPassword && (
+                <ResetPassword
+                  setForgotPasswdMode={setForgotPasswdMode}
+                  setModal={setModal}
+                  setOtpMode={setOtpMode}
+                  setResetPassword={setResetPassword}
+                />
+              )}
+            </View>
+          </View>
+        </Modal>
+        // </CustomTopBottomModalLayout>
       )}
 
       <Toast ref={ref => Toast.setRef(ref)} style={{zIndex: 100}} />

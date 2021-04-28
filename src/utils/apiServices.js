@@ -8,7 +8,7 @@ const LOGIN_WITH_OTP = '/loginwithotp';
 const DEALER_DEVICE_LIST = '/dealeractivedevice';
 const VALIDATE_DEVICE = '/checkDeviceIdExists';
 const SAVED_DEALER_CUSTOMER = '/savedealercustomer';
-const SAVED_DEVICE_DEPLOY = '/savedevicedeploy';
+const SAVED_DEVICE_DEPLOY = '/savedevicedeploynew'; //'/savedevicedeploy';
 const EDIT_ACCOUNT = '/editaccount';
 const CHANGE_PASSWORD = '/changepassword';
 // Customer API's
