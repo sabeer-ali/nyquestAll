@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const BASEURL = 'https://web.nyquestindia.com/API/api/index.php';
+const BASEURL = 'https://web.energy24by7.com/API/api/index.php';
+//'https://web.nyquestindia.com/API/api/index.php';
 
 const LOGINURL = '/logincheck';
 const SEND_OTP = '/sendotp';
@@ -13,6 +14,8 @@ const EDIT_ACCOUNT = '/editaccount';
 const CHANGE_PASSWORD = '/changepassword';
 // Customer API's
 const GET_DEVICE_FOR_CUSTOMER = '/getdeviceforcust';
+const ADD_CUSTOMER_DEVICE = '/addcustomerdevice';
+const REGISTER_URL = '/savecustomer';
 
 const MiddleWareForAuth = async (method, endPont, params, callback) => {
   if (method === 'GET') {
@@ -54,6 +57,8 @@ const POSTRequest = (endPont, params, callback) => {
 };
 
 export {
+  REGISTER_URL,
+  ADD_CUSTOMER_DEVICE,
   CHANGE_PASSWORD,
   EDIT_ACCOUNT,
   GET_DEVICE_FOR_CUSTOMER,

@@ -23,6 +23,7 @@ import {
   CustomHeader,
   CustomInput,
   CustomWrapper,
+  CustomButton,
 } from '../../../components';
 import {color, CommonStyles} from '../../../utils/CommonStyles';
 import {iconLVIcon, closeIcon, successCircleIcon} from '../../../assets';
@@ -37,6 +38,7 @@ import {
 import {
   MiddleWareForAuth,
   SAVED_DEALER_CUSTOMER,
+  ADD_CUSTOMER_DEVICE,
 } from '../../../utils/apiServices';
 
 const ReconfigRedeployComponent = ({
@@ -351,7 +353,8 @@ const CustomerForm = ({
           <View style={CommonStyles.buttonWrapper}>
             <CustomButton
               text="Configure"
-              backgroundStyle={CommonStyles.buttonBgStyle}
+              width100
+              backgroundStyle={[{width: '100%'}, CommonStyles.buttonBgStyle]}
               textStyle={CommonStyles.buttonTextStyle}
               onpress={() => handleConfig()}
             />
@@ -401,15 +404,12 @@ const ConnectionStatus = ({
   }, []);
 
   const connectionSetup = () => {
-    console.log(
-      'IN Connection Set ups..............................................................',
-    );
-    StoreLocalDB('@deviceDetailsFromQr', deviceDetails, res => {
+    StoreLocalDB('@customerDeviceDetailsFromQr', deviceDetails, res => {
       ConnectDevice_Stage_1(deviceTypeApi, res => {
         if (res && res !== null) {
           setConnectionConfirm(true);
           setResponse(true);
-          StoreLocalDB('@res_devCommunication_stage_1', res);
+          StoreLocalDB('@res_devCommunication_stage_1_customer_main', res);
           setCustomerDetails(false);
           setStepsDetsils(false);
           setConnectionStatus(false);
@@ -558,7 +558,10 @@ const DeviceInfo = ({
 }) => {
   const [geoLocationDetails, setGeoLocationDetails] = React.useState('');
   const [locationAdd, setLocationAdd] = React.useState(false);
-  const requestGpsPermission = async () => {
+  const [nickname, setNickName] = React.useState('');
+  const [isLoading, setLoader] = React.useState(false);
+
+  const requestGpsPermission = async callback => {
     try {
       const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
@@ -581,9 +584,7 @@ const DeviceInfo = ({
           position => {
             console.log(position);
             setGeoLocationDetails(position.coords);
-            setLocationAdd(true);
-            setStepsDetsils(true);
-            setModal(true);
+            if (callback) callback(position.coords);
           },
           error => {
             // See error code charts below.
@@ -603,8 +604,65 @@ const DeviceInfo = ({
     }
   };
 
+  const handleconfigApi = () => {
+    requestGpsPermission(gpsdata => {
+      getLocalDB('@customerLoginDetails', localData => {
+        console.log('1110000', gpsdata);
+        const payload = {
+          userid: localData.cust_id,
+          deviceid: deviceDetails.deviceId,
+          nickname: nickname,
+          depl_gps_lat: gpsdata.latitude,
+          depl_gps_long: gpsdata.longitude,
+          token: localData.token,
+        };
+
+        console.log('Payload ==>', payload);
+
+        NetInfo.fetch().then(state => {
+          console.log('Connection type', state.type);
+          console.log('Is connected?', state.isInternetReachable);
+          if (state.isInternetReachable) {
+            setLoader(true);
+            MiddleWareForAuth(
+              'POST',
+              ADD_CUSTOMER_DEVICE,
+              payload,
+              (res, err) => {
+                setLoader(false);
+                if (err === null) {
+                  if (res !== null && res.data) {
+                    console.log('customer details submit RES=>', res.data);
+                    if (res.data.code == 10) {
+                      setLocationAdd(true);
+                      setStepsDetsils(true);
+                      setModal(true);
+                    } else {
+                      if (res.data && res.data.message) {
+                        Alert.alert('Warning', res.data.message);
+                        // showToaster('error', res.data.message);
+                      }
+                    }
+                  }
+                } else {
+                  console.error(
+                    'Device Connection Csutomer Details Save  Error',
+                    err,
+                  );
+                  showToaster('error', 'Something went wrong');
+                }
+              },
+            );
+          } else {
+            Alert.alert('Warning', 'No Internet Connection');
+          }
+        });
+      });
+    });
+  };
+
   return (
-    <View>
+    <ScrollView>
       <View style={Styles.deviceInfoContainer}>
         <Text style={Styles.heading}>Device Info</Text>
         <Text style={Styles.desc}>
@@ -629,6 +687,12 @@ const DeviceInfo = ({
           }
         />
       </View>
+      <CustomInput
+        form
+        placeholder="Nick Name"
+        value={nickname}
+        onChange={text => setNickName(text)}
+      />
 
       <View
         style={
@@ -636,53 +700,18 @@ const DeviceInfo = ({
             ? CommonStyles.buttonWrapperWithtwo
             : CommonStyles.buttonWrapper
         }>
-        {isData ? (
-          <>
-            <Button
-              uppercase={false}
-              mode="contained"
-              style={[
-                CommonStyles.halfmodalButton,
-                {backgroundColor: '#7F91BB'},
-              ]}
-              labelStyle={Styles.modalButtonLabel}
-              onPress={() => {
-                setModal(true);
-                setReDeploy(true);
-              }}>
-              Redeploy
-            </Button>
-
-            <Button
-              uppercase={false}
-              mode="contained"
-              style={[
-                CommonStyles.halfmodalButton,
-                {backgroundColor: '#E28534'},
-              ]}
-              labelStyle={Styles.modalButtonLabel}
-              onPress={() => {
-                setModal(true);
-                setReConfig(true);
-              }}>
-              Reconfigure
-            </Button>
-          </>
+        {isLoading ? (
+          <Loader />
         ) : (
           <CustomButton
             text="Configure"
             backgroundStyle={CommonStyles.buttonBgStyle}
             textStyle={CommonStyles.buttonTextStyle}
-            onpress={() => {
-              requestGpsPermission();
-              // setCustomerDetails(true);
-              // setStepsDetsils(true);
-              // setModal(true);
-            }}
+            onpress={() => handleconfigApi()}
           />
         )}
       </View>
-    </View>
+    </ScrollView>
   );
 };
 

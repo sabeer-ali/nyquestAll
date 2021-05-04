@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import {SplashScreen} from './screens';
 
+import LottieView from 'lottie-react-native';
 import NavigationWrapper from './navigation/navigationWrapper';
 
 const App = () => {
@@ -9,8 +10,15 @@ const App = () => {
   if (isSplash) {
     setTimeout(() => {
       setSplash(false);
-    }, 3000);
-    return <SplashScreen />;
+    }, 2500);
+    return (
+      <LottieView
+        source={require('./assets/NQ_splashscrenn.json')}
+        autoPlay
+        loop
+      />
+    );
+    // <SplashScreen />;
   } else {
     return <NavigationWrapper />;
   }

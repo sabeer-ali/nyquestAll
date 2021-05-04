@@ -13,7 +13,7 @@ import {
 import {getLocalDB, Loader} from '../../../utils/commonUtils';
 import {MiddleWareForAuth} from '../../../utils/apiServices';
 
-export default CommonInstallationDetailsScreen = ({route, navigation}) => {
+export default InstallationDetailsScreen = ({route, navigation}) => {
   const [deviceDetails, setDeviceDetails] = React.useState([]);
   const [deviceData, setDeviceData] = React.useState([]);
   const [isLoading, setLoader] = React.useState(false);
@@ -28,7 +28,8 @@ export default CommonInstallationDetailsScreen = ({route, navigation}) => {
     setLoader(true);
     let deviceId = route.params.deviceDetails.deviceDetails.dev_id;
 
-    getLocalDB('@delaerLoginDetails', res => {
+    getLocalDB('@customerLoginDetails', res => {
+      console.log('res CUSTTTTTTTT', res);
       let endPoints =
         '/getdevicestatusdtls/' +
         res.cust_id +
@@ -48,14 +49,16 @@ export default CommonInstallationDetailsScreen = ({route, navigation}) => {
               if (callback) callback(res.data.data[0]);
             } else {
               if (res.data && res.data.message) {
-                showToaster('error', res.data.message);
+                // showToaster('error', res.data.message);
+                Alert.alert('Warning', res.data.message);
               }
             }
           }
         } else {
           setLoader(false);
           console.error('Device VAlidation API  Error', err);
-          showToaster('error', 'Something went wrong');
+          Alert.alert('Warning', 'Something went wrong');
+          // showToaster('error', 'Something went wrong');
         }
       });
     });

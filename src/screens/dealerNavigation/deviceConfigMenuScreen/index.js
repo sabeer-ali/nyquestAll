@@ -56,30 +56,26 @@ const DeviceInfo = ({navigation, setExitConfig, deviceTypeApi}) => {
   React.useEffect(() => {
     getLocalDB('@res_devCommunication_stage_1').then(resDb => {
       console.log('11 00 22', resDb.deviceType);
-      // const jsonValue = JSON.parse(resDb);
-      // if (jsonValue) {
       setDeviceCommunicationDat(resDb);
-      // }
     });
   }, []);
 
   const handleExitConfig = () => {
-    // console.log('200', deviceCommunicationData);
     setLoader(true);
     setTimeout(() => {
-      DeviceCommunication_ExitConfig(
-        deviceCommunicationData.deviceType === 1 ||
-          deviceCommunicationData.deviceType === 2
-          ? 'LV'
-          : 'HV',
-        {
-          sessionId: deviceCommunicationData.sessionId,
-        },
-        resWifi => {
-          console.log('res EXIT Config ===> ', resWifi);
-          setExitDevice(true);
-        },
-      );
+      getLocalDB('@res_devCommunication_stage_1').then(resDb => {
+        console.log('11 00 22', resDb);
+        DeviceCommunication_ExitConfig(
+          resDb.deviceType === 1 || resDb.deviceType === 2 ? 'LV' : 'HV',
+          {
+            sessionId: resDb.sessionId,
+          },
+          resWifi => {
+            console.log('res EXIT Config ===> ', resWifi);
+            setExitDevice(true);
+          },
+        );
+      });
       setLoader(false);
     }, 5000);
   };

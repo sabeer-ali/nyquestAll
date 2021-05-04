@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {View, Text, Modal, TouchableOpacity, Image} from 'react-native';
+import {View, Text, Modal, TouchableOpacity, Image, Alert} from 'react-native';
 import {closeIcon, arrowBackIcon, arrowForwardIcon} from '../../assets';
 import Styles from './styles';
 import moment from 'moment';
@@ -8,11 +8,13 @@ import {CustomButton} from '..';
 
 export default CustomModal = ({showMoadal, handleModal, selectedValue}) => {
   const [selectedPriod, setPeriod] = useState('');
-  const handlePeriod = (value) => {
+
+  const handlePeriod = value => {
     if (value === 'Period') {
       setPeriod('Period');
     } else {
-      setPeriod(value);
+      // setPeriod(value);
+      handleModal(false);
       selectedValue(value);
     }
   };
@@ -20,7 +22,7 @@ export default CustomModal = ({showMoadal, handleModal, selectedValue}) => {
     <Modal transparent={true} visible={showMoadal} animationType={'slide'}>
       <View style={Styles.container}>
         {selectedPriod !== '' ? (
-          <CalanderView handleModal={handleModal} />
+          <CalanderView handleModal={handleModal} handleDate={selectedValue} />
         ) : (
           <ListSection handlePeriod={handlePeriod} handleModal={handleModal} />
         )}
@@ -64,7 +66,7 @@ const ListData = ({data, setPeriod}) => {
   );
 };
 
-const CalanderView = ({handleModal}) => {
+const CalanderView = ({handleModal, handleDate}) => {
   const [selectedDay, setDay] = useState('');
   console.log('currentDay', selectedDay);
 
@@ -78,6 +80,25 @@ const CalanderView = ({handleModal}) => {
     } else {
       setSelectedEndDate(null);
       setSelectedStartDate(date);
+    }
+
+    console.log('date, type', date, type);
+  };
+  const handleSubmit = () => {
+    let date = '';
+    if (selectedStartDate === null && selectedEndDate !== null) {
+      date = selectedEndDate;
+    } else if (selectedStartDate !== null && selectedEndDate === null) {
+      date = selectedEndDate;
+    } else if (selectedStartDate !== null && selectedEndDate !== null) {
+      date = selectedEndDate;
+    }
+
+    if (!date || date !== null) {
+      handleDate(date);
+      handleModal(false);
+    } else {
+      Alert.alert('Warning', 'please selesct a DATE');
     }
   };
   return (
@@ -142,7 +163,7 @@ const CalanderView = ({handleModal}) => {
           alignSelf: 'center',
         }}>
         <CustomButton
-          onpress={() => handleModal(false)}
+          onpress={() => handleSubmit()}
           text="Done"
           textColor="#fff"
           backgroundStyle={{

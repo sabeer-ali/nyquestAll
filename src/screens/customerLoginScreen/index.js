@@ -16,6 +16,7 @@ import CheckBox from '@react-native-community/checkbox';
 import OTPInputView from '@twotalltotems/react-native-otp-input';
 import Toast from 'react-native-toast-message';
 import sha512 from 'js-sha512';
+import NetInfo from '@react-native-community/netinfo';
 
 import Styles from './styles';
 import {
@@ -31,8 +32,13 @@ import {
 import {closeIcon, logoIcon} from '../../assets';
 import {color, CommonStyles} from '../../utils/CommonStyles';
 import {StoreLocalDB, getLocalDB} from '../../utils/localDB';
-import {MiddleWareForAuth, LOGINURL} from '../.././utils/apiServices';
+import {
+  MiddleWareForAuth,
+  LOGINURL,
+  REGISTER_URL,
+} from '../.././utils/apiServices';
 import {Loader, showToaster} from '../../utils/commonUtils';
+import {set} from 'react-native-reanimated';
 
 const ResetPassword = ({
   setForgotPasswdMode,
@@ -218,8 +224,186 @@ const ForgotPassword = ({setForgotPasswdMode, setModal, setOtpMode}) => {
   );
 };
 
-const LoginForm = ({setModal, setForgotPasswdMode, navigation}) => {
-  const [isFocusedInput, setFocusedInput] = React.useState(false);
+const NewAccount = ({setForgotPasswdMode, setModal, setOtpMode}) => {
+  const [isLoading, setLoader] = React.useState(false);
+  const [name, setName] = React.useState('');
+  const [mobile, setMobile] = React.useState('');
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [cPassword, setCPassword] = React.useState('');
+
+  const handleValidate = callback => {
+    let validation = {
+      msg: '',
+      isValid: true,
+    };
+    if (name === '') {
+      validation.msg = 'Name is required';
+      validation.isValid = false;
+    }
+    if (mobile === '' || mobile.length !== 10) {
+      validation.msg = 'please check Mobile Number';
+      validation.isValid = false;
+    }
+
+    if (email === '') {
+      validation.msg = 'Email is required';
+      validation.isValid = false;
+    }
+    if (password === '') {
+      validation.msg = 'Password is required';
+      validation.isValid = false;
+    }
+
+    if (cPassword === '') {
+      validation.msg = 'Confirm Password is required';
+      validation.isValid = false;
+    }
+
+    if (password !== cPassword) {
+      validation.msg = 'Password and Confirm Password is not matched';
+      validation.isValid = false;
+    }
+    if (validation.isValid) {
+      if (callback) callback(true);
+    } else {
+      Alert.alert('Warning', validation.msg);
+    }
+  };
+  const handleSubmitApi = () => {
+    handleValidate(isvalid => {
+      if (isvalid) {
+        let payload = {
+          user_id: -1,
+          parent_id: '-1',
+          usertype: 'C',
+          email: email,
+          password: sha512(password),
+          username: name,
+          mobno: mobile,
+        };
+        NetInfo.fetch().then(state => {
+          console.log('Connection type', state.type);
+          console.log('Is connected?', state.isInternetReachable);
+          if (state.isInternetReachable) {
+            setLoader(true);
+            MiddleWareForAuth('POST', REGISTER_URL, payload, (res, err) => {
+              setLoader(false);
+              if (err !== null) {
+                console.log('REs Login API Errr => ', err);
+                Alert.alert('Warning', err.text);
+              } else {
+                console.log('REs Register API Success => ', res.data);
+                if (res.data.status === 'error') {
+                  Alert.alert('Warning', res.data.text);
+                } else {
+                  Alert.alert('Code ', res.data.code);
+                  setModal(false);
+                  // showToaster('error', data.msg);
+                }
+              }
+            });
+          } else {
+            Alert.alert('Warning', 'No Internet Connection');
+          }
+        });
+      }
+    });
+  };
+
+  return (
+    <CustomWrapper ph25 pb1 btlr25 btrr25 bg="#fff">
+      <CustomHeader
+        rightIcon={closeIcon}
+        rightIconAction={() => {
+          setModal(false);
+        }}
+      />
+
+      <CustomWrapper ph2>
+        <CustomWrapper pv3 h450 vSpaceBetween>
+          <CustomInput
+            form
+            placeholder="Name"
+            value={name}
+            onChange={value => setName(value)}
+          />
+          <CustomInput
+            form
+            placeholder="Mobile"
+            value={mobile}
+            onChange={value => setMobile(value)}
+          />
+          <CustomInput
+            form
+            placeholder="Email"
+            value={email}
+            onChange={value => setEmail(value)}
+          />
+          <CustomInput
+            form
+            placeholder="Password"
+            value={password}
+            onChange={value => setPassword(value)}
+          />
+          <CustomInput
+            form
+            placeholder="Confirm Password"
+            value={cPassword}
+            onChange={value => setCPassword(value)}
+          />
+        </CustomWrapper>
+        <CustomWrapper pv2>
+          <Text
+            style={[
+              CommonStyles.primaryFontStyle,
+              {
+                color: color.grey,
+                lineHeight: 20,
+                fontSize: 12,
+                paddingRight: 40,
+              },
+            ]}></Text>
+        </CustomWrapper>
+        {isLoading ? (
+          <Loader />
+        ) : (
+          <Button
+            uppercase={false}
+            mode="contained"
+            style={[
+              CommonStyles.buttonBgStyle,
+              {
+                backgroundColor: '#E28534',
+                width: '100%',
+                alignSelf: 'center',
+                marginBottom: 5,
+              },
+            ]}
+            labelStyle={Styles.modalButtonLabel}
+            onPress={() => {
+              handleSubmitApi();
+            }}>
+            Register
+          </Button>
+        )}
+        <CustomWrapper flexDirectionRow pv2>
+          <Text>Already have an acoount? </Text>
+          <TouchableOpacity>
+            <Text>Login</Text>
+          </TouchableOpacity>
+        </CustomWrapper>
+      </CustomWrapper>
+    </CustomWrapper>
+  );
+};
+
+const LoginForm = ({
+  setModal,
+  setForgotPasswdMode,
+  navigation,
+  setNewAccount,
+}) => {
   const [isSecureInput, setSecureInput] = React.useState(true);
   const [isloggedIn, setloggedIn] = React.useState(false);
   const [userName, setUserName] = React.useState('');
@@ -371,7 +555,10 @@ const LoginForm = ({setModal, setForgotPasswdMode, navigation}) => {
           </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={() => navigation.navigate('customer register')}>
+            onPress={() => {
+              setModal(true);
+              setNewAccount(true);
+            }}>
             <Text
               style={[CommonStyles.primaryFontStyle, {color: color.orange}]}>
               New Account
@@ -396,7 +583,8 @@ export default CustomerLoginScreen = ({navigation}) => {
   const [isForgotPasswdMode, setForgotPasswdMode] = React.useState(false);
   const [isOtpMode, setOtpMode] = React.useState(false);
   const [isResetPassword, setResetPassword] = React.useState(false);
-  console.log('isForgotPasswdMode', isForgotPasswdMode);
+  const [isNewAccount, setNewAccount] = React.useState(false);
+
   return (
     <View style={{flex: 1}}>
       <TopBottomLayout
@@ -410,6 +598,7 @@ export default CustomerLoginScreen = ({navigation}) => {
             setModal={setModal}
             setForgotPasswdMode={setForgotPasswdMode}
             navigation={navigation}
+            setNewAccount={setNewAccount}
           />
         }
       />
@@ -449,6 +638,8 @@ export default CustomerLoginScreen = ({navigation}) => {
                   setResetPassword={setResetPassword}
                 />
               )}
+
+              {isNewAccount && <NewAccount setModal={setModal} />}
             </View>
           </View>
         </Modal>

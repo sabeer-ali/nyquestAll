@@ -92,10 +92,12 @@ export default CustomList = ({
 
         <View>
           <View style={Styles.deviceNameContainer}>
-            <Text style={Styles.deviceName}>{deviceName && deviceName} | </Text>
-            <Text style={[Styles.deviceName, {fontWeight: '400'}]}>
-              {deviceNickName}
-            </Text>
+            <Text style={Styles.deviceName}>{deviceName && deviceName} </Text>
+            {deviceNickName && (
+              <Text style={[Styles.deviceName, {fontWeight: '400'}]}>
+                | {deviceNickName}
+              </Text>
+            )}
           </View>
           <Text style={Styles.deviceId}>
             Device Id : {deviceId && deviceId}

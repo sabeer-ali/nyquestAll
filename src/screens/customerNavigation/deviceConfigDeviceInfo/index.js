@@ -6,6 +6,7 @@ import {
   CustomList,
   CustomHeaderWithDesc,
   CustomHeader,
+  CustomWrapper,
 } from '../../../components';
 import {color, CommonStyles} from '../../../utils/CommonStyles';
 import {iconLVIcon, closeIcon, successCircleIcon} from '../../../assets';
@@ -230,7 +231,7 @@ const DeviceInfo = ({
   setReDeploy,
 }) => {
   return (
-    <View>
+    <CustomWrapper>
       <View style={Styles.deviceInfoContainer}>
         <Text style={Styles.heading}>Device Info</Text>
         <Text style={Styles.desc}>
@@ -258,51 +259,17 @@ const DeviceInfo = ({
             ? CommonStyles.buttonWrapperWithtwo
             : CommonStyles.buttonWrapper
         }>
-        {isData ? (
-          <>
-            <Button
-              uppercase={false}
-              mode="contained"
-              style={[
-                CommonStyles.halfmodalButton,
-                {backgroundColor: '#7F91BB'},
-              ]}
-              labelStyle={Styles.modalButtonLabel}
-              onPress={() => {
-                setModal(true);
-                setReDeploy(true);
-              }}>
-              Redeploy
-            </Button>
-
-            <Button
-              uppercase={false}
-              mode="contained"
-              style={[
-                CommonStyles.halfmodalButton,
-                {backgroundColor: '#E28534'},
-              ]}
-              labelStyle={Styles.modalButtonLabel}
-              onPress={() => {
-                setModal(true);
-                setReConfig(true);
-              }}>
-              Reconfigure
-            </Button>
-          </>
-        ) : (
-          <CustomButton
-            text="Configure"
-            backgroundStyle={CommonStyles.buttonBgStyle}
-            textStyle={CommonStyles.buttonTextStyle}
-            onpress={() => {
-              setCustomerDetails(true);
-              setModal(true);
-            }}
-          />
-        )}
+        <CustomButton
+          text="Configure"
+          backgroundStyle={CommonStyles.buttonBgStyle}
+          textStyle={CommonStyles.buttonTextStyle}
+          onpress={() => {
+            setCustomerDetails(true);
+            setModal(true);
+          }}
+        />
       </View>
-    </View>
+    </CustomWrapper>
   );
 };
 

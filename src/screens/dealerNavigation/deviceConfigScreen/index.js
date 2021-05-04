@@ -121,6 +121,8 @@ class DeviceConfigScreen extends React.Component {
             this.setState({isLoading: false});
             if (err === null) {
               if (res !== null && res.data) {
+                console.log('res.data in Device validate id', res.data);
+
                 if (res.data.code == '10') {
                   this.setState({deviceDetails: res.data.data[0]}, () => {
                     res.data.data[0].deviceId = deviceId;

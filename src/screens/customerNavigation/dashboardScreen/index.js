@@ -34,7 +34,7 @@ import {
   dashboardNoDeviceConfigImage,
   iconLVIcon,
 } from '../../../assets';
-import {getLocalDB, Loader} from '../../../utils/commonUtils';
+import {getLocalDB, Loader, logOut} from '../../../utils/commonUtils';
 import {
   MiddleWareForAuth,
   GET_DEVICE_FOR_CUSTOMER,
@@ -42,7 +42,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useNavigation} from '@react-navigation/native';
 
-const NoData = () => {
+const NoData = ({navigation}) => {
   return (
     <>
       <CustomWrapper flex={7} center vCenter>
@@ -72,7 +72,7 @@ const NoData = () => {
           ]}
           labelStyle={CommonStyles.buttonLabel}
           onPress={() => {
-            navigation.navigate('bottom navigator');
+            navigation.navigate('deviceConfig');
           }}>
           Add Device
         </Button>
@@ -81,7 +81,7 @@ const NoData = () => {
   );
 };
 
-const BottomSection = ({navigation}) => {
+const BottomSection = ({navigation, setData}) => {
   const [deviceList, setDeviceList] = React.useState([]);
   const [isLoading, setLoader] = React.useState(false);
   const [deviceCount, setDeviceCount] = React.useState(0);
@@ -134,9 +134,12 @@ const BottomSection = ({navigation}) => {
         if (err === null) {
           console.log('res.data.devlst', res.data);
           if (res !== null && err === null && res.data) {
-            if (res.data && res.data.code === '10') {
+            if (res.data && res.data.code !== 10) {
               // showToaster('error', res.data.message);
               Alert.alert('Warning', res.data.message);
+              logOut('@customerLoginDetails', () => {
+                navigation.navigate('customerLogin');
+              });
             } else {
               if (res && res.data && res.data.data) {
                 let data;
@@ -146,6 +149,7 @@ const BottomSection = ({navigation}) => {
                   data = res.data.data;
                 }
                 setDeviceList(data);
+                setData(data.length ? true : false);
                 // setDeviceCount(res.data.devicecnt);
                 if (callback) callback();
               }
@@ -167,9 +171,7 @@ const BottomSection = ({navigation}) => {
         deviceName={item.dev_category === 'L' ? 'ICON LV' : 'ICON HV'}
         deviceNickName={item.nick_name}
         deviceId={item.dev_id}
-        onpress={() =>
-          navigation.push('dealerDeviceInfo', {deviceDetails: item})
-        }
+        onpress={() => navigation.push('deviceDetails', {deviceDetails: item})}
         navigateNext
         icon={iconLVIcon}
         iconBgColor={item.dev_category === 'L' ? '#DBD3EB' : '#C4C4C4'}
@@ -212,13 +214,13 @@ const BottomSection = ({navigation}) => {
           }}
         />
       ) : (
-        <NoData />
+        <NoData navigation={navigation} />
       )}
     </CustomWrapper>
   );
 };
 
-const TopSection = ({navigation}) => {
+const TopSection = ({navigation, isData}) => {
   return (
     <ColumnLine>
       <RowLine spaceBetween ph2>
@@ -237,7 +239,7 @@ const TopSection = ({navigation}) => {
       <CustomWrapper ph2 mt2>
         <CustomHeaderWithDesc
           headerText="Welcome"
-          descText="Add your device"
+          descText={isData ? 'Your Device' : 'Add Your Device'}
           white
         />
       </CustomWrapper>
@@ -247,13 +249,16 @@ const TopSection = ({navigation}) => {
 
 export default CustomerDashboardScreen = () => {
   const navigation = useNavigation();
+  const [isData, setData] = React.useState(false);
   return (
     <View style={{flex: 1}}>
       <TopBottomLayout
         topHeight={2.5}
         bottomHeight={9.5}
-        topSection={<TopSection navigation={navigation} />}
-        bottomSection={<BottomSection navigation={navigation} />}
+        topSection={<TopSection navigation={navigation} isData={isData} />}
+        bottomSection={
+          <BottomSection navigation={navigation} setData={setData} />
+        }
       />
     </View>
   );

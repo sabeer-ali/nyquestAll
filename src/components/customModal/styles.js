@@ -14,14 +14,10 @@ const Styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   topSection: {
-    flex: 0.4,
-    // backgroundColor: 'red',
-    // paddingHorizontal: 20,
-    // minHeight: 76,
-    // justifyContent: 'center',
+    flex: 0.55,
   },
   bottomSection: {
-    flex: 0.6,
+    flex: 0.65,
     backgroundColor: '#fff',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,

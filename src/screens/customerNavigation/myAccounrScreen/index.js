@@ -12,6 +12,7 @@ import {Button} from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useNavigation} from '@react-navigation/native';
 import sha512 from 'js-sha512';
+import VersionInfo from 'react-native-version-info';
 import Styles from './styles';
 import {
   CommonBottomNavigator,
@@ -31,7 +32,7 @@ import {
   logoIcon,
 } from '../../../assets';
 import {CommonStyles} from '../../../utils/CommonStyles';
-import {getLocalDB, Loader} from '../../../utils/commonUtils';
+import {getLocalDB, Loader, logOut} from '../../../utils/commonUtils';
 import {MiddleWareForAuth, CHANGE_PASSWORD} from '../../../utils/apiServices';
 
 const Logout = ({setModal, navigation}) => {
@@ -119,7 +120,7 @@ const About = ({setModal}) => {
           <Image source={logoIcon} />
         </View>
         <View style={{marginLeft: 15}}>
-          <Text style={Styles.aboutVer}>Ver 1.0.0</Text>
+          <Text style={Styles.aboutVer}>Ver {VersionInfo.appVersion}</Text>
           <View style={{flexDirection: 'row'}}>
             <Text style={Styles.aboutVer}>Updated on : </Text>
             <Text style={Styles.aboutVerDate}>10 Oct 2020</Text>
@@ -143,10 +144,17 @@ const About = ({setModal}) => {
   );
 };
 
-const PasswordComponent = ({setModal}) => {
+const PasswordComponent = ({setModal, navigation}) => {
   const [isLoading, setLoader] = React.useState(false);
   const [password, setPassword] = React.useState('');
   const [cPassword, setConfirmPassword] = React.useState('');
+
+  const handleChangePassword = () => {
+    setModal(false);
+    logOut('@customerLoginDetails', () => {
+      navigation.navigate('customerLogin');
+    });
+  };
 
   const changePasswordApi = () => {
     if (password === cPassword) {
@@ -166,11 +174,11 @@ const PasswordComponent = ({setModal}) => {
               if (res.data && res.data.code === '10') {
                 // showToaster('error', res.data.message);
                 Alert.alert('Success', res.data.message, [
-                  {text: 'OK', onPress: () => setModal(false)},
+                  {text: 'OK', onPress: () => handleChangePassword()},
                 ]);
               } else {
                 Alert.alert('Success', res.data.message, [
-                  {text: 'OK', onPress: () => setModal(false)},
+                  {text: 'OK', onPress: () => handleChangePassword()},
                 ]);
               }
             }
@@ -329,7 +337,12 @@ const ModalContents = ({
                 </TouchableOpacity>
               </View>
               <View style={{flex: 11}}>
-                {isChangePasswd && <PasswordComponent setModal={setModal} />}
+                {isChangePasswd && (
+                  <PasswordComponent
+                    setModal={setModal}
+                    navigation={navigation}
+                  />
+                )}
               </View>
             </View>
           )}
@@ -345,6 +358,7 @@ const MyAccountScreen = () => {
   const [isChangePasswd, setChangePasswd] = React.useState(false);
   const [isAbout, setAbout] = React.useState(false);
   const [isLogout, setLogout] = React.useState(false);
+
   return (
     <View style={{flex: 1, backgroundColor: 'red'}}>
       <SecondaryCommonLayout
@@ -355,11 +369,19 @@ const MyAccountScreen = () => {
 
         <CustomList
           defaultList
+          onpress={() => navigation.navigate('customerDeviceManager')}
+          navigateNext
+          icon={lockIcon}
+          defaultText="Device Manager"
+        />
+
+        <CustomList
+          defaultList
           onpress={() => {
             setModal(true);
-            setChangePasswd(false);
-            setAbout(false);
             setChangePasswd(true);
+            setAbout(false);
+            setLogout(false);
           }}
           navigateNext
           icon={lockIcon}

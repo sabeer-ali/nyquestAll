@@ -209,6 +209,7 @@ const CustomerForm = ({
       replace: '0',
       olddevid: '',
       token: localdata.token,
+      nickname: '',
     };
 
     StoreLocalDB('@deviceComData', data, res => {
@@ -559,6 +560,56 @@ const DeviceInfo = ({
   setReDeploy,
   deviceDetails,
 }) => {
+  const [isReplace, setReplace] = React.useState(false);
+
+  React.useEffect(() => {
+    console.log('deviceDetails for replace ', deviceDetails);
+    getLocalDB('@replaceDvice', reslocal => {
+      console.log('reslocal 111110000 ==>', reslocal);
+
+      if (reslocal.isReplace && reslocal.customerData.customerid != -1) {
+        setReplace(true);
+        getLocalDB('@deviceComData', resOldServerData => {
+          let newServerData = {...resOldServerData};
+          console.log('resOldServerData', resOldServerData);
+          newServerData.olddevid = resOldServerData.devid;
+          newServerData.devid = '';
+          newServerData.replace = 1;
+          newServerData.custid = deviceDetails.customerid;
+        });
+        StoreLocalDB('@deviceComData', newServerData);
+      } else {
+        setReplace(false);
+      }
+    });
+  }, []);
+
+  const replaceDevice = () => {
+    console.log('deviceDetails ==>', deviceDetails);
+    StoreLocalDB(
+      '@replaceDvice',
+      {isReplace: true, customerData: deviceDetails},
+      res => {
+        if (res !== null) {
+        } else {
+          setModal(true);
+          setReDeploy(true);
+        }
+      },
+    );
+  };
+
+  const handleconfig = () => {
+    // getLocalDB('@replaceDvice', reslocaldb => {
+    //   console.log('reslocaldb ==>', reslocaldb);
+    //   if (reslocaldb.isReplace && reslocaldb.customerData.customerid != -1) {
+    setCustomerDetails(true);
+    setModal(true);
+    // } else {
+    //   Alert.alert('Warning', 'Customer Id not Found.');
+    // }
+    // });
+  };
   return (
     <View>
       <View style={Styles.deviceInfoContainer}>
@@ -602,11 +653,8 @@ const DeviceInfo = ({
                 {backgroundColor: '#7F91BB'},
               ]}
               labelStyle={Styles.modalButtonLabel}
-              onPress={() => {
-                setModal(true);
-                setReDeploy(true);
-              }}>
-              Redeploy
+              onPress={() => replaceDevice()}>
+              Replace
             </Button>
 
             <Button
@@ -629,10 +677,7 @@ const DeviceInfo = ({
             text="Configure"
             backgroundStyle={CommonStyles.buttonBgStyle}
             textStyle={CommonStyles.buttonTextStyle}
-            onpress={() => {
-              setCustomerDetails(true);
-              setModal(true);
-            }}
+            onpress={() => handleconfig()}
           />
         )}
       </View>

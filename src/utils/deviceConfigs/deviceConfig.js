@@ -286,7 +286,7 @@ export const DeviceCommunication_ExitConfig = async (type, data, callback) => {
 };
 
 export const DeviceCommunication_wifisetup = async (type, data, callback) => {
-  console.log('data 111111111111111111111111111111', data);
+  console.log('data 111111111111111111111111111111', type, data);
   const device = type === 'LV' ? SYNC_WORD_LV : SYNC_WORD_HV;
   const syncWord = device;
   const DATA_CONSTANT1 = CONSTANT2;

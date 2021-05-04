@@ -16,7 +16,7 @@ import {
   DeviceCommunication_wifisetup,
   DeviceCommunication_ExitConfig,
 } from '../../../utils/deviceConfigs/deviceConfig';
-import {Loader} from '../../../utils/commonUtils';
+import {getLocalDB, Loader} from '../../../utils/commonUtils';
 import {closeIcon, wifiIcon, iconLVIcon} from '../../../assets';
 import Styles from './styles';
 
@@ -28,10 +28,45 @@ const DeviceInfo = ({
   setReDeploy,
   deviceDetails,
   handleConfig,
-  isLoading,
   isConnected,
   navigation,
+  isWifiUpdate,
 }) => {
+  console.log('deviceDetails', deviceDetails);
+  const [isLoading, setLoader] = React.useState(false);
+
+  const handleExitConfig = () => {
+    // console.log('200', deviceCommunicationData);
+    setLoader(true);
+    if (isWifiUpdate) {
+    } else {
+      AsyncStorage.getItem('@res_devCommunication_stage_1_customer_main').then(
+        resDb => {
+          const jsonValue = JSON.parse(resDb);
+          console.log('isWifiUpdate', jsonValue);
+          setTimeout(() => {
+            DeviceCommunication_ExitConfig(
+              jsonValue.deviceType === 1 || jsonValue.deviceType === 2
+                ? 'LV'
+                : 'HV',
+              {
+                sessionId: jsonValue.sessionId,
+              },
+              resWifi => {
+                console.log('res EXIT Config ===> ', resWifi);
+                // setExitConfig(false);
+                // setconfigStatus(true);
+                setModal(false);
+                navigation.navigate('CustomerBottomNavigator');
+              },
+            );
+            setLoader(false);
+          }, 5000);
+        },
+      );
+    }
+  };
+
   return (
     <CustomWrapper bg="#F5F8FF" btlr25 btrr25>
       <View style={Styles.deviceInfoContainer}>
@@ -45,20 +80,35 @@ const DeviceInfo = ({
         />
       </View>
       <View style={Styles.deviceDetailsContainer}>
-        <CustomList
-          deviceInfo
-          deviceName={deviceDetails !== null ? deviceDetails.devicetype : 'NA'}
-          deviceId={deviceDetails !== null ? deviceDetails.deviceId : 'NA'}
-          // deviceConfigStatus={isData ? 'CONFIGURED' : 'NOT CONFIGURED'}
-          colorChanged="#7AB78C"
-          icon={iconLVIcon}
-          iconBgColor={
-            '#C4C4C4'
-            // deviceDetails !== null
-            //   ? deviceDetails.dev_category === 'H' && '#e746451a'
-            //   : '#C4C4C4'
-          }
-        />
+        {isWifiUpdate ? (
+          <CustomList
+            deviceInfo
+            deviceName={
+              deviceDetails !== null ? deviceDetails.devicetype : 'NA'
+            }
+            deviceId={deviceDetails !== null ? deviceDetails.deviceId : 'NA'}
+            colorChanged="#7AB78C"
+            icon={iconLVIcon}
+            iconBgColor={'#C4C4C4'}
+          />
+        ) : (
+          <CustomList
+            deviceInfo
+            deviceName={
+              deviceDetails !== null ? deviceDetails.devicetype : 'NA'
+            }
+            deviceId={deviceDetails !== null ? deviceDetails.deviceId : 'NA'}
+            // deviceConfigStatus={isData ? 'CONFIGURED' : 'NOT CONFIGURED'}
+            colorChanged="#7AB78C"
+            icon={iconLVIcon}
+            iconBgColor={
+              '#C4C4C4'
+              // deviceDetails !== null
+              //   ? deviceDetails.dev_category === 'H' && '#e746451a'
+              //   : '#C4C4C4'
+            }
+          />
+        )}
       </View>
       <CustomWrapper ph3>
         {isLoading ? (
@@ -69,9 +119,7 @@ const DeviceInfo = ({
             backgroundStyle={CommonStyles.buttonBgStyle}
             textStyle={CommonStyles.buttonTextStyle}
             onpress={() => {
-              isConnected
-                ? navigation.navigate('CustomerBottomNavigator')
-                : handleConfig();
+              isConnected ? handleExitConfig() : handleConfig();
             }}
           />
         )}
@@ -80,7 +128,7 @@ const DeviceInfo = ({
   );
 };
 
-const BottomSection = ({navigation, deviceDetails}) => {
+const BottomSection = ({navigation, deviceDetails, isWifiUpdate}) => {
   const [isModal, setModal] = React.useState(false);
   const [isLoading, setLoader] = React.useState(false);
   const [ssid, setSSID] = React.useState('');
@@ -100,44 +148,79 @@ const BottomSection = ({navigation, deviceDetails}) => {
   };
 
   React.useEffect(() => {
-    AsyncStorage.getItem('@res_devCommunication_stage_1').then(resDb => {
-      const jsonValue = JSON.parse(resDb);
-      if (jsonValue) {
+    if (isWifiUpdate) {
+      getLocalDB('@customerDeviceManager', resDb => {
+        const jsonValue = JSON.parse(resDb);
         setDeviceCommunicationDat(jsonValue);
-      }
-    });
+      });
+    } else {
+      getLocalDB('@res_devCommunication_stage_1_customer', resDb => {
+        const jsonValue = JSON.parse(resDb);
+        if (jsonValue) {
+          setDeviceCommunicationDat(jsonValue);
+        }
+      });
+    }
 
     NativeModules.WifiConnectivity.onCreate(res => {
       if (res) NativeModules.WifiConnectivity.onPause();
       if (typeof res === 'string') {
-        let jsonValue = JSON.parse(res);
-        setWifiList(jsonValue);
+        let jsonWifiList = JSON.parse(res);
+        setWifiList(jsonWifiList);
       } else {
         setWifiList(res);
       }
     });
+
+    console.log('isWifiUpdate', isWifiUpdate);
   }, []);
 
   const handleConfig = () => {
     setLoader(true);
-    setTimeout(() => {
-      DeviceCommunication_wifisetup(
-        deviceCommunicationData.deviceType === 1 ||
-          deviceCommunicationData.deviceType === 2
-          ? 'LV'
-          : 'HV',
-        {
-          sessionId: deviceCommunicationData.sessionId,
-          wifiSSID: selectedWifi !== '' ? selectedWifi : ssid,
-          wifiPassword: wifiPassword,
-        },
-        resWifi => {
-          console.log('resWifi ===> ', resWifi);
-          setConnection(true);
-        },
-      );
-      setLoader(false);
-    }, 5000);
+    if (isWifiUpdate) {
+      AsyncStorage.getItem('@customerDeviceManager').then(resDb => {
+        const jsonValue = JSON.parse(resDb);
+        console.log('isWifiUpdate', jsonValue);
+        setTimeout(() => {
+          DeviceCommunication_wifisetup(
+            jsonValue.deviceType === 1 || jsonValue.deviceType === 2
+              ? 'LV'
+              : 'HV',
+            {
+              sessionId: jsonValue.sessionId,
+              wifiSSID: selectedWifi !== '' ? selectedWifi : ssid,
+              wifiPassword: wifiPassword,
+            },
+            resWifi => {
+              console.log('resWifi ===> ', resWifi);
+              setConnection(true);
+              if (isWifiUpdate) {
+                navigation.navigate('customerDeviceConfigMenu');
+              }
+            },
+          );
+          setLoader(false);
+        }, 5000);
+      });
+    } else {
+      setTimeout(() => {
+        getLocalDB('@res_devCommunication_stage_1_customer_main', resDb => {
+          DeviceCommunication_wifisetup(
+            resDb.deviceType === 1 || resDb.deviceType === 2 ? 'LV' : 'HV',
+            {
+              sessionId: resDb.sessionId,
+              wifiSSID: selectedWifi !== '' ? selectedWifi : ssid,
+              wifiPassword: wifiPassword,
+            },
+            resWifi => {
+              console.log('resWifi ===> ', resWifi);
+              setConnection(true);
+            },
+          );
+        });
+        setLoader(false);
+      }, 5000);
+    }
   };
 
   return (
@@ -180,11 +263,15 @@ const BottomSection = ({navigation, deviceDetails}) => {
       {isModal && (
         <Modal visible={true} animationType="fade" transparent={true}>
           <View style={{flex: 1, backgroundColor: '#000000a6'}}>
-            <View
+            <TouchableOpacity
+              onPress={() => {
+                setModal(false);
+                setPopup(false);
+              }}
               style={{
                 flex: 1,
                 backgroundColor: '#000000a6',
-              }}></View>
+              }}></TouchableOpacity>
             <View
               style={{
                 flex: isPopup ? 0.8 : 1.3,
@@ -199,6 +286,9 @@ const BottomSection = ({navigation, deviceDetails}) => {
                       isLoading={isLoading}
                       isConnected={isConnected}
                       navigation={navigation}
+                      deviceDetails={deviceDetails}
+                      isWifiUpdate={isWifiUpdate}
+                      setModal={setModal}
                     />
                   </>
                 ) : (
@@ -250,7 +340,6 @@ const BottomSection = ({navigation, deviceDetails}) => {
                           ]}
                           labelStyle={CommonStyles.buttonTextStyle}
                           onPress={() => {
-                            // handleConfig();
                             setPopup(true);
                             setModal(true);
                           }}>
@@ -271,11 +360,14 @@ const BottomSection = ({navigation, deviceDetails}) => {
 
 const WifiSetupScreen = ({navigation, route}) => {
   const [deviceDetails, setDeviceDetails] = React.useState(null);
+  const [isWifiUpdate, setWifiUpdate] = React.useState(false);
   React.useEffect(() => {
     if (route.params) {
-      console.log('deviceDetails --- ==== ', route.params.deviceDetails);
+      console.log('route.params', route.params.deviceDetails);
       setDeviceDetails(route.params.deviceDetails);
-      // deviceDetails
+      if (route.params.wifiUpdate) {
+        setWifiUpdate(route.params.wifiUpdate);
+      }
     }
   });
   return (
@@ -290,6 +382,7 @@ const WifiSetupScreen = ({navigation, route}) => {
           <BottomSection
             navigation={navigation}
             deviceDetails={deviceDetails}
+            isWifiUpdate={isWifiUpdate}
           />
         }
       />

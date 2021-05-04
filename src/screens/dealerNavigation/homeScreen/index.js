@@ -11,7 +11,12 @@ import {
 import Toast from 'react-native-toast-message';
 import {NativeModules} from 'react-native';
 // const {SocketConnection, WifiConnectivity} = NativeModules;
-import {logoIcon, notificationIcon, iconLVIcon} from '../../../assets';
+import {
+  logoIcon,
+  notificationIcon,
+  iconLVIcon,
+  logoutIcon,
+} from '../../../assets';
 import {
   CustomHeader,
   CustomInput,
@@ -23,17 +28,27 @@ import {
   MiddleWareForAuth,
   DEALER_DEVICE_LIST,
 } from '../../../utils/apiServices';
-import {getLocalDB, Loader, showToaster} from '../../../utils/commonUtils';
+import {
+  getLocalDB,
+  Loader,
+  showToaster,
+  StoreLocalDB,
+  logOut,
+} from '../../../utils/commonUtils';
 
 const HomeScreen = ({navigation}) => {
   const [deviceList, setDeviceList] = React.useState([]);
   const [deviceCount, setDeviceCount] = React.useState(0);
   const [isLoading, setLoader] = React.useState(false);
   const [pageNum, setPageNum] = React.useState(0);
+  const [isPaginationEnd, setPaginationEnd] = React.useState(false);
   const flatListRef = React.useRef();
 
   React.useEffect(() => {
-    handleGetListAPI();
+    console.log('navigation.isFocused()', navigation.isFocused());
+    if (navigation.isFocused()) {
+      handleGetListAPI();
+    }
     const backAction = () => {
       if (navigation.isFocused()) {
         Alert.alert('Hold on!', 'Are you sure you want to exit the app?', [
@@ -54,30 +69,42 @@ const HomeScreen = ({navigation}) => {
     return () => backHandler.remove();
   }, []);
 
+  const handleLogout = () => {
+    logOut('@delaerLoginDetails', () => {
+      navigation.navigate('dealerlogin');
+    });
+  };
+
   const handleGetListAPI = async (isPagination, callback) => {
+    if (isPagination) setPageNum(pageNum + 1);
     getLocalDB('@delaerLoginDetails', resLogin => {
-      console.log('@delaerLoginDetails', resLogin);
       const endPoints =
         DEALER_DEVICE_LIST +
         '/' +
         resLogin.cust_id +
         '/' +
         pageNum +
+        '0' +
         '/' +
         resLogin.token;
 
+      console.log('Home Details endPoints', endPoints);
       setLoader(true);
 
       MiddleWareForAuth('GET', endPoints, null, (res, err) => {
         setLoader(false);
         if (err === null) {
+          console.log('LOG for HOME ==>', res.data, err);
           if (res !== null && err === null && res.data) {
             if (res.data && res.data.status && res.data.status === 'error') {
               showToaster('error', res.data.message);
+              if (res.data.message === 'Invalid Token') {
+                handleLogout();
+              }
             } else {
-              console.log('res.data.devlst', res.data);
+              console.log('res.data.devlst', res.data, res.data.data.length);
 
-              if (res && res.data && res.data.data) {
+              if (res && res.data && res.data.data && res.data.data.length) {
                 let data;
                 if (isPagination) {
                   data = [...deviceList, ...res.data.data];
@@ -88,6 +115,9 @@ const HomeScreen = ({navigation}) => {
                 setDeviceList(data);
                 setDeviceCount(res.data.devicecnt);
                 if (callback) callback();
+              } else {
+                Alert.alert('No More Data Available');
+                setPaginationEnd(true);
               }
             }
           }
@@ -100,12 +130,24 @@ const HomeScreen = ({navigation}) => {
   };
 
   const handlePagination = async () => {
-    await setPageNum(pageNum + 1);
     handleGetListAPI(true, () => {
-      flatListRef.current.scrollToIndex({
-        animated: true,
-        index: deviceList.length - 5,
-      });
+      if (isPaginationEnd) {
+        flatListRef.current.scrollToIndex({
+          animated: true,
+          index: deviceList.length - 5,
+        });
+      } else {
+        flatListRef.current.scrollToIndex({
+          animated: true,
+          index: deviceList.length - pageNum * 10 - 5,
+        });
+      }
+
+      console.log(
+        'deviceList.length - pageNum',
+        deviceList.length - 10,
+        deviceList.length,
+      );
     });
   };
 
@@ -168,16 +210,17 @@ const HomeScreen = ({navigation}) => {
             onScrollToIndexFailed={info => {
               const wait = new Promise(resolve => setTimeout(resolve, 700));
               wait.then(() => {
-                console.log(
-                  '100000000000000000000000011111111',
-                  deviceList.length,
-                  pageNum,
-                );
-
-                flatListRef.current?.scrollToIndex({
-                  index: pageNum * 10,
-                  animated: true,
-                });
+                if (isPaginationEnd) {
+                  flatListRef.current?.scrollToIndex({
+                    index: deviceList - 5,
+                    animated: true,
+                  });
+                } else {
+                  flatListRef.current?.scrollToIndex({
+                    index: pageNum * 10,
+                    animated: true,
+                  });
+                }
               });
             }}
           />

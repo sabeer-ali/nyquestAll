@@ -160,17 +160,30 @@ const Form5 = ({navigation, setStep, deviceCommData, deviceComServerData}) => {
       msg: '',
     };
 
-    if (equalizationIntervel > 30 && equalizationIntervel < 7) {
+    if (Number(equalizationIntervel) < 7 || Number(equalizationIntervel) > 30) {
       validate.status = false;
       validate.msg = 'Equalization Interval (In Days) Range Must be 7 - 30 ';
-    } else if (equalizationDuration === '') {
+    } else if (
+      equalizationDuration === '' ||
+      equalizationDuration < 1 ||
+      equalizationDuration > 12
+    ) {
       validate.status = false;
       validate.msg = 'Equalization Duration (In Hours) Range must be 1 - 12 ';
-    } else if (absorptionIntervel === '') {
+    } else if (
+      absorptionIntervel === '' ||
+      absorptionIntervel < 1 ||
+      absorptionIntervel > 7
+    ) {
       validate.status = false;
       validate.msg = 'Absorption Interval (In Days) Range must be 1 - 7 ';
     }
 
+    console.log(
+      'validate.status',
+      validate,
+      typeof Number(equalizationIntervel),
+    );
     if (validate.status) {
       if (callback) callback(true);
     } else {
@@ -489,19 +502,42 @@ const Form3 = ({setStep, deviceCommData, deviceComServerData}) => {
       validate.msg = 'UPS Model -> Field Cannot Be Empty';
     }
 
+    console.log('deviceCommData.deviceType ---->>', deviceCommData.deviceType);
     if (deviceCommData.deviceType !== 4) {
-      if (upsVA === '') {
+      if (upsMake === '') {
         validate.status = false;
-        validate.msg = 'UPS VA -> Field Cannot Be Empty ';
-      } else if (deviceCommData.deviceType === 1) {
-        if (upsVA < 600 && upsVA > 1100) {
+        validate.msg = 'UPS Makes -> Field Cannot Be Empty';
+      } else if (upsModel === '') {
+        validate.status = false;
+        validate.msg = 'UPS Model -> Field Cannot Be Empty';
+      }
+      if (deviceCommData.deviceType === 1) {
+        if (upsVA < 600 || upsVA > 1100) {
           validate.status = false;
           validate.msg = 'Please Check the Range in LV 12V ';
         }
       } else if (deviceCommData.deviceType === 2) {
-        if (upsVA < 1200 && upsVA > 2000) {
+        console.log('IN Type 2');
+        if (upsVA >= 1200 || upsVA <= 2000) {
+          console.log('IN Type 2 valid');
+        } else {
+          console.log('IN Type 2 invalid');
           validate.status = false;
           validate.msg = 'Please Check the Range in LV 24V ';
+        }
+      }
+    } else {
+      if (upsMake === '') {
+        validate.status = false;
+        validate.msg = 'UPS Makes -> Field Cannot Be Empty';
+      } else if (upsModel === '') {
+        validate.status = false;
+        validate.msg = 'UPS Model -> Field Cannot Be Empty';
+      }
+      if (deviceCommData.deviceType === 4) {
+        if (upsVA < 3000 || upsVA > 25000) {
+          validate.status = false;
+          validate.msg = 'Please Check the Range in HV ';
         }
       }
     }
@@ -517,9 +553,15 @@ const Form3 = ({setStep, deviceCommData, deviceComServerData}) => {
 
   const handleContinue = () => {
     console.log('deviceCommData ---------->', deviceCommData);
+    console.log(
+      'deviceCommData.deviceType ---------->',
+      deviceCommData.deviceType,
+    );
     handleValidation(isValid => {
       if (isValid) {
         setLoader(true);
+        let dcOverload = DcOverload();
+        let acOverload = AcOverload();
 
         if (deviceCommData.deviceType == 1) {
           if (upsVA >= 600 && upsVA <= 1100) {
@@ -581,18 +623,20 @@ const Form3 = ({setStep, deviceCommData, deviceComServerData}) => {
               setLoader(false);
             }, 5000);
           } else {
-            setValidate(false);
+            console.log('setValidate False');
           }
-          setLoader(false);
+          // setLoader(false);
         }
+        // setLoader(false);
       } else {
-        setLoader(false);
+        // setLoader(false);
       }
     });
   };
 
   const DcOverload = () => {
     let result = (upsVA * 0.8) / (12 * deviceCommData.deviceType);
+    console.log('DC OVerload Calculation', result);
     return result;
   };
 
@@ -635,6 +679,7 @@ const Form3 = ({setStep, deviceCommData, deviceComServerData}) => {
             !isValid && {color: 'red', fontWeight: 'bold'},
           ]}>
           Value range for iCON 12V - 600 to 1100 & for iCON 24V - 1200 to 2000.
+          For HV 3000 - 25000.
         </Text>
       </View>
       <View style={{flex: 0.4}}>
@@ -655,7 +700,14 @@ const Form3 = ({setStep, deviceCommData, deviceComServerData}) => {
   );
 };
 
-const Form2 = ({setStep, deviceTypeApi, deviceComServerData}) => {
+const Form2 = ({
+  setStep,
+  deviceTypeApi,
+  deviceComServerData,
+  deviceCommData,
+}) => {
+  console.log('deviceCommData in FORM 2', deviceCommData);
+
   const [isVisible, setVisible] = React.useState(false);
   const [selectedValue, setSelectedValue] = React.useState('');
 
@@ -829,7 +881,7 @@ const Form2 = ({setStep, deviceTypeApi, deviceComServerData}) => {
     if (deviceTypeApi === 'HV') {
       setTotalBatteryCapacity(numberInParalell * batteryCapacity);
     } else {
-      setTotalBatteryCapacity(batteryCapacity * deviceType * numberInParalell);
+      setTotalBatteryCapacity(batteryCapacity * numberInParalell);
     }
   }, [numberInParalell]);
 
@@ -843,7 +895,7 @@ const Form2 = ({setStep, deviceTypeApi, deviceComServerData}) => {
     if (deviceTypeApi === 'HV') {
       setTotalBatteryCapacity(numberInParalell * batteryCapacity);
     } else {
-      setTotalBatteryCapacity(numberInParalell * deviceType * batteryCapacity);
+      setTotalBatteryCapacity(batteryCapacity * numberInParalell);
     }
   };
 
@@ -855,13 +907,7 @@ const Form2 = ({setStep, deviceTypeApi, deviceComServerData}) => {
     if (deviceTypeApi === 'HV') {
       setTotalBatteryCapacity(numberInParalell * batteryCapacity);
     } else {
-      console.log(
-        'batteryCapacity * deviceType * batteryCapacity',
-        batteryCapacity,
-        deviceType,
-        batteryCapacity,
-      );
-      setTotalBatteryCapacity(batteryCapacity * deviceType * numberInParalell);
+      setTotalBatteryCapacity(batteryCapacity * numberInParalell);
     }
   }, [batteryCapacity]);
 

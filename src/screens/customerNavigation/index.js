@@ -1,6 +1,4 @@
 import LoginScreen from './loginScreen';
-import DealerLoginScreen from './dealerLoginScreen';
-import HomeScreen from './homeScreen';
 import DeviceInfoScreen from './deviceInfoScreen';
 import InstallationDetailsScreen from './installationDetailsScreen';
 import CustomerDashboardScreen from './dashboardScreen';
@@ -15,8 +13,12 @@ import FAQScreen from './FAQScreen';
 import CustomerSupportScreen from './supportScreen';
 import CustomerMyAccountScreen from './myAccounrScreen';
 import CustomerBottomNavigator from './bottomNavigator';
+import CustomerDeviceManager from './customerDeviceManager';
+import CustomerDeviceConfigMenuScreen from './deviceConfigMenuScreen';
 
 export {
+  CustomerDeviceConfigMenuScreen,
+  CustomerDeviceManager,
   CustomerDashboardScreen,
   CustomerSupportScreen,
   CustomerMyAccountScreen,

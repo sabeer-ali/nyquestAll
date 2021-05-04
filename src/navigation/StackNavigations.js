@@ -3,6 +3,8 @@ import {View, Text} from 'react-native';
 import {createStackNavigator} from '@react-navigation/stack';
 
 import {
+  CommonInstallationDetailsScreen,
+  DeviceDetailsScreen,
   MyAccountEditScreen,
   WifiSetupScreen,
   DeviceConfigDeviceInfoScreen,
@@ -26,6 +28,8 @@ import {
   DealerHomeScreen,
   DealerLoginScreen,
   UserListScreen,
+  CustomerDeviceManager,
+  CustomerDeviceConfigMenuScreen,
 } from '../screens';
 
 const Stack = createStackNavigator();
@@ -110,6 +114,16 @@ const StackNav = props => {
       />
       {/* Customer Login */}
       <Stack.Screen
+        name="deviceDetails"
+        component={DeviceDetailsScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="customerInstallationDetails"
+        component={CommonInstallationDetailsScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
         name="customerLogin"
         component={CustomerLoginScreen}
         options={{headerShown: false}}
@@ -148,6 +162,16 @@ const StackNav = props => {
       <Stack.Screen
         name="myAccountEdit"
         component={MyAccountEditScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="customerDeviceManager"
+        component={CustomerDeviceManager}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="customerDeviceConfigMenu"
+        component={CustomerDeviceConfigMenuScreen}
         options={{headerShown: false}}
       />
     </Stack.Navigator>

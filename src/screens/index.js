@@ -18,11 +18,15 @@ import {
   DealerDeviceConfigScreen,
 } from './dealerNavigation';
 import {
+  CustomerDeviceConfigMenuScreen,
+  CustomerDeviceManager,
   CustomerMyAccountScreen,
   CustomerBottomNavigator,
 } from './customerNavigation';
 
 import {
+  CommonInstallationDetailsScreen,
+  DeviceDetailsScreen,
   MyAccountEditScreen,
   WifiSetupScreen,
   DeviceConfigDeviceInfoScreen,
@@ -31,6 +35,10 @@ import {
 } from './commonScreens';
 
 export {
+  CommonInstallationDetailsScreen,
+  DeviceDetailsScreen,
+  CustomerDeviceConfigMenuScreen,
+  CustomerDeviceManager,
   MyAccountEditScreen,
   WifiSetupScreen,
   DeviceConfigDeviceInfoScreen,

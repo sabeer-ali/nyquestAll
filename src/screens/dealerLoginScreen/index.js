@@ -28,34 +28,44 @@ import {
   LOGIN_WITH_OTP,
 } from '../../utils/apiServices';
 
-const DealerLogin = ({setOtpPage, toaster}) => {
+const DealerLogin = ({setOtpPage, toaster, setDealerCodes}) => {
   const [dealerCode, setDealerCode] = useState('');
   const [isLoading, setLoader] = useState(false);
 
   const handleLoginAPI = () => {
-    // setLoader(true);
-    setOtpPage(true);
-    // MiddleWareForAuth('POST', SEND_OTP, {usercode: dealerCode}, (res, err) => {
-    // if (err && res === null) {
-    //   console.error('Error in OTP SEND Screen', err);
-    // } else {
-    //   if (err === null) {
-    //     console.log('Res OTP', res.data);
-    //     if (
-    //       res &&
-    //       res.data &&
-    //       res.data.code !== '' &&
-    //       res.data.code &&
-    //       res.data.code === '10'
-    //     ) {
-    //       setOtpPage(true);
-    //     } else {
-    //       console.error('OTP Send Error', res.data.message);
-    //       toaster('error', res.data.message);
-    //     }
-    //   }
-    // }
-    // });
+    if (dealerCode === '') {
+      Alert.alert('Warning', 'Plaese type deler code');
+    } else {
+      setLoader(true);
+      MiddleWareForAuth(
+        'POST',
+        SEND_OTP,
+        {usercode: dealerCode},
+        (res, err) => {
+          setLoader(false);
+          if (err && res === null) {
+            console.error('Error in OTP SEND Screen', err);
+          } else {
+            if (err === null) {
+              console.log('Res OTP', res.data);
+              if (
+                res &&
+                res.data &&
+                res.data.code !== '' &&
+                res.data.code &&
+                res.data.code === '10'
+              ) {
+                setDealerCodes(dealerCode);
+                setOtpPage(true);
+              } else {
+                console.error('OTP Send Error', res.data.message);
+                toaster('error', res.data.message);
+              }
+            }
+          }
+        },
+      );
+    }
   };
 
   return (
@@ -93,9 +103,34 @@ const DealerLogin = ({setOtpPage, toaster}) => {
   );
 };
 
-const DealerOTP = ({navigation, toaster}) => {
+const DealerOTP = ({navigation, toaster, dealerCodes}) => {
   const [otp, setOTP] = useState('');
   const [isLoading, setLoader] = useState(false);
+
+  const handleResendOPAPI = () => {
+    setLoader(true);
+    MiddleWareForAuth('POST', SEND_OTP, {usercode: dealerCodes}, (res, err) => {
+      setLoader(false);
+      if (err && res === null) {
+        console.error('Error in OTP SEND Screen', err);
+      } else {
+        if (err === null) {
+          console.log('Res OTP', res.data);
+          if (
+            res &&
+            res.data &&
+            res.data.code !== '' &&
+            res.data.code &&
+            res.data.code === '10'
+          ) {
+          } else {
+            console.error('OTP Send Error', res.data.message);
+            toaster('error', res.data.message);
+          }
+        }
+      }
+    });
+  };
 
   const handleContinue = () => {
     NetInfo.fetch().then(state => {
@@ -109,6 +144,7 @@ const DealerOTP = ({navigation, toaster}) => {
           if (err === null) {
             if (res !== null && res.data) {
               if (res.data.code === '10') {
+                setOTP('');
                 StoreLocalDB('@delaerLoginDetails', res.data.msg, res => {
                   navigation();
                 });
@@ -166,7 +202,7 @@ const DealerOTP = ({navigation, toaster}) => {
           <Text style={Styles.loggedInText}>Keep me logged in.</Text>
         </View>
         <View>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => handleResendOPAPI()}>
             <Text style={Styles.resendOtp}> Resend OTP</Text>
           </TouchableOpacity>
         </View>
@@ -190,6 +226,7 @@ const DealerOTP = ({navigation, toaster}) => {
 
 export default DealerLoginScreen = ({navigation}) => {
   const [isOtpPage, setOtpPage] = useState(false);
+  const [dealerCodes, setDealerCodes] = useState('');
 
   const showCustomToaster = (error, msg, callback) => {
     showToaster(error, msg, callback);
@@ -210,9 +247,14 @@ export default DealerLoginScreen = ({navigation}) => {
         <DealerOTP
           navigation={() => navigation.navigate('dealerHome')}
           toaster={showCustomToaster}
+          dealerCodes={dealerCodes}
         />
       ) : (
-        <DealerLogin setOtpPage={setOtpPage} toaster={showCustomToaster} />
+        <DealerLogin
+          setOtpPage={setOtpPage}
+          toaster={showCustomToaster}
+          setDealerCodes={setDealerCodes}
+        />
       )}
     </View>
   );

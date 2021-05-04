@@ -23,7 +23,16 @@ export default function CustomWrapper(props) {
         props.mv3 && {marginVertical: 30},
         props.mv4 && {marginVertical: 40},
         props.mv5 && {marginVertical: 50},
+        props.ml1 && {marginLeft: 10},
         props.ml2 && {marginLeft: 20},
+        props.ml3 && {marginLeft: 30},
+        props.ml4 && {marginLeft: 40},
+        props.ml5 && {marginLeft: 50},
+        props.mb1 && {marginBottom: 10},
+        props.mb2 && {marginBottom: 20},
+        props.mb3 && {marginBottom: 30},
+        props.mb4 && {marginBottom: 40},
+        props.mb5 && {marginBottom: 50},
         props.ph25 && {paddingHorizontal: 25},
         props.pt1 && {paddingTop: 10},
         props.pt2 && {paddingTop: 20},
@@ -39,6 +48,8 @@ export default function CustomWrapper(props) {
         props.h200 && {height: 200},
         props.h300 && {height: 300},
         props.h400 && {height: 400},
+        props.h450 && {height: 450},
+        props.h500 && {height: 500},
         props.spaceEvently && {justifyContent: 'space-evenly'},
         props.center && {justifyContent: 'center'},
         props.vCenter && {alignItems: 'center'},
@@ -51,6 +62,7 @@ export default function CustomWrapper(props) {
         props.styles && {...props.styles},
         props.btlr25 && {borderTopLeftRadius: 25},
         props.btrr25 && {borderTopRightRadius: 25},
+        props.flexDirectionRow && {flexDirection: 'row'},
       ]}>
       {props.children}
     </View>

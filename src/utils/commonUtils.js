@@ -11,6 +11,11 @@ const getAllKeys = async () => {
 const StoreLocalDB = async (key, value, callback) => {
   try {
     const jsonValue = typeof value === 'string' ? value : JSON.stringify(value);
+    await getLocalDB(key, resGetLocal => {
+      if (resGetLocal !== null) {
+        AsyncStorage.removeItem(key);
+      }
+    });
     await AsyncStorage.setItem(key, jsonValue);
     console.log('key, value in DB -->', key, value, jsonValue);
     if (callback) callback(null);
@@ -25,12 +30,20 @@ const StoreLocalDB = async (key, value, callback) => {
 const getLocalDB = async (key, callback) => {
   try {
     const jsonValue = await AsyncStorage.getItem(key);
-    if (callback) callback(jsonValue != null ? JSON.parse(jsonValue) : null);
-    else return jsonValue != null ? JSON.parse(jsonValue) : null;
+    if (callback) {
+      callback(jsonValue != null ? JSON.parse(jsonValue) : null);
+    } else {
+      return jsonValue != null ? JSON.parse(jsonValue) : null;
+    }
   } catch (e) {
     console.error('Err in Async Data GET', e);
     if (callback) callback(null);
   }
+};
+
+const logOut = async (key, callback) => {
+  await AsyncStorage.removeItem(key);
+  if (callback) callback();
 };
 
 const Loader = () => {
@@ -56,4 +69,4 @@ const showToaster = (type, msg) => {
   });
 };
 
-export {Loader, showToaster, StoreLocalDB, getLocalDB, getAllKeys};
+export {Loader, showToaster, StoreLocalDB, getLocalDB, getAllKeys, logOut};
