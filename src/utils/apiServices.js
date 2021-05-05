@@ -16,14 +16,24 @@ const CHANGE_PASSWORD = '/changepassword';
 const GET_DEVICE_FOR_CUSTOMER = '/getdeviceforcust';
 const ADD_CUSTOMER_DEVICE = '/addcustomerdevice';
 const REGISTER_URL = '/savecustomer';
+const FORGOT_PASSWORD_OTP =
+  'https://web.energy24by7.com/API3/index.php/forgotpasswordotp';
+const VALIDATE_FORGOT_PASSWORD_OTP = '/validateOTPforgotpass';
+const UPDATE_PASSWORD = '/updatepasswordreset';
 
-const MiddleWareForAuth = async (method, endPont, params, callback) => {
+const MiddleWareForAuth = async (
+  method,
+  endPont,
+  params,
+  callback,
+  noBaseUrl,
+) => {
   if (method === 'GET') {
     GETRequest(endPont, params, callback);
   }
 
   if (method === 'POST') {
-    POSTRequest(endPont, params, callback);
+    POSTRequest(endPont, params, callback, noBaseUrl);
   }
 };
 
@@ -41,8 +51,14 @@ const GETRequest = async (endPont, params, callback) => {
     });
 };
 
-const POSTRequest = (endPont, params, callback) => {
-  const url = BASEURL + '' + endPont;
+const POSTRequest = (endPont, params, callback, noBaseUrl) => {
+  let url = '';
+  if (noBaseUrl) {
+    url = endPont;
+  } else {
+    url = BASEURL + '' + endPont;
+  }
+
   console.log('You Call POST', url, params);
   axios
     .post(url, params)
@@ -57,6 +73,9 @@ const POSTRequest = (endPont, params, callback) => {
 };
 
 export {
+  UPDATE_PASSWORD,
+  VALIDATE_FORGOT_PASSWORD_OTP,
+  FORGOT_PASSWORD_OTP,
   REGISTER_URL,
   ADD_CUSTOMER_DEVICE,
   CHANGE_PASSWORD,

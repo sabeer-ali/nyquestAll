@@ -36,16 +36,72 @@ import {
   MiddleWareForAuth,
   LOGINURL,
   REGISTER_URL,
+  FORGOT_PASSWORD_OTP,
+  VALIDATE_FORGOT_PASSWORD_OTP,
+  CHANGE_PASSWORD,
 } from '../.././utils/apiServices';
 import {Loader, showToaster} from '../../utils/commonUtils';
-import {set} from 'react-native-reanimated';
 
 const ResetPassword = ({
   setForgotPasswdMode,
   setModal,
   setOtpMode,
   setResetPassword,
+  resetPasswordData,
 }) => {
+  const [newPassword, setNewPassword] = React.useState('');
+  const [cPassword, setConfirmNewPassword] = React.useState('');
+  const [isLoading, setLoader] = React.useState(false);
+
+  const handleSubmit = () => {
+    if (resetPasswordData !== '') {
+      if (newPassword !== cPassword) {
+        Alert.alert(
+          'Warning',
+          'New Password and Confirm Password didnot match.',
+        );
+      } else {
+        handleResetPassword(() => {
+          setModal(false);
+          setForgotPasswdMode(false);
+          setOtpMode(false);
+          setResetPassword(false);
+        });
+      }
+    } else {
+      Alert.alert('Warning', 'User Id didnot Get');
+    }
+  };
+
+  const handleResetPassword = callback => {
+    NetInfo.fetch().then(state => {
+      let payload = {user_id: resetPasswordData, password: sha512(newPassword)};
+
+      if (state.isInternetReachable) {
+        console.log('payload', payload);
+        setLoader(true);
+        MiddleWareForAuth('POST', CHANGE_PASSWORD, payload, (res, err) => {
+          setLoader(false);
+          if (err !== null) {
+            console.log('REs CHANGE_PASSWORD API Errr => ', err);
+            Alert.alert('Warning', err.text);
+          } else {
+            console.log('REs CHANGE_PASSWORD Success => ', res.data);
+            if (res.data.status === 'error') {
+              Alert.alert('Warning', res.data.text);
+            } else {
+              // Alert.alert('Code ', res.data.code);
+              if (callback) callback();
+              // showToaster('error', data.msg);
+            }
+          }
+        });
+      } else {
+        Alert.alert('Warning', 'No Internet Connection');
+      }
+    });
+  };
+
   return (
     <CustomWrapper ph25 btrr25 btlr25 bg="#fff">
       <CustomHeader
@@ -61,33 +117,41 @@ const ResetPassword = ({
       />
 
       <CustomWrapper h150 spaceEvently>
-        <CustomInput form placeholder="New Password" />
-        <CustomInput form placeholder="Confirm Password" />
+        <CustomInput
+          form
+          placeholder="New Password"
+          value={newPassword}
+          onChange={passwd => setNewPassword(passwd)}
+        />
+        <CustomInput
+          form
+          placeholder="Confirm Password"
+          value={cPassword}
+          onChange={cPasswd => setConfirmNewPassword(cPasswd)}
+        />
       </CustomWrapper>
 
       <CustomWrapper pb2>
-        <Button
-          uppercase={false}
-          mode="contained"
-          style={[
-            CommonStyles.buttonBgStyle,
-            {
-              backgroundColor: '#E28534',
-              width: '100%',
-              alignSelf: 'center',
-              marginVertical: 30,
-            },
-          ]}
-          labelStyle={Styles.modalButtonLabel}
-          onPress={() => {
-            setModal(false);
-            setForgotPasswdMode(false);
-            setOtpMode(false);
-            setResetPassword(false);
-            // navigation.navigate('deviceConfig');
-          }}>
-          Done
-        </Button>
+        {isLoading ? (
+          <Loader />
+        ) : (
+          <Button
+            uppercase={false}
+            mode="contained"
+            style={[
+              CommonStyles.buttonBgStyle,
+              {
+                backgroundColor: '#E28534',
+                width: '100%',
+                alignSelf: 'center',
+                marginVertical: 30,
+              },
+            ]}
+            labelStyle={Styles.modalButtonLabel}
+            onPress={() => handleSubmit()}>
+            Done
+          </Button>
+        )}
       </CustomWrapper>
     </CustomWrapper>
   );
@@ -98,7 +162,56 @@ const ForgotPasswordOtp = ({
   setModal,
   setOtpMode,
   setResetPassword,
+  setResetPasswordData,
 }) => {
+  const [otp, setOtp] = React.useState('');
+  const [isLoading, setLoader] = React.useState(false);
+
+  const handleSubmit = () => {
+    handleValidateOTP(data => {
+      setForgotPasswdMode(false);
+      setOtpMode(false);
+      setResetPassword(true);
+      setResetPasswordData(data);
+    });
+  };
+
+  const handleValidateOTP = callback => {
+    NetInfo.fetch().then(state => {
+      let payload = {otp: otp};
+      if (state.isInternetReachable) {
+        setLoader(true);
+        MiddleWareForAuth(
+          'POST',
+          VALIDATE_FORGOT_PASSWORD_OTP,
+          payload,
+          (res, err) => {
+            setLoader(false);
+            if (err !== null) {
+              console.log('REs VALIDATE_FORGOT_PASSWORD_OTP API Errr => ', err);
+              Alert.alert('Warning', err.text);
+            } else {
+              console.log(
+                'REs VALIDATE_FORGOT_PASSWORD_OTP Success => ',
+                res.data,
+              );
+              if (res.data.status === 'error') {
+                Alert.alert('Warning', res.data.text);
+              } else {
+                if (res.data.code === 10 && res.data.status === 'valid') {
+                  if (callback) callback(res.data.userid);
+                } else {
+                  Alert.alert('Warning', 'Please Retry Again');
+                }
+              }
+            }
+          },
+        );
+      } else {
+        Alert.alert('Warning', 'No Internet Connection');
+      }
+    });
+  };
   return (
     <CustomWrapper ph25 bg="#fff" btrr25 btlr25>
       <CustomHeader
@@ -115,8 +228,8 @@ const ForgotPasswordOtp = ({
       <OTPInputView
         style={{width: '80%', height: 90}}
         pinCount={4}
-        // code={this.state.code} //You can supply this prop or not. The component will be used as a controlled / uncontrolled component respectively.
-        // onCodeChanged = {code => { this.setState({code})}}
+        code={otp} //You can supply this prop or not. The component will be used as a controlled / uncontrolled component respectively.
+        onCodeChanged={code => setOtp(code)}
         autoFocusOnLoad
         codeInputFieldStyle={Styles.underlineStyleBase}
         codeInputHighlightStyle={Styles.underlineStyleHighLighted}
@@ -135,26 +248,26 @@ const ForgotPasswordOtp = ({
         </Text>
       </CustomWrapper>
       <CustomWrapper pb2>
-        <Button
-          uppercase={false}
-          mode="contained"
-          style={[
-            CommonStyles.buttonBgStyle,
-            {
-              backgroundColor: '#E28534',
-              width: '100%',
-              alignSelf: 'center',
-              marginVertical: 30,
-            },
-          ]}
-          labelStyle={Styles.modalButtonLabel}
-          onPress={() => {
-            setForgotPasswdMode(false);
-            setOtpMode(false);
-            setResetPassword(true);
-          }}>
-          Reset
-        </Button>
+        {isLoading ? (
+          <Loader />
+        ) : (
+          <Button
+            uppercase={false}
+            mode="contained"
+            style={[
+              CommonStyles.buttonBgStyle,
+              {
+                backgroundColor: '#E28534',
+                width: '100%',
+                alignSelf: 'center',
+                marginVertical: 30,
+              },
+            ]}
+            labelStyle={Styles.modalButtonLabel}
+            onPress={() => handleSubmit()}>
+            Reset
+          </Button>
+        )}
       </CustomWrapper>
     </CustomWrapper>
   );
@@ -162,6 +275,47 @@ const ForgotPasswordOtp = ({
 
 const ForgotPassword = ({setForgotPasswdMode, setModal, setOtpMode}) => {
   const [usermailOrPass, setUserMailOrPassword] = React.useState('');
+  const [isLoading, setLoader] = React.useState(false);
+
+  const handleSubmit = () => {
+    handleForgotPasswordOTP(() => {
+      setForgotPasswdMode(false);
+      setOtpMode(true);
+    });
+  };
+
+  const handleForgotPasswordOTP = callback => {
+    NetInfo.fetch().then(state => {
+      let payload = {username: usermailOrPass};
+      if (state.isInternetReachable) {
+        setLoader(true);
+        MiddleWareForAuth(
+          'POST',
+          FORGOT_PASSWORD_OTP,
+          payload,
+          (res, err) => {
+            setLoader(false);
+            if (err !== null) {
+              console.log('REs FORGOT_PASSWORD_OTP API Errr => ', err);
+              Alert.alert('Warning', err.text);
+            } else {
+              console.log('REs FORGOT_PASSWORD_OTP Success => ', res.data);
+              if (res.data.status === 'error') {
+                Alert.alert('Warning', res.data.text);
+              } else {
+                // Alert.alert('Code ', res.data.code);
+                if (callback) callback();
+                // showToaster('error', data.msg);
+              }
+            }
+          },
+          true,
+        );
+      } else {
+        Alert.alert('Warning', 'No Internet Connection');
+      }
+    });
+  };
   return (
     <CustomWrapper ph25 pb1 btlr25 btrr25 bg="#fff">
       <CustomHeader
@@ -199,26 +353,26 @@ const ForgotPassword = ({setForgotPasswdMode, setModal, setOtpMode}) => {
             password reset.
           </Text>
         </CustomWrapper>
-        <Button
-          uppercase={false}
-          mode="contained"
-          style={[
-            CommonStyles.buttonBgStyle,
-            {
-              backgroundColor: '#E28534',
-              width: '100%',
-              alignSelf: 'center',
-              marginBottom: 5,
-            },
-          ]}
-          labelStyle={Styles.modalButtonLabel}
-          onPress={() => {
-            setForgotPasswdMode(false);
-            setOtpMode(true);
-            // navigation.navigate('deviceConfig');
-          }}>
-          Get OTP
-        </Button>
+        {isLoading ? (
+          <Loader />
+        ) : (
+          <Button
+            uppercase={false}
+            mode="contained"
+            style={[
+              CommonStyles.buttonBgStyle,
+              {
+                backgroundColor: '#E28534',
+                width: '100%',
+                alignSelf: 'center',
+                marginBottom: 5,
+              },
+            ]}
+            labelStyle={Styles.modalButtonLabel}
+            onPress={() => handleSubmit()}>
+            Get OTP
+          </Button>
+        )}
       </CustomWrapper>
     </CustomWrapper>
   );
@@ -584,6 +738,7 @@ export default CustomerLoginScreen = ({navigation}) => {
   const [isOtpMode, setOtpMode] = React.useState(false);
   const [isResetPassword, setResetPassword] = React.useState(false);
   const [isNewAccount, setNewAccount] = React.useState(false);
+  const [resetPasswordData, setResetPasswordData] = React.useState('');
 
   return (
     <View style={{flex: 1}}>
@@ -628,6 +783,7 @@ export default CustomerLoginScreen = ({navigation}) => {
                   setModal={setModal}
                   setOtpMode={setOtpMode}
                   setResetPassword={setResetPassword}
+                  setResetPasswordData={setResetPasswordData}
                 />
               )}
               {isResetPassword && (
@@ -636,6 +792,7 @@ export default CustomerLoginScreen = ({navigation}) => {
                   setModal={setModal}
                   setOtpMode={setOtpMode}
                   setResetPassword={setResetPassword}
+                  resetPasswordData={resetPasswordData}
                 />
               )}
 

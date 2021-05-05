@@ -10,9 +10,10 @@ const App = () => {
   if (isSplash) {
     setTimeout(() => {
       setSplash(false);
-    }, 2500);
+    }, 3000);
     return (
       <LottieView
+        style={{flex: 1, backgroundColor: '#243A5E'}}
         source={require('./assets/NQ_splashscrenn.json')}
         autoPlay
         loop
