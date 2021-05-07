@@ -36,9 +36,9 @@ export default CustomInput = props => {
           <TextInput
             placeholder="Search by Name, Mobile & Device ID"
             style={Styles.input}
-            editable={false}
             value={props.value && props.value}
             onChangeText={text => props.onChange && props.onChange(text)}
+            onFocus={() => props.onfocus && props.onfocus()}
           />
         </View>
       )}

@@ -40,13 +40,15 @@ export default function DeviceInfoScreen({
 }) {
   const [isModal, setModal] = useState(false);
   const [deviceDetails, setDeviceDetails] = useState(null);
-  const [isLoading, setLoader] = useState(false);
+  const [isLoading, setLoader] = useState(true);
   const [graphType, setGraphType] = useState('lifetime');
   const [graphDetails, setGraphDetails] = useState(null);
+  const [graphData, setGraphData] = useState(null);
 
   React.useEffect(() => {
-    deviceDetailsApi();
-    graphListApi();
+    deviceDetailsApi(() => {
+      graphListApi();
+    });
   }, []);
 
   const deviceDetailsApi = callback => {
@@ -88,58 +90,113 @@ export default function DeviceInfoScreen({
     });
   };
 
-  const graphListApi = callback => {
+  const graphListApi = async (type, date, callback) => {
+    console.log('type', type);
     setLoader(true);
-    let deviceId = route.params.deviceDetails.dev_id;
-    console.log('101', deviceId);
+    let graph = type ? type : graphType;
+    console.log('graph', date);
+    let localUrl = date ? '/graphdatauser_date/' : '/graphdatauser_term/';
 
     getLocalDB('@delaerLoginDetails', res => {
-      let endPoints =
-        '/graphdatadealer_term/' +
-        res.cust_id +
-        '/' +
-        graphType +
-        '/' +
-        res.token;
-      console.log('END Points', endPoints);
+      console.log(
+        '@delaerLoginDetails ------------------------------------- >',
+        res.cust_id,
+      );
+
+      let endPoints = localUrl + res.cust_id + '/' + graph + '/' + res.token;
 
       MiddleWareForAuth('GET', endPoints, null, (res, err) => {
+        setLoader(false);
         if (err === null) {
           if (res !== null && res.data) {
-            setLoader(false);
             if (res.data.code == '10') {
               console.log('res.data Graph', res.data.data);
+
+              console.log(
+                'in Details Screen Graph ===> ',
+                res.data.data.summarydata,
+              );
               setGraphDetails(res.data.data.summarydata);
-              console.log('in Details Screen Graph ===> ', res.data.data);
-              // if (callback) callback(res.data.data[0]);
+
+              if (res.data && res.data.data && res.data.data.summarydata) {
+                const {result, total} = generateCombineArray(
+                  res.data.data.summarydata.solarsav.y,
+                  res.data.data.summarydata.utilitysav.y,
+                );
+                console.log('TOTAL ===> ', result, total);
+
+                if (result && total > 0) {
+                  let data = {
+                    labels: res.data.data.summarydata.utilitysav.x,
+                    // legend: ['Solar Saving', 'Utility Saving'],
+                    datasets: [0, 50, 150, 200, 250, 300, 350],
+                    data: result,
+                    barColors: ['#839ACF', '#F5A266'],
+                  };
+                  setGraphData(data);
+                }
+              }
             } else {
               if (res.data && res.data.message) {
                 // showToaster('error', res.data.message);
-                console.error('in Details Screen NOT "10" API  Error', err);
+                console.error(
+                  'in Details Screen NOT "10" => 2 API  Error',
+                  res.data.message,
+                );
+                console.error(
+                  'in Details Screen NOT "10" API  Error',
+                  err.response.data,
+                );
               }
             }
           }
         } else {
-          setLoader(false);
           console.error('Device VAlidation API Graph Error', err);
+          if (err) {
+            console.error(
+              'Device VAlidation API Graph Error 2222222222222',
+              err,
+            );
+          }
           // showToaster('error', 'Something went wrong');
         }
       });
     });
   };
 
-  const data = {
-    labels: ['2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023'],
-    legend: ['Solar Saving', 'Utility Saving'],
-    data: [
-      [10, 15],
-      [15, 20],
-      [20, 30],
-      [30, 40],
-      [40, 50],
-      [20, 40],
-    ],
-    barColors: ['#839ACF', '#F5A266'],
+  const generateCombineArray = (data1, data2) => {
+    console.log(data1, data2);
+    let result = [];
+    let total = 0;
+    for (let i = 0; i < data1.length; i++) {
+      result.push([Number(data1[i]), Number(data2[i])]);
+      total = total + Number(data1[i]) + Number(data2[i]);
+    }
+    return {result, total};
+  };
+
+  const handleSelectedValue = value => {
+    console.log('value', value);
+
+    let type = '';
+    let isDate = false;
+    if (value === 'Lifetime') {
+      type = 'lifetime';
+    } else if (value === 'Today') {
+      type = 'today';
+    } else if (value === 'Last 7 days') {
+      type = 'week';
+    } else if (value === 'Last 12 months') {
+      type = 'month';
+    } else {
+      type = moment(value).format('YYYY-MM-DD');
+      isDate = true;
+    }
+
+    console.log('type ----------->', type);
+
+    setGraphType(type);
+    graphListApi(type, isDate);
   };
 
   const chartConfig = {
@@ -262,23 +319,45 @@ export default function DeviceInfoScreen({
               <TouchableOpacity
                 onPress={() => setModal(true)}
                 style={Styles.pickerContainer}>
-                <Text style={Styles.pickerText}>Lifetime</Text>
+                <Text style={Styles.pickerText}>
+                  {graphType.charAt(0).toUpperCase() + '' + graphType.slice(1)}
+                </Text>
                 <Image source={arrowDownIcon} />
               </TouchableOpacity>
             </View>
 
             <View style={Styles.barChartContainer}>
               <Text style={Styles.barChartHeading}>Energy Statistics</Text>
-              <StackedBarChart
-                style={{
-                  backgroundColor: '#F5F8FF',
-                  marginVertical: 15,
-                }}
-                data={data}
-                width={screenWidth - 15}
-                height={180}
-                chartConfig={chartConfig}
-              />
+              <ScrollView horizontal nestedScrollEnabled>
+                {graphData !== null ? (
+                  <StackedBarChart
+                    style={{
+                      backgroundColor: '#F5F8FF',
+                      marginVertical: 15,
+                    }}
+                    data={graphData}
+                    width={
+                      graphData && graphData.data && graphData.data.length * 80
+                    }
+                    height={200}
+                    chartConfig={chartConfig}
+                  />
+                ) : (
+                  <View
+                    style={{
+                      justifyContent: 'center',
+                      width: screenWidth,
+                      paddingVertical: 50,
+                    }}>
+                    <Text
+                      style={{
+                        textAlign: 'center',
+                      }}>
+                      NO DATA AVAILABLE
+                    </Text>
+                  </View>
+                )}
+              </ScrollView>
             </View>
 
             <View style={Styles.secondaryListing}>
@@ -288,7 +367,7 @@ export default function DeviceInfoScreen({
                   text2="Savings"
                   image={solarSavingIcon}
                   bgColor="#F8AB9B"
-                  value={graphDetails.totalsav}
+                  value={graphDetails.totalsav.toString()}
                   // params="kWh"
                 />
               )}
@@ -298,7 +377,7 @@ export default function DeviceInfoScreen({
                   text2="Savings"
                   image={co2Icon}
                   bgColor="#6F6F6F"
-                  value={graphDetails.co2save}
+                  value={graphDetails.co2save.toString()}
                   // params="kg"
                 />
               )}
@@ -311,7 +390,7 @@ export default function DeviceInfoScreen({
                   text2="Saved"
                   image={treeIcon}
                   bgColor="#F8AB9B"
-                  value={graphDetails.treesav}
+                  value={graphDetails.treesav.toString()}
                   // params="Trees"
                 />
               )}
@@ -319,7 +398,13 @@ export default function DeviceInfoScreen({
           </View>
         </View>
       )}
-      {isModal && <CustomModal showModal={isModal} handleModal={setModal} />}
+      {isModal && (
+        <CustomModal
+          showModal={isModal}
+          handleModal={setModal}
+          selectedValue={text => handleSelectedValue(text)}
+        />
+      )}
     </ScrollView>
   );
 }

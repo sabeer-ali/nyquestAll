@@ -17,21 +17,25 @@ export default function topBottomLayout(props) {
             </TouchableOpacity>
           </View>
         )}
-        <View
-          style={[
-            Styles.topSection,
-            {flex: props.topHeight ? props.topHeight : 1},
-          ]}>
-          {props.topSection && props.topSection}
-        </View>
+        {props.topSection && (
+          <View
+            style={[
+              Styles.topSection,
+              {flex: props.topHeight ? props.topHeight : 1},
+            ]}>
+            {props.topSection && props.topSection}
+          </View>
+        )}
 
-        <View
-          style={[
-            Styles.bottomSection,
-            {flex: props.bottomHeight ? props.bottomHeight : 1},
-          ]}>
-          {props.bottomSection && props.bottomSection}
-        </View>
+        {props.bottomSection && (
+          <View
+            style={[
+              Styles.bottomSection,
+              {flex: props.bottomHeight ? props.bottomHeight : 1},
+            ]}>
+            {props.bottomSection && props.bottomSection}
+          </View>
+        )}
       </View>
     </ScrollView>
   );

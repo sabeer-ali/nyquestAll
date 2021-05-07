@@ -16,6 +16,7 @@ import {
   CustomList,
   CustomSecondaryList,
   CustomModal,
+  CustomWrapper,
 } from '../../../components';
 import {
   arrowBackIcon,
@@ -122,14 +123,16 @@ export default function DeviceDetailsScreen({
                   'res.data.data.summarydata.utilitysav.x',
                   res.data.data.summarydata.utilitysav,
                 );
-                const result = generateCombineArray(
+                const {result, total} = generateCombineArray(
                   res.data.data.summarydata.solarsav.y,
                   res.data.data.summarydata.utilitysav.y,
                 );
-                if (result) {
+                console.log('TOTAL ===> ', result, total);
+
+                if (result && total > 0) {
                   let data = {
                     labels: res.data.data.summarydata.utilitysav.x,
-                    legend: ['Solar Saving', 'Utility Saving'],
+                    // legend: ['Solar Saving', 'Utility Saving'],
                     datasets: [0, 50, 150, 200, 250, 300, 350],
                     data: result,
                     barColors: ['#839ACF', '#F5A266'],
@@ -168,10 +171,12 @@ export default function DeviceDetailsScreen({
   const generateCombineArray = (data1, data2) => {
     console.log(data1, data2);
     let result = [];
+    let total = 0;
     for (let i = 0; i < data1.length; i++) {
       result.push([Number(data1[i]), Number(data2[i])]);
+      total = total + Number(data1[i]) + Number(data2[i]);
     }
-    return result;
+    return {result, total};
   };
 
   const handleSelectedValue = value => {
@@ -199,14 +204,14 @@ export default function DeviceDetailsScreen({
   };
 
   const chartConfig = {
-    backgroundColor: 'red',
+    // backgroundColor: 'red',
     backgroundGradientFrom: '#F5F8FF',
     // backgroundGradientFromOpacity: 0,
     backgroundGradientTo: '#F5F8FF',
     // backgroundGradientToOpacity: 0.5,
     color: (opacity = 0) => `#BDBDBD`,
     strokeWidth: 1, // optional, default 3
-    barPercentage: 1.5,
+    barPercentage: 1,
     useShadowColorFromDataset: false, // optional
   };
 
@@ -314,7 +319,9 @@ export default function DeviceDetailsScreen({
               <TouchableOpacity
                 onPress={() => setModal(true)}
                 style={Styles.pickerContainer}>
-                <Text style={Styles.pickerText}>{graphType}</Text>
+                <Text style={Styles.pickerText}>
+                  {graphType.charAt(0).toUpperCase() + '' + graphType.slice(1)}
+                </Text>
                 <Image source={arrowDownIcon} />
               </TouchableOpacity>
             </View>
@@ -322,21 +329,59 @@ export default function DeviceDetailsScreen({
             <View style={Styles.barChartContainer}>
               <Text style={Styles.barChartHeading}>Energy Statistics</Text>
               <ScrollView horizontal nestedScrollEnabled>
-                {graphData !== null && (
+                {graphData !== null ? (
                   <StackedBarChart
                     style={{
                       backgroundColor: '#F5F8FF',
                       marginVertical: 15,
                     }}
+                    showValuesOnTopOfBars={false}
                     data={graphData}
-                    width={
-                      graphData && graphData.data && graphData.data.length * 100
-                    }
-                    height={200}
+                    width={graphData.data.length * 80}
+                    height={250}
                     chartConfig={chartConfig}
+                    barPercentage={10}
                   />
+                ) : (
+                  <View
+                    style={{
+                      justifyContent: 'center',
+                      width: screenWidth,
+                      paddingVertical: 50,
+                    }}>
+                    <Text
+                      style={{
+                        textAlign: 'center',
+                      }}>
+                      NO DATA AVAILABLE
+                    </Text>
+                  </View>
                 )}
               </ScrollView>
+              {graphData !== null && (
+                <CustomWrapper flexDirectionRow spaceEvently mb3>
+                  <CustomWrapper flexDirectionRow>
+                    <View
+                      style={{
+                        backgroundColor: '#F5A266',
+                        height: 16,
+                        width: 16,
+                        borderRadius: 4,
+                      }}></View>
+                    <Text style={{marginLeft: 15}}>Solar Savings</Text>
+                  </CustomWrapper>
+                  <CustomWrapper flexDirectionRow>
+                    <View
+                      style={{
+                        backgroundColor: '#839ACF',
+                        height: 16,
+                        width: 16,
+                        borderRadius: 4,
+                      }}></View>
+                    <Text style={{marginLeft: 15}}>Solar Savings</Text>
+                  </CustomWrapper>
+                </CustomWrapper>
+              )}
             </View>
 
             <View style={Styles.secondaryListing}>

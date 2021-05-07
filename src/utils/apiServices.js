@@ -12,6 +12,7 @@ const SAVED_DEALER_CUSTOMER = '/savedealercustomer';
 const SAVED_DEVICE_DEPLOY = '/savedevicedeploynew'; //'/savedevicedeploy';
 const EDIT_ACCOUNT = '/editaccount';
 const CHANGE_PASSWORD = '/changepassword';
+const DEALER_SEARCH = '/searchdealeractivedevice';
 // Customer API's
 const GET_DEVICE_FOR_CUSTOMER = '/getdeviceforcust';
 const ADD_CUSTOMER_DEVICE = '/addcustomerdevice';
@@ -73,6 +74,7 @@ const POSTRequest = (endPont, params, callback, noBaseUrl) => {
 };
 
 export {
+  DEALER_SEARCH,
   UPDATE_PASSWORD,
   VALIDATE_FORGOT_PASSWORD_OTP,
   FORGOT_PASSWORD_OTP,
