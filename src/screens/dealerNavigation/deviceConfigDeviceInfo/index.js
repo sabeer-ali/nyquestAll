@@ -35,6 +35,7 @@ import {
 } from '../../../utils/commonUtils';
 
 import {
+  DEALER_RECONFIG,
   MiddleWareForAuth,
   SAVED_DEALER_CUSTOMER,
 } from '../../../utils/apiServices';
@@ -561,6 +562,7 @@ const DeviceInfo = ({
   deviceDetails,
 }) => {
   const [isReplace, setReplace] = React.useState(false);
+  const [isLoading, setLoader] = React.useState(false);
 
   React.useEffect(() => {
     console.log('deviceDetails for replace ', deviceDetails);
@@ -585,7 +587,6 @@ const DeviceInfo = ({
   }, []);
 
   const replaceDevice = () => {
-    console.log('deviceDetails ==>', deviceDetails);
     StoreLocalDB(
       '@replaceDvice',
       {isReplace: true, customerData: deviceDetails},
@@ -609,6 +610,61 @@ const DeviceInfo = ({
     //   Alert.alert('Warning', 'Customer Id not Found.');
     // }
     // });
+  };
+
+  const reconfigApi = data => {
+    NetInfo.fetch().then(state => {
+      if (state.isInternetReachable) {
+        setLoader(true);
+        let url =
+          DEALER_RECONFIG +
+          '/' +
+          data.dev_id +
+          '/' +
+          data.cust_id +
+          '/' +
+          data.token;
+        console.log(url + '/');
+        MiddleWareForAuth('GET', url, null, (res, err) => {
+          setLoader(false);
+          if (err === null) {
+            if (res !== null && res.data) {
+              if (res.data.status === 'success') {
+                console.log('dealer DEALER_RECONFIG RES=>', res.data);
+                // StoreLocalDB('@ReconfigData',)
+                // setModal(true);
+                // setReConfig(true);
+              } else {
+                if (res.data && res.data.message) {
+                  // showToaster('error', res.data.message);
+                  Alert.alert('WArning', res.data.message);
+                }
+              }
+            }
+          } else {
+            console.error(
+              'Device Connection Csutomer Details Save  Error',
+              err,
+            );
+            showToaster('error', 'Something went wrong');
+          }
+        });
+      } else {
+        Alert.alert('Warning', 'No Internet Connection');
+      }
+    });
+  };
+
+  const handleReConfig = () => {
+    getLocalDB('@delaerLoginDetails', localData => {
+      console.log('localData ==> Reconfig ', localData);
+      console.log('deviceDetails in Reconfig', deviceDetails);
+      reconfigApi({
+        cust_id: localData.cust_id,
+        dev_id: deviceDetails.deviceId,
+        token: localData.token,
+      });
+    });
   };
   return (
     <View>
@@ -643,7 +699,9 @@ const DeviceInfo = ({
             ? CommonStyles.buttonWrapperWithtwo
             : CommonStyles.buttonWrapper
         }>
-        {isData ? (
+        {isLoading ? (
+          <Loader />
+        ) : isData ? (
           <>
             <Button
               uppercase={false}
@@ -665,10 +723,7 @@ const DeviceInfo = ({
                 {backgroundColor: '#E28534'},
               ]}
               labelStyle={Styles.modalButtonLabel}
-              onPress={() => {
-                setModal(true);
-                setReConfig(true);
-              }}>
+              onPress={() => handleReConfig()}>
               Reconfigure
             </Button>
           </>

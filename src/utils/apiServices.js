@@ -13,6 +13,7 @@ const SAVED_DEVICE_DEPLOY = '/savedevicedeploynew'; //'/savedevicedeploy';
 const EDIT_ACCOUNT = '/editaccount';
 const CHANGE_PASSWORD = '/changepassword';
 const DEALER_SEARCH = '/searchdealeractivedevice';
+const DEALER_RECONFIG = '/deviceconfiglog';
 // Customer API's
 const GET_DEVICE_FOR_CUSTOMER = '/getdeviceforcust';
 const ADD_CUSTOMER_DEVICE = '/addcustomerdevice';
@@ -67,6 +68,7 @@ const POSTRequest = (endPont, params, callback, noBaseUrl) => {
       console.log('You Call POST RES ==> ', res.data);
       callback(res, null);
     })
+
     .catch(err => {
       console.error('Err in POST API', err);
       callback(null, err);
@@ -74,6 +76,7 @@ const POSTRequest = (endPont, params, callback, noBaseUrl) => {
 };
 
 export {
+  DEALER_RECONFIG,
   DEALER_SEARCH,
   UPDATE_PASSWORD,
   VALIDATE_FORGOT_PASSWORD_OTP,

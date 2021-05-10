@@ -198,6 +198,7 @@ const Form5 = ({navigation, setStep, deviceCommData, deviceComServerData}) => {
       deviceComServerData.equalization_interval = equalizationIntervel;
       deviceComServerData.equalization_duration = equalizationDuration;
       deviceComServerData.absorption_interval = absorptionIntervel;
+      deviceComServerData.reconfigure = 0;
 
       console.log(
         'deviceComServerData in SOLAR ==>',

@@ -37,34 +37,34 @@ const DealerLogin = ({setOtpPage, toaster, setDealerCodes}) => {
       Alert.alert('Warning', 'Plaese type deler code');
     } else {
       setLoader(true);
-      setOtpPage(true);
-      // MiddleWareForAuth(
-      //   'POST',
-      //   SEND_OTP,
-      //   {usercode: dealerCode},
-      //   (res, err) => {
-      //     setLoader(false);
-      //     if (err && res === null) {
-      //       console.error('Error in OTP SEND Screen', err);
-      //     } else {
-      //       if (err === null) {
-      //         console.log('Res OTP', res.data);
-      //         if (
-      //           res &&
-      //           res.data &&
-      //           res.data.code !== '' &&
-      //           res.data.code &&
-      //           res.data.code === '10'
-      //         ) {
-      //           setDealerCodes(dealerCode);
-      //         } else {
-      //           console.error('OTP Send Error', res.data.message);
-      //           toaster('error', res.data.message);
-      //         }
-      //       }
-      //     }
-      //   },
-      // );
+      MiddleWareForAuth(
+        'POST',
+        SEND_OTP,
+        {usercode: dealerCode},
+        (res, err) => {
+          setLoader(false);
+          if (err && res === null) {
+            console.error('Error in OTP SEND Screen', err);
+          } else {
+            if (err === null) {
+              console.log('Res OTP', res.data);
+              if (
+                res &&
+                res.data &&
+                res.data.code !== '' &&
+                res.data.code &&
+                res.data.code === '10'
+              ) {
+                setDealerCodes(dealerCode);
+                setOtpPage(true);
+              } else {
+                console.error('OTP Send Error', res.data.message);
+                toaster('error', res.data.message);
+              }
+            }
+          }
+        },
+      );
     }
   };
 
