@@ -61,6 +61,12 @@ const DeviceInfo = ({navigation, setExitConfig, deviceTypeApi}) => {
   }, []);
 
   const handleExitConfig = () => {
+    // getLocalDB('@deviceComData', res => {
+    //   console.log('Server Data', res);
+    //   getLocalDB('@replaceDvice', resReplaceDev => {
+    //     console.log('resReplaceDev', resReplaceDev.customerData);
+    //   });
+    // });
     setLoader(true);
     setTimeout(() => {
       getLocalDB('@res_devCommunication_stage_1').then(resDb => {
@@ -82,55 +88,122 @@ const DeviceInfo = ({navigation, setExitConfig, deviceTypeApi}) => {
 
   const deviceDataApi = () => {
     NetInfo.fetch().then(state => {
-      console.log('Connection type', state.type);
-      console.log('Is connected?', state.isConnected);
-      console.log('isInternetReachable?', state.isInternetReachable);
       if (state.isInternetReachable) {
-        getLocalDB('@deviceComData', res => {
-          console.log('Server Data', res);
-          if (
-            res.batage !== '' &&
-            res.batmake !== '' &&
-            res.batmaxvolt !== '' &&
-            res.batmodel !== ''
-          ) {
-            MiddleWareForAuth('POST', SAVED_DEVICE_DEPLOY, res, (res, err) => {
-              if (err === null) {
-                if (res !== null && res.data) {
-                  if (res.data.code == '10') {
-                    console.log('res.data in EXit Config', res.data);
-                    setExitConfig(true);
-                  } else {
-                    if (res.data && res.data.msg && res.data.msg) {
-                      // toaster('error', res.data.msg);
-                      console.error(res.data.msg);
+        getLocalDB('@ReconfigData', resReconfig => {
+          if (resReconfig) {
+            if (
+              resReconfig.batage !== '' &&
+              resReconfig.batmake !== '' &&
+              resReconfig.batmaxvolt !== '' &&
+              resReconfig.batmodel !== ''
+            ) {
+              MiddleWareForAuth(
+                'POST',
+                SAVED_DEVICE_DEPLOY,
+                resReconfig,
+                (res, err) => {
+                  if (err === null) {
+                    if (res !== null && res.data) {
+                      if (res.data.code == '10') {
+                        console.log('res.data in EXit Config', res.data);
+                        setExitConfig(true);
+                      } else {
+                        if (res.data && res.data.msg && res.data.msg) {
+                          // toaster('error', res.data.msg);
+                          console.error(res.data.msg);
+                        }
+                      }
                     }
+                  } else {
+                    console.error('Login OTP Check Error', err);
+                    // toaster('error', 'Something went wrong');
                   }
+                },
+              );
+            } else {
+              Alert.alert(
+                'Warning',
+                'No Data Available For Sync. Are You Sure You Want to Exit ?',
+                [
+                  {
+                    text: 'Cancel',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel',
+                  },
+                  {
+                    text: 'OK',
+                    onPress: () => {
+                      setExitDevice(true);
+                      setExitConfig(true);
+                    },
+                  },
+                ],
+              );
+            }
+          } else {
+            console.log('May be replacement or normal');
+            getLocalDB('@deviceComData', res => {
+              console.log('Server Data', res);
+              getLocalDB('@replaceDvice', resReplaceDev => {
+                console.log('resReplaceDev', resReplaceDev);
+                if (resReplaceDev && resReplaceDev.isReplace) {
+                  res.replace = 1;
+                  res.reconfigure = 0;
+                  res.olddevid = resReplaceDev.deviceId;
+                  res.custid = resReplaceDev.customerid;
                 }
+              });
+              console.log('Final Data ==>', res);
+              if (
+                res.batage !== '' &&
+                res.batmake !== '' &&
+                res.batmaxvolt !== '' &&
+                res.batmodel !== ''
+              ) {
+                MiddleWareForAuth(
+                  'POST',
+                  SAVED_DEVICE_DEPLOY,
+                  res,
+                  (res, err) => {
+                    if (err === null) {
+                      if (res !== null && res.data) {
+                        if (res.data.code == '10') {
+                          console.log('res.data in EXit Config', res.data);
+                          setExitConfig(true);
+                        } else {
+                          if (res.data && res.data.msg && res.data.msg) {
+                            // toaster('error', res.data.msg);
+                            console.error(res.data.msg);
+                          }
+                        }
+                      }
+                    } else {
+                      console.error('Login OTP Check Error', err);
+                      // toaster('error', 'Something went wrong');
+                    }
+                  },
+                );
               } else {
-                console.error('Login OTP Check Error', err);
-                // toaster('error', 'Something went wrong');
+                Alert.alert(
+                  'Warning',
+                  'No Data Available For Sync. Are You Sure You Want to Exit ?',
+                  [
+                    {
+                      text: 'Cancel',
+                      onPress: () => console.log('Cancel Pressed'),
+                      style: 'cancel',
+                    },
+                    {
+                      text: 'OK',
+                      onPress: () => {
+                        setExitDevice(true);
+                        setExitConfig(true);
+                      },
+                    },
+                  ],
+                );
               }
             });
-          } else {
-            Alert.alert(
-              'Warning',
-              'No Data Available For Sync. Are You Sure You Want to Exit ?',
-              [
-                {
-                  text: 'Cancel',
-                  onPress: () => console.log('Cancel Pressed'),
-                  style: 'cancel',
-                },
-                {
-                  text: 'OK',
-                  onPress: () => {
-                    setExitDevice(true);
-                    setExitConfig(true);
-                  },
-                },
-              ],
-            );
           }
         });
       } else {

@@ -73,10 +73,14 @@ const StepsComponent = ({navigation, setModal, selectedDevice}) => {
 
   const connectionSetup = async () => {
     getLocalDB('@customerDeviceDetailsFromQr', res => {
+      console.log('res ---->', res);
       let deviceTypeApi =
-        selectedDevice.dev_state === 1 || selectedDevice.dev_state === 2
+        selectedDevice.dev_category == 'iCON 12 V' ||
+        selectedDevice.dev_category == 'iCON 24 V'
           ? 'LV'
-          : 'HV';
+          : selectedDevice.dev_category == 'iCON 240 V'
+          ? 'HV'
+          : 'LV';
       if (deviceTypeApi)
         if (res !== null) {
           ConnectDevice_Stage_1(deviceTypeApi, res => {

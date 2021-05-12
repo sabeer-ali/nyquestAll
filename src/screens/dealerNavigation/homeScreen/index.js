@@ -38,6 +38,7 @@ import {
   showToaster,
   StoreLocalDB,
   logOut,
+  removeLocalDB,
 } from '../../../utils/commonUtils';
 
 const TopSection = ({handleSearchApi}) => {
@@ -104,6 +105,20 @@ const HomeScreen = ({navigation}) => {
     if (navigation.isFocused()) {
       handleGetListAPI();
     }
+
+    getLocalDB('@ReconfigData', resRecongif => {
+      if (resRecongif) {
+        removeLocalDB('@ReconfigData');
+      }
+    });
+
+    getLocalDB('@replaceDvice', resReplaceDevice => {
+      if (resReplaceDevice) {
+        removeLocalDB('@resReplaceDevice');
+      }
+    });
+
+    // back handler
     const backAction = () => {
       if (navigation.isFocused()) {
         Alert.alert('Hold on!', 'Are you sure you want to exit the app?', [

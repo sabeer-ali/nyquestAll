@@ -560,7 +560,7 @@ const DeviceInfo = ({
   const [locationAdd, setLocationAdd] = React.useState(false);
   const [nickname, setNickName] = React.useState('');
   const [isLoading, setLoader] = React.useState(false);
-
+  console.log('deviceDetails', deviceDetails);
   const requestGpsPermission = async callback => {
     try {
       const granted = await PermissionsAndroid.request(
@@ -605,60 +605,64 @@ const DeviceInfo = ({
   };
 
   const handleconfigApi = () => {
-    requestGpsPermission(gpsdata => {
-      getLocalDB('@customerLoginDetails', localData => {
-        console.log('1110000', gpsdata);
-        const payload = {
-          userid: localData.cust_id,
-          deviceid: deviceDetails.deviceId,
-          nickname: nickname,
-          depl_gps_lat: gpsdata.latitude,
-          depl_gps_long: gpsdata.longitude,
-          token: localData.token,
-        };
+    if (deviceDetails.customerid == -1) {
+      requestGpsPermission(gpsdata => {
+        getLocalDB('@customerLoginDetails', localData => {
+          console.log('1110000', gpsdata);
+          const payload = {
+            userid: localData.cust_id,
+            deviceid: deviceDetails.deviceId,
+            nickname: nickname,
+            depl_gps_lat: gpsdata.latitude,
+            depl_gps_long: gpsdata.longitude,
+            token: localData.token,
+          };
 
-        console.log('Payload ==>', payload);
+          console.log('Payload ==>', payload);
 
-        NetInfo.fetch().then(state => {
-          console.log('Connection type', state.type);
-          console.log('Is connected?', state.isInternetReachable);
-          if (state.isInternetReachable) {
-            setLoader(true);
-            MiddleWareForAuth(
-              'POST',
-              ADD_CUSTOMER_DEVICE,
-              payload,
-              (res, err) => {
-                setLoader(false);
-                if (err === null) {
-                  if (res !== null && res.data) {
-                    console.log('customer details submit RES=>', res.data);
-                    if (res.data.code == 10) {
-                      setLocationAdd(true);
-                      setStepsDetsils(true);
-                      setModal(true);
-                    } else {
-                      if (res.data && res.data.message) {
-                        Alert.alert('Warning', res.data.message);
-                        // showToaster('error', res.data.message);
+          NetInfo.fetch().then(state => {
+            console.log('Connection type', state.type);
+            console.log('Is connected?', state.isInternetReachable);
+            if (state.isInternetReachable) {
+              setLoader(true);
+              MiddleWareForAuth(
+                'POST',
+                ADD_CUSTOMER_DEVICE,
+                payload,
+                (res, err) => {
+                  setLoader(false);
+                  if (err === null) {
+                    if (res !== null && res.data) {
+                      console.log('customer details submit RES=>', res.data);
+                      if (res.data.code == 10) {
+                        setLocationAdd(true);
+                        setStepsDetsils(true);
+                        setModal(true);
+                      } else {
+                        if (res.data && res.data.message) {
+                          Alert.alert('Warning', res.data.message);
+                          // showToaster('error', res.data.message);
+                        }
                       }
                     }
+                  } else {
+                    console.error(
+                      'Device Connection Csutomer Details Save  Error',
+                      err,
+                    );
+                    showToaster('error', 'Something went wrong');
                   }
-                } else {
-                  console.error(
-                    'Device Connection Csutomer Details Save  Error',
-                    err,
-                  );
-                  showToaster('error', 'Something went wrong');
-                }
-              },
-            );
-          } else {
-            Alert.alert('Warning', 'No Internet Connection');
-          }
+                },
+              );
+            } else {
+              Alert.alert('Warning', 'No Internet Connection');
+            }
+          });
         });
       });
-    });
+    } else {
+      Alert.alert('Warning', 'This Device Already assigned');
+    }
   };
 
   return (
@@ -703,12 +707,15 @@ const DeviceInfo = ({
         {isLoading ? (
           <Loader />
         ) : (
-          <CustomButton
-            text="Configure"
-            backgroundStyle={CommonStyles.buttonBgStyle}
-            textStyle={CommonStyles.buttonTextStyle}
-            onpress={() => handleconfigApi()}
-          />
+          <CustomWrapper pv3>
+            <CustomButton
+              text="Configure"
+              width100
+              backgroundStyle={[CommonStyles.buttonBgStyle, {width: 250}]}
+              textStyle={CommonStyles.buttonTextStyle}
+              onpress={() => handleconfigApi()}
+            />
+          </CustomWrapper>
         )}
       </View>
     </ScrollView>

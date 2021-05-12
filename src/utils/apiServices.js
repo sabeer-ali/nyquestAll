@@ -22,6 +22,7 @@ const FORGOT_PASSWORD_OTP =
   'https://web.energy24by7.com/API3/index.php/forgotpasswordotp';
 const VALIDATE_FORGOT_PASSWORD_OTP = '/validateOTPforgotpass';
 const UPDATE_PASSWORD = '/updatepasswordreset';
+const UPDATE_BATTERY = '/changebattery';
 
 const MiddleWareForAuth = async (
   method,
@@ -76,6 +77,7 @@ const POSTRequest = (endPont, params, callback, noBaseUrl) => {
 };
 
 export {
+  UPDATE_BATTERY,
   DEALER_RECONFIG,
   DEALER_SEARCH,
   UPDATE_PASSWORD,

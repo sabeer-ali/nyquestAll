@@ -384,6 +384,7 @@ const ConnectionStatus = ({
   const [deviceTypeApi, setDeviceType] = useState(
     deviceDetails.dev_category === 'L' ? 'LV' : 'HV',
   );
+  console.log('deviceDetails', deviceDetails);
   useEffect(() => {
     NetInfo.fetch().then(state => {
       console.log('Connection type', state.type);
@@ -568,8 +569,7 @@ const DeviceInfo = ({
     console.log('deviceDetails for replace ', deviceDetails);
     getLocalDB('@replaceDvice', reslocal => {
       console.log('reslocal 111110000 ==>', reslocal);
-
-      if (reslocal.isReplace && reslocal.customerData.customerid != -1) {
+      if (reslocal.isReplace) {
         setReplace(true);
         getLocalDB('@deviceComData', resOldServerData => {
           let newServerData = {...resOldServerData};
@@ -579,7 +579,7 @@ const DeviceInfo = ({
           newServerData.replace = 1;
           newServerData.custid = deviceDetails.customerid;
         });
-        StoreLocalDB('@deviceComData', newServerData);
+        // StoreLocalDB('@deviceComData', newServerData);
       } else {
         setReplace(false);
       }
@@ -601,15 +601,8 @@ const DeviceInfo = ({
   };
 
   const handleconfig = () => {
-    // getLocalDB('@replaceDvice', reslocaldb => {
-    //   console.log('reslocaldb ==>', reslocaldb);
-    //   if (reslocaldb.isReplace && reslocaldb.customerData.customerid != -1) {
     setCustomerDetails(true);
     setModal(true);
-    // } else {
-    //   Alert.alert('Warning', 'Customer Id not Found.');
-    // }
-    // });
   };
 
   const reconfigApi = data => {
@@ -629,11 +622,48 @@ const DeviceInfo = ({
           setLoader(false);
           if (err === null) {
             if (res !== null && res.data) {
-              if (res.data.status === 'success') {
+              if (res.data.code == 10) {
                 console.log('dealer DEALER_RECONFIG RES=>', res.data);
-                // StoreLocalDB('@ReconfigData',)
-                // setModal(true);
-                // setReConfig(true);
+                const resData = res.data.data[0];
+                let payloads = {
+                  absorption_interval: resData.absorption_interval,
+                  batage: resData.batage,
+                  batmake: resData.batmake,
+                  batmaxvolt: resData.batmaxvolt,
+                  batminvolt: resData.batminvolt,
+                  batmodel: resData.batmodel,
+                  batparallelnos: resData.batparallelnos,
+                  battotalcap: resData.battotalcap,
+                  battype: resData.battype,
+                  custid: '-1',
+                  depl_gps_lat: '',
+                  depl_gps_long: '',
+                  devid: data.dev_id,
+                  equalization_duration: resData.equalization_duration,
+                  equalization_interval: resData.equalization_interval,
+                  invcap: resData.invcap,
+                  invdesc: resData.invdesc,
+                  nickname: '',
+                  olddevid: '',
+                  paneldesc: resData.paneldesc,
+                  panelorien: 'South',
+                  panelparallelnos: resData.panelparallelnos,
+                  panelseriesnos: resData.panelseriesnos,
+                  panelsinglecapa: resData.panelsinglecapa,
+                  paneltilt: resData.paneltilt,
+                  paneltotalcap: resData.paneltotalcap,
+                  replace: '0',
+                  token: data.token,
+                  userid: data.cust_id,
+                  email: '',
+                  custname: '',
+                  mobno: '',
+                  reconfigure: 1,
+                };
+                StoreLocalDB('@ReconfigData', payloads, res => {
+                  setModal(true);
+                  setReConfig(true);
+                });
               } else {
                 if (res.data && res.data.message) {
                   // showToaster('error', res.data.message);
@@ -840,16 +870,24 @@ const DeviceConfigDeviceInfoScreen = ({navigation, route}) => {
                     deviceDetails={deviceDetails}
                   />
                 )}
-                {isReConfig ||
-                  (isReDeploy && (
-                    <ReconfigRedeployComponent
-                      setModal={setModal}
-                      setReConfig={setReConfig}
-                      setStepsDetsils={setStepsDetsils}
-                      isReDeploy={isReDeploy}
-                      navigation={navigation}
-                    />
-                  ))}
+                {isReDeploy && (
+                  <ReconfigRedeployComponent
+                    setModal={setModal}
+                    setReConfig={setReConfig}
+                    setStepsDetsils={setStepsDetsils}
+                    isReDeploy={isReDeploy}
+                    navigation={navigation}
+                  />
+                )}
+                {isReConfig && (
+                  <ReconfigRedeployComponent
+                    setModal={setModal}
+                    setReConfig={setReConfig}
+                    setStepsDetsils={setStepsDetsils}
+                    isReDeploy={isReDeploy}
+                    navigation={navigation}
+                  />
+                )}
               </View>
             </View>
           </View>

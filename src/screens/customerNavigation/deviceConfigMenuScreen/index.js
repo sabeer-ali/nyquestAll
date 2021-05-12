@@ -285,7 +285,11 @@ const BottomSection = ({
         />
         <CustomList
           defaultList
-          // onpress={() => navigation.navigate('customerDeviceManager')}
+          onpress={() =>
+            navigation.navigate('customerBatteryUpdate', {
+              deviceTypeApi: choosedDeviceDetails,
+            })
+          }
           navigateNext
           icon={lockIcon}
           defaultText="Battery Update"
@@ -354,6 +358,7 @@ const customerDeviceConfigMenuScreen = ({navigation, route}) => {
             setModal={setModal}
             choosedDeviceDetails={choosedDeviceDetails}
             setExitConfig={setExitConfig}
+            route={route}
           />
         }
       />

@@ -41,6 +41,15 @@ const getLocalDB = async (key, callback) => {
   }
 };
 
+const removeLocalDB = async (key, callback) => {
+  try {
+    await AsyncStorage.removeItem(key);
+    if (callback) callback();
+  } catch (err) {
+    console.error('Remove Async Data', err);
+  }
+};
+
 const logOut = async (key, callback) => {
   await AsyncStorage.removeItem(key);
   if (callback) callback();
@@ -69,4 +78,12 @@ const showToaster = (type, msg) => {
   });
 };
 
-export {Loader, showToaster, StoreLocalDB, getLocalDB, getAllKeys, logOut};
+export {
+  Loader,
+  showToaster,
+  StoreLocalDB,
+  getLocalDB,
+  getAllKeys,
+  logOut,
+  removeLocalDB,
+};

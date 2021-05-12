@@ -15,8 +15,10 @@ import CustomerMyAccountScreen from './myAccounrScreen';
 import CustomerBottomNavigator from './bottomNavigator';
 import CustomerDeviceManager from './customerDeviceManager';
 import CustomerDeviceConfigMenuScreen from './deviceConfigMenuScreen';
+import CustomerBatteryUpdateScreen from './customerBatteryUpdateScreen';
 
 export {
+  CustomerBatteryUpdateScreen,
   CustomerDeviceConfigMenuScreen,
   CustomerDeviceManager,
   CustomerDashboardScreen,

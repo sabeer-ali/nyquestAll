@@ -145,12 +145,36 @@ const StepsPreview = ({step}) => {
   );
 };
 
-const Form5 = ({navigation, setStep, deviceCommData, deviceComServerData}) => {
+const Form5 = ({
+  navigation,
+  setStep,
+  deviceCommData,
+  deviceComServerData,
+  reconfigData,
+}) => {
   console.log('props in form 5', deviceCommData);
 
-  const [equalizationIntervel, setEqualizationIntervel] = useState('30');
-  const [equalizationDuration, setEqualizationDuration] = useState('6');
-  const [absorptionIntervel, setAbsorptionIntervel] = useState('5');
+  const [equalizationIntervel, setEqualizationIntervel] = useState(
+    reconfigData
+      ? reconfigData.equalization_interval !== ''
+        ? reconfigData.equalization_interval
+        : '30'
+      : '30',
+  );
+  const [equalizationDuration, setEqualizationDuration] = useState(
+    reconfigData
+      ? reconfigData.equalization_duration !== ''
+        ? reconfigData.equalization_duration
+        : '6'
+      : '6',
+  );
+  const [absorptionIntervel, setAbsorptionIntervel] = useState(
+    reconfigData
+      ? reconfigData.absorption_interval !== ''
+        ? reconfigData.absorption_interval
+        : '5'
+      : '5',
+  );
 
   const [isLoading, setLoader] = useState(false);
 
@@ -291,12 +315,47 @@ const Form5 = ({navigation, setStep, deviceCommData, deviceComServerData}) => {
   );
 };
 
-const Form4 = ({setStep, deviceCommData, deviceComServerData}) => {
-  const [solarModuleMake, setSolarModuleMake] = useState('');
-  const [solarModuleModel, setSolarModuleModel] = useState('');
-  const [solarModuleWattage, setSolarModuleWattage] = useState('');
-  const [modulesInSeries, setModulesInSeries] = useState(1);
-  const [modulesInParelell, setModulesInParalell] = useState(1);
+const Form4 = ({
+  setStep,
+  deviceCommData,
+  deviceComServerData,
+  reconfigData,
+}) => {
+  const [solarModuleMake, setSolarModuleMake] = useState(
+    reconfigData
+      ? reconfigData.paneldesc !== ''
+        ? reconfigData.paneldesc.split(',')[0]
+        : ''
+      : '',
+  );
+  const [solarModuleModel, setSolarModuleModel] = useState(
+    reconfigData
+      ? reconfigData.paneldesc !== ''
+        ? reconfigData.paneldesc.split(',')[1]
+        : ''
+      : '',
+  );
+  const [solarModuleWattage, setSolarModuleWattage] = useState(
+    reconfigData
+      ? reconfigData.panelsinglecapa !== ''
+        ? Number(reconfigData.panelsinglecapa)
+        : ''
+      : '',
+  );
+  const [modulesInSeries, setModulesInSeries] = useState(
+    reconfigData
+      ? reconfigData.panelseriesnos !== ''
+        ? Number(reconfigData.panelseriesnos)
+        : 1
+      : 1,
+  );
+  const [modulesInParelell, setModulesInParalell] = useState(
+    reconfigData
+      ? reconfigData.panelparallelnos !== ''
+        ? Number(reconfigData.panelparallelnos)
+        : 1
+      : 1,
+  );
   const [totalSolarModuleWattage, setTotalSolarModuleWattage] = useState(0);
   const [isLoading, setLoader] = useState(false);
 
@@ -479,12 +538,29 @@ const Form4 = ({setStep, deviceCommData, deviceComServerData}) => {
   );
 };
 
-const Form3 = ({setStep, deviceCommData, deviceComServerData}) => {
-  console.log('props in form 3', deviceCommData);
+const Form3 = ({
+  setStep,
+  deviceCommData,
+  deviceComServerData,
+  reconfigData,
+}) => {
+  console.log('props in form 3', reconfigData);
 
-  const [upsVA, setUpsVA] = useState('');
-  const [upsMake, setUpsMake] = useState('');
-  const [upsModel, setUpsModel] = useState('');
+  const [upsVA, setUpsVA] = useState(reconfigData ? reconfigData.invcap : '');
+  const [upsMake, setUpsMake] = useState(
+    reconfigData
+      ? reconfigData.invdesc !== ''
+        ? reconfigData.invdesc.split(',')[0]
+        : ''
+      : '',
+  );
+  const [upsModel, setUpsModel] = useState(
+    reconfigData
+      ? reconfigData.invdesc !== ''
+        ? reconfigData.invdesc.split(',')[1]
+        : ''
+      : '',
+  );
 
   const [isValid, setValidate] = useState(true);
   const [isLoading, setLoader] = useState(false);
@@ -706,68 +782,8 @@ const Form2 = ({
   deviceTypeApi,
   deviceComServerData,
   deviceCommData,
+  reconfigData,
 }) => {
-  console.log('deviceCommData in FORM 2', deviceCommData);
-
-  const [isVisible, setVisible] = React.useState(false);
-  const [selectedValue, setSelectedValue] = React.useState('');
-
-  const [isVisible1, setVisible1] = React.useState(false);
-  const [selectedValue1, setSelectedValue1] = React.useState('');
-
-  const [maxVolt, setMaxVolt] = React.useState(0.0);
-  const [minVolt, setMinVolt] = React.useState(0.0);
-
-  const [deviceType, setDeviceType] = React.useState(1);
-  const [year, setYear] = React.useState(1);
-  const [numberInParalell, setNumberInParalell] = React.useState(1);
-
-  const [batteryCapacity, setBatteryCapacity] = React.useState('');
-  const [totalBatteryCapacity, setTotalBatteryCapacity] = React.useState(0.0);
-
-  const [batteryMake, setBatteryMake] = React.useState('');
-  const [batteryModel, setBatteryModel] = React.useState('');
-  const [deviceDetailsFromQr, setDeviceDetailsFromQr] = React.useState(null);
-
-  const [isLoading, setLoader] = React.useState(false);
-
-  React.useEffect(() => {
-    console.log('FOrm 2 DATAS', deviceTypeApi, deviceComServerData);
-    AsyncStorage.getItem('@res_devCommunication_stage_1').then(resDb => {
-      const jsonValue = JSON.parse(resDb);
-      setDeviceType(jsonValue.deviceType);
-    });
-
-    getLocalDB('@deviceDetailsFromQr', deviceDetailsFromQr => {
-      setDeviceDetailsFromQr(deviceDetailsFromQr);
-      console.log(' deviceDetailsFromQr => ', deviceDetailsFromQr);
-    });
-  }, []);
-
-  const toggleVisible = () => {
-    setVisible(!isVisible);
-  };
-
-  const onToggleSelect = selectedData => {
-    setSelectedValue(selectedData);
-    setMaxVolt(selectedData.value.maxVolt);
-    setMinVolt(selectedData.value.minVolt);
-
-    console.log('Dropdown =>', maxVolt, minVolt);
-    toggleVisible();
-  };
-
-  const toggleVisible1 = () => {
-    setVisible1(!isVisible1);
-  };
-
-  const onToggleSelect1 = selectedData => {
-    setSelectedValue1(selectedData);
-    setMaxVolt(selectedData.maxVoltage);
-    setMinVolt(selectedData.minVoltage);
-    toggleVisible1();
-  };
-
   const deviceList = {
     iconLv12: [
       {
@@ -857,6 +873,120 @@ const Form2 = ({
       ranges: {maxVolt: {max: 330, min: 324}, minVolt: {max: 300, min: 288}},
     },
   ];
+  console.log('reconfigData in FORM 2', deviceCommData);
+  const reconfigBatteryType = () => {
+    const {deviceType} = deviceCommData;
+
+    if (deviceType === 1) {
+      // reconfigData.battype
+      let index = deviceList.iconLv12.findIndex(
+        i => i.name === reconfigData.battype,
+      );
+      return deviceList.iconLv12[index];
+    } else if (deviceType === 2) {
+      let index = deviceList.iconLv24.findIndex(
+        i => i.name === reconfigData.battype,
+      );
+      return deviceList.iconLv24[index];
+    } else if (deviceType === 4) {
+      let index = deviceList.listHV.findIndex(
+        i => i.name === reconfigData.battype,
+      );
+      return listHV[index];
+    }
+  };
+
+  const [isVisible, setVisible] = React.useState(false);
+  const [selectedValue, setSelectedValue] = React.useState(
+    reconfigData
+      ? reconfigData.battype !== ''
+        ? reconfigBatteryType()
+        : ''
+      : '',
+  );
+
+  const [isVisible1, setVisible1] = React.useState(false);
+  const [selectedValue1, setSelectedValue1] = React.useState('');
+
+  const [maxVolt, setMaxVolt] = React.useState(
+    reconfigData ? reconfigData.batmaxvolt : 0.0,
+  );
+  const [minVolt, setMinVolt] = React.useState(
+    reconfigData ? reconfigData.batminvolt : 0.0,
+  );
+
+  const [deviceType, setDeviceType] = React.useState(1);
+  const [year, setYear] = React.useState(1);
+  const [numberInParalell, setNumberInParalell] = React.useState(
+    reconfigData
+      ? reconfigData.batparallelnos !== ''
+        ? Number(reconfigData.batparallelnos)
+        : 1
+      : 1,
+  );
+
+  const [batteryCapacity, setBatteryCapacity] = React.useState(
+    reconfigData
+      ? reconfigData.battotalcap === '' &&
+          reconfigData.battotalcap / numberInParalell
+      : '',
+  );
+  console.log('reconfigData.battotalcap', reconfigData);
+  const [totalBatteryCapacity, setTotalBatteryCapacity] = React.useState(
+    reconfigData
+      ? reconfigData.battotalcap !== ''
+        ? Number(reconfigData.battotalcap)
+        : 0.0
+      : 0.0,
+  );
+
+  const [batteryMake, setBatteryMake] = React.useState(
+    reconfigData ? reconfigData.batmake && reconfigData.batmake : '',
+  );
+  const [batteryModel, setBatteryModel] = React.useState(
+    reconfigData ? reconfigData.batmodel : '',
+  );
+
+  const [deviceDetailsFromQr, setDeviceDetailsFromQr] = React.useState(null);
+
+  const [isLoading, setLoader] = React.useState(false);
+
+  React.useEffect(() => {
+    console.log('FOrm 2 DATAS', deviceTypeApi, deviceComServerData);
+    AsyncStorage.getItem('@res_devCommunication_stage_1').then(resDb => {
+      const jsonValue = JSON.parse(resDb);
+      setDeviceType(jsonValue.deviceType);
+    });
+
+    getLocalDB('@deviceDetailsFromQr', deviceDetailsFromQr => {
+      setDeviceDetailsFromQr(deviceDetailsFromQr);
+      console.log(' deviceDetailsFromQr => ', deviceDetailsFromQr);
+    });
+  }, []);
+
+  const toggleVisible = () => {
+    setVisible(!isVisible);
+  };
+
+  const onToggleSelect = selectedData => {
+    setSelectedValue(selectedData);
+    setMaxVolt(selectedData.value.maxVolt);
+    setMinVolt(selectedData.value.minVolt);
+
+    console.log('Dropdown =>', maxVolt, minVolt);
+    toggleVisible();
+  };
+
+  const toggleVisible1 = () => {
+    setVisible1(!isVisible1);
+  };
+
+  const onToggleSelect1 = selectedData => {
+    setSelectedValue1(selectedData);
+    setMaxVolt(selectedData.maxVoltage);
+    setMinVolt(selectedData.minVoltage);
+    toggleVisible1();
+  };
 
   const handleIncr = () => {
     if (year === 10 || year > 10) {
@@ -1065,6 +1195,7 @@ const Form2 = ({
           <CustomInput
             form
             placeholder="Battery Model"
+            value={batteryModel}
             onChange={value => setBatteryModel(value)}
           />
         </View>
@@ -1073,7 +1204,13 @@ const Form2 = ({
           <View style={Styles.wrappper}>
             <CustomDropdown
               placeholder="Battery Model Battery Type"
-              value={selectedValue.name}
+              value={
+                selectedValue
+                  ? selectedValue.name
+                    ? selectedValue.name
+                    : ''
+                  : ''
+              }
               isVisible={isVisible}
               toggleVisible={toggleVisible}
               onToggleSelect={onToggleSelect}
@@ -1263,6 +1400,7 @@ const Forms = ({
   deviceCommData,
   deviceTypeApi,
   deviceComServerData,
+  reconfigData,
 }) => {
   if (step === 1) {
     return (
@@ -1281,6 +1419,7 @@ const Forms = ({
         deviceCommData={deviceCommData}
         deviceTypeApi={deviceTypeApi}
         deviceComServerData={deviceComServerData}
+        reconfigData={reconfigData}
       />
     );
   } else if (step === 3) {
@@ -1289,6 +1428,7 @@ const Forms = ({
         setStep={setStep}
         deviceCommData={deviceCommData}
         deviceComServerData={deviceComServerData}
+        reconfigData={reconfigData}
       />
     );
   } else if (step === 4) {
@@ -1297,6 +1437,7 @@ const Forms = ({
         setStep={setStep}
         deviceCommData={deviceCommData}
         deviceComServerData={deviceComServerData}
+        reconfigData={reconfigData}
       />
     );
   } else if (step === 5) {
@@ -1306,6 +1447,7 @@ const Forms = ({
         navigation={navigation}
         deviceCommData={deviceCommData}
         deviceComServerData={deviceComServerData}
+        reconfigData={reconfigData}
       />
     );
   }
@@ -1317,6 +1459,7 @@ const serverConfigScreen = ({navigation, route}) => {
   const [deviceCommunicationData, setDeviceCommunicationDat] = useState('');
   const [deviceTypeApi, setDeviceTypeApi] = useState('');
   const [deviceComServerData, setDeviceComServerData] = useState(null);
+  const [reconfigData, setReconfigData] = useState(null);
 
   React.useEffect(() => {
     console.log('route --> in SERVER CONFIG', route.params.deviceTypeApi);
@@ -1332,8 +1475,12 @@ const serverConfigScreen = ({navigation, route}) => {
     });
 
     getLocalDB('@deviceComData', localData => {
-      console.log('localData in ServerConfig ', localData);
       setDeviceComServerData(localData);
+    });
+
+    getLocalDB('@ReconfigData', resReconfigData => {
+      if (resReconfigData) setReconfigData(resReconfigData);
+      else setReconfigData(null);
     });
   }, []);
 
@@ -1360,6 +1507,7 @@ const serverConfigScreen = ({navigation, route}) => {
             deviceCommData={deviceCommunicationData}
             deviceTypeApi={deviceTypeApi}
             deviceComServerData={deviceComServerData}
+            reconfigData={reconfigData}
           />
         }
       />

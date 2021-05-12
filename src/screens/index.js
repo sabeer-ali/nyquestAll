@@ -18,6 +18,7 @@ import {
   DealerDeviceConfigScreen,
 } from './dealerNavigation';
 import {
+  CustomerBatteryUpdateScreen,
   CustomerDeviceConfigMenuScreen,
   CustomerDeviceManager,
   CustomerMyAccountScreen,
@@ -35,6 +36,7 @@ import {
 } from './commonScreens';
 
 export {
+  CustomerBatteryUpdateScreen,
   CommonInstallationDetailsScreen,
   DeviceDetailsScreen,
   CustomerDeviceConfigMenuScreen,

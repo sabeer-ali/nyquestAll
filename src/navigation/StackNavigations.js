@@ -3,6 +3,7 @@ import {View, Text} from 'react-native';
 import {createStackNavigator} from '@react-navigation/stack';
 
 import {
+  CustomerBatteryUpdateScreen,
   CommonInstallationDetailsScreen,
   DeviceDetailsScreen,
   MyAccountEditScreen,
@@ -172,6 +173,11 @@ const StackNav = props => {
       <Stack.Screen
         name="customerDeviceConfigMenu"
         component={CustomerDeviceConfigMenuScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="customerBatteryUpdate"
+        component={CustomerBatteryUpdateScreen}
         options={{headerShown: false}}
       />
     </Stack.Navigator>
