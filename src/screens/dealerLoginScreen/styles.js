@@ -124,6 +124,7 @@ const Styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: '#BDBDBD',
     color: '#000',
+    fontSize: 15,
   },
 
   underlineStyleHighLighted: {

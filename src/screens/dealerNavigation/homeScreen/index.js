@@ -102,6 +102,7 @@ const HomeScreen = ({navigation}) => {
     if (!searchModal) {
       setSearchResult([]);
     }
+    handleGetListAPI();
     if (navigation.isFocused()) {
       handleGetListAPI();
     }

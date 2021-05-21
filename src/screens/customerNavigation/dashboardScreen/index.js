@@ -91,8 +91,13 @@ const BottomSection = ({navigation, setData}) => {
 
   React.useEffect(() => {
     getDeviceListApi();
+    if (navigation.isFocused()) {
+      getDeviceListApi();
+    }
+
     const backAction = () => {
       if (navigation.isFocused()) {
+        getDeviceListApi();
         Alert.alert('Hold on!', 'Are you sure you want to exit the app?', [
           {
             text: 'Cancel',
@@ -168,7 +173,7 @@ const BottomSection = ({navigation, setData}) => {
     return (
       <CustomList
         customerName={item.nick_name}
-        deviceName={item.dev_category === 'L' ? 'ICON LV' : 'ICON HV'}
+        deviceName={item.dev_category} //=== 'L' ? 'ICON LV' : 'ICON HV'
         deviceNickName={item.nick_name}
         deviceId={item.dev_id}
         onpress={() => navigation.push('deviceDetails', {deviceDetails: item})}

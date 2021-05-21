@@ -145,15 +145,10 @@ const StepsPreview = ({step}) => {
   );
 };
 
-const Form5 = ({
-  navigation,
-  setStep,
-  deviceCommData,
-  deviceComServerData,
-  reconfigData,
-}) => {
+const Form5 = ({navigation, setStep, deviceCommData, reconfigData}) => {
   console.log('props in form 5', deviceCommData);
 
+  const [deviceComServerData, setDeviceComServerData] = useState(null);
   const [equalizationIntervel, setEqualizationIntervel] = useState(
     reconfigData
       ? reconfigData.equalization_interval !== ''
@@ -177,6 +172,13 @@ const Form5 = ({
   );
 
   const [isLoading, setLoader] = useState(false);
+
+  React.useEffect(() => {
+    getLocalDB('@deviceComData', localData => {
+      setDeviceComServerData(localData);
+      console.log('localData in FORM 5', localData);
+    });
+  }, []);
 
   const handleValidation = callback => {
     let validate = {
@@ -224,13 +226,7 @@ const Form5 = ({
       deviceComServerData.absorption_interval = absorptionIntervel;
       deviceComServerData.reconfigure = 0;
 
-      console.log(
-        'deviceComServerData in SOLAR ==>',
-        deviceComServerData,
-        equalizationIntervel,
-        equalizationDuration,
-        absorptionIntervel,
-      );
+      console.log('deviceComServerData in FORM 5 ==>', deviceComServerData);
       StoreLocalDB('@deviceComData', deviceComServerData, res => {
         if (deviceCommData.deviceType === 4) {
           setLoader(false);
@@ -315,12 +311,8 @@ const Form5 = ({
   );
 };
 
-const Form4 = ({
-  setStep,
-  deviceCommData,
-  deviceComServerData,
-  reconfigData,
-}) => {
+const Form4 = ({setStep, deviceCommData, reconfigData}) => {
+  const [deviceComServerData, setDeviceComServerData] = useState(null);
   const [solarModuleMake, setSolarModuleMake] = useState(
     reconfigData
       ? reconfigData.paneldesc !== ''
@@ -362,6 +354,13 @@ const Form4 = ({
   const handleIncrSeries = async () => {
     setModulesInSeries(modulesInSeries + 1);
   };
+
+  React.useEffect(() => {
+    getLocalDB('@deviceComData', localData => {
+      setDeviceComServerData(localData);
+      console.log('localData in FORM 4', localData);
+    });
+  }, []);
 
   const handleDcrSeries = () => {
     if (modulesInSeries <= 1) {
@@ -441,32 +440,31 @@ const Form4 = ({
       deviceComServerData.panelseriesnos = modulesInSeries;
       deviceComServerData.paneltotalcap = totalSolarModuleWattage;
 
-      console.log(
-        'deviceComServerData in SOLAR ==>',
-        deviceComServerData,
-        deviceCommData,
-      );
-      if (deviceCommData.deviceType === 4) {
-        setLoader(false);
-        setStep(5);
-      } else {
-        setTimeout(() => {
-          SOLAR_Config_Stage_5(
-            'LV',
-            {
-              sessionId: deviceCommData.sessionId,
-              solarCapacity: totalSolarModuleWattage,
-              mainChargeIN: deviceCommData.deviceType == 1 ? '11.2' : '22.4',
-              mainChargeOUT: deviceCommData.deviceType == 1 ? '12' : '24',
-            },
-            res => {
-              console.log('REs stage 5 IN SOLAR', res);
-              setStep(5);
-            },
-          );
+      console.log('deviceComServerData FORM 4 ==>', deviceComServerData);
+
+      StoreLocalDB('@deviceComData', deviceComServerData, res => {
+        if (deviceCommData.deviceType === 4) {
           setLoader(false);
-        }, 5000);
-      }
+          setStep(5);
+        } else {
+          setTimeout(() => {
+            SOLAR_Config_Stage_5(
+              'LV',
+              {
+                sessionId: deviceCommData.sessionId,
+                solarCapacity: totalSolarModuleWattage,
+                mainChargeIN: deviceCommData.deviceType == 1 ? '11.2' : '22.4',
+                mainChargeOUT: deviceCommData.deviceType == 1 ? '12' : '24',
+              },
+              res => {
+                console.log('REs stage 5 IN SOLAR', res);
+                setStep(5);
+              },
+            );
+            setLoader(false);
+          }, 5000);
+        }
+      });
     });
   };
 
@@ -538,14 +536,10 @@ const Form4 = ({
   );
 };
 
-const Form3 = ({
-  setStep,
-  deviceCommData,
-  deviceComServerData,
-  reconfigData,
-}) => {
+const Form3 = ({setStep, deviceCommData, reconfigData}) => {
   console.log('props in form 3', reconfigData);
 
+  const [deviceComServerData, setDeviceComServerData] = useState(null);
   const [upsVA, setUpsVA] = useState(reconfigData ? reconfigData.invcap : '');
   const [upsMake, setUpsMake] = useState(
     reconfigData
@@ -564,6 +558,13 @@ const Form3 = ({
 
   const [isValid, setValidate] = useState(true);
   const [isLoading, setLoader] = useState(false);
+
+  React.useEffect(() => {
+    getLocalDB('@deviceComData', localData => {
+      setDeviceComServerData(localData);
+      console.log('localData in FORM 3', localData);
+    });
+  }, []);
 
   const handleValidation = callback => {
     let validate = {
@@ -629,11 +630,6 @@ const Form3 = ({
   };
 
   const handleContinue = () => {
-    console.log('deviceCommData ---------->', deviceCommData);
-    console.log(
-      'deviceCommData.deviceType ---------->',
-      deviceCommData.deviceType,
-    );
     handleValidation(isValid => {
       if (isValid) {
         setLoader(true);
@@ -651,27 +647,23 @@ const Form3 = ({
               deviceComServerData.invdesc = upsMake + ',' + upsModel;
               deviceComServerData.invcap = upsVA;
 
-              console.log(
-                'deviceComServerData in UPS ==>',
-                deviceComServerData,
-                deviceCommData,
-              );
-
-              setTimeout(() => {
-                UPS_Config_Stage_4(
-                  'LV',
-                  {
-                    sessionId: deviceCommData.sessionId,
-                    dcOverload,
-                    acOverload,
-                  },
-                  res => {
-                    console.log('res in dtg 4 UPS Config ', res);
-                    setStep(4);
-                  },
-                );
-                setLoader(false);
-              }, 5000);
+              StoreLocalDB('@deviceComData', deviceComServerData, res => {
+                setTimeout(() => {
+                  UPS_Config_Stage_4(
+                    'LV',
+                    {
+                      sessionId: deviceCommData.sessionId,
+                      dcOverload,
+                      acOverload,
+                    },
+                    res => {
+                      console.log('res in dtg 4 UPS Config ', res);
+                      setStep(4);
+                    },
+                  );
+                  setLoader(false);
+                }, 5000);
+              });
             }
           } else {
             setValidate(false);
@@ -679,8 +671,10 @@ const Form3 = ({
         } else if (deviceCommData.deviceType == 4) {
           deviceComServerData.invdesc = upsMake + ',' + upsModel;
           deviceComServerData.invcap = upsVA;
-          setStep(4);
-          setLoader(false);
+          StoreLocalDB('@deviceComData', deviceComServerData, res => {
+            setStep(4);
+            setLoader(false);
+          });
         } else {
           if (upsVA >= 1200 && upsVA <= 2000) {
             setValidate(true);
@@ -777,13 +771,7 @@ const Form3 = ({
   );
 };
 
-const Form2 = ({
-  setStep,
-  deviceTypeApi,
-  deviceComServerData,
-  deviceCommData,
-  reconfigData,
-}) => {
+const Form2 = ({setStep, deviceTypeApi, deviceCommData, reconfigData}) => {
   const deviceList = {
     iconLv12: [
       {
@@ -823,6 +811,7 @@ const Form2 = ({
       },
     ],
   };
+
   const listHV = [
     {
       name: '48V',
@@ -873,12 +862,12 @@ const Form2 = ({
       ranges: {maxVolt: {max: 330, min: 324}, minVolt: {max: 300, min: 288}},
     },
   ];
-  console.log('reconfigData in FORM 2', deviceCommData);
+
+  console.log('reconfigData in FORM 2', reconfigData);
   const reconfigBatteryType = () => {
     const {deviceType} = deviceCommData;
 
     if (deviceType === 1) {
-      // reconfigData.battype
       let index = deviceList.iconLv12.findIndex(
         i => i.name === reconfigData.battype,
       );
@@ -896,7 +885,15 @@ const Form2 = ({
     }
   };
 
+  const [deviceComServerData, setDeviceComServerData] = useState(null);
   const [isVisible, setVisible] = React.useState(false);
+  const [batteryMake, setBatteryMake] = React.useState(
+    reconfigData ? reconfigData.batmake && reconfigData.batmake : '',
+  );
+  console.log('batteryMake ==>', batteryMake);
+  const [batteryModel, setBatteryModel] = React.useState(
+    reconfigData ? reconfigData.batmodel : '',
+  );
   const [selectedValue, setSelectedValue] = React.useState(
     reconfigData
       ? reconfigData.battype !== ''
@@ -916,7 +913,13 @@ const Form2 = ({
   );
 
   const [deviceType, setDeviceType] = React.useState(1);
-  const [year, setYear] = React.useState(1);
+  const [year, setYear] = React.useState(
+    reconfigData
+      ? reconfigData.batparallelnos !== ''
+        ? Number(reconfigData.batage)
+        : 1
+      : 1,
+  );
   const [numberInParalell, setNumberInParalell] = React.useState(
     reconfigData
       ? reconfigData.batparallelnos !== ''
@@ -926,25 +929,17 @@ const Form2 = ({
   );
 
   const [batteryCapacity, setBatteryCapacity] = React.useState(
-    reconfigData
-      ? reconfigData.battotalcap === '' &&
-          reconfigData.battotalcap / numberInParalell
+    reconfigData && reconfigData.battotalcap !== ''
+      ? (Number(reconfigData.battotalcap) / Number(numberInParalell)).toString()
       : '',
   );
-  console.log('reconfigData.battotalcap', reconfigData);
+
   const [totalBatteryCapacity, setTotalBatteryCapacity] = React.useState(
     reconfigData
       ? reconfigData.battotalcap !== ''
         ? Number(reconfigData.battotalcap)
         : 0.0
       : 0.0,
-  );
-
-  const [batteryMake, setBatteryMake] = React.useState(
-    reconfigData ? reconfigData.batmake && reconfigData.batmake : '',
-  );
-  const [batteryModel, setBatteryModel] = React.useState(
-    reconfigData ? reconfigData.batmodel : '',
   );
 
   const [deviceDetailsFromQr, setDeviceDetailsFromQr] = React.useState(null);
@@ -961,6 +956,10 @@ const Form2 = ({
     getLocalDB('@deviceDetailsFromQr', deviceDetailsFromQr => {
       setDeviceDetailsFromQr(deviceDetailsFromQr);
       console.log(' deviceDetailsFromQr => ', deviceDetailsFromQr);
+    });
+
+    getLocalDB('@deviceComData', localData => {
+      setDeviceComServerData(localData);
     });
   }, []);
 
@@ -1124,7 +1123,7 @@ const Form2 = ({
       if (isValid)
         AsyncStorage.getItem('@res_devCommunication_stage_1').then(resDb => {
           const jsonValue = JSON.parse(resDb);
-          console.log('resDb from local ==> ', resDb);
+          // console.log('resDb from local ==> ', resDb);
           // storing data for Server
           deviceComServerData.batmake = batteryMake;
           deviceComServerData.batmodel = batteryModel;
@@ -1134,40 +1133,47 @@ const Form2 = ({
           deviceComServerData.batage = year;
           deviceComServerData.batparallelnos = numberInParalell;
           deviceComServerData.battotalcap = totalBatteryCapacity;
-          let datas =
-            deviceTypeApi == 'HV'
-              ? {
-                  sessionId: jsonValue.sessionId,
-                  batteryMaxVoltage: maxVolt,
-                  batteryMinVoltage: minVolt,
-                  batteryAh: Number(batteryCapacity) * numberInParalell,
-                }
-              : {
-                  sessionId: jsonValue.sessionId,
-                  batteryType: deviceType,
-                  batteryMaxVoltage: maxVolt,
-                  batteryAh: Number(batteryCapacity) * numberInParalell,
-                  batteryAge: year,
-                  forceTripExileVoltage: deviceType === 1 ? '12.0' : '24.0',
-                  noOfFts: '03',
-                };
 
-          console.log(
-            'BEFORE DEV Comm ===> DevCommSerrData',
-            deviceComServerData,
-          );
-          setLoader(true);
-          setTimeout(() => {
-            setLoader(false);
-            Battery_Config_Stage_3(
-              deviceTypeApi, //!== '' ? deviceTypeApi : 'LV',
-              datas,
-              res => {
-                console.log('Res success stage -- > 3', res);
-                setStep(3);
-              },
+          StoreLocalDB('@deviceComData', deviceComServerData, res => {
+            console.log(
+              'deviceComServerData FORM 2 ==== >',
+              deviceComServerData,
             );
-          }, 5000);
+            let datas =
+              deviceTypeApi == 'HV'
+                ? {
+                    sessionId: jsonValue.sessionId,
+                    batteryMaxVoltage: maxVolt,
+                    batteryMinVoltage: minVolt,
+                    batteryAh: Number(batteryCapacity) * numberInParalell,
+                  }
+                : {
+                    sessionId: jsonValue.sessionId,
+                    batteryType: deviceType,
+                    batteryMaxVoltage: maxVolt,
+                    batteryAh: Number(batteryCapacity) * numberInParalell,
+                    batteryAge: year,
+                    forceTripExileVoltage: deviceType === 1 ? '12.0' : '24.0',
+                    noOfFts: '03',
+                  };
+
+            console.log(
+              'BEFORE DEV Comm ===> DevCommSerrData',
+              deviceComServerData,
+            );
+            setLoader(true);
+            setTimeout(() => {
+              setLoader(false);
+              Battery_Config_Stage_3(
+                deviceTypeApi, //!== '' ? deviceTypeApi : 'LV',
+                datas,
+                res => {
+                  console.log('Res success stage -- > 3', res);
+                  setStep(3);
+                },
+              );
+            }, 5000);
+          });
         });
     });
   };
@@ -1186,9 +1192,9 @@ const Form2 = ({
         <View style={Styles.wrappper}>
           <CustomInput
             form
+            value={batteryMake}
             placeholder="Battery Make"
             onChange={value => setBatteryMake(value)}
-            value={batteryMake}
           />
         </View>
         <View style={Styles.wrappper}>

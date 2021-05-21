@@ -360,6 +360,26 @@ const Form2 = ({
             console.log('Res success stage -- > Battery Update', res);
             // batteryUpdateApi();
             setCompletedDeviceConnection(true);
+            getLocalDB('@customerLoginDetails', custLoginData => {
+              let payload = {
+                user_id: allData.cust_id,
+                devid: allData.dev_id,
+                singlecapa: batteryCapacity,
+                make: batteryMake,
+                model: batteryModel,
+                parallelnos: numberInParalell,
+                totalcap: totalBatteryCapacity,
+                battype: selectedValue.name,
+                batage: year,
+                maxvolt: maxVolt,
+                minvolt: minVolt,
+                token: custLoginData.token,
+              };
+              console.log('custLoginData', payload);
+              StoreLocalDB('@customerUpdateBatter', payload, res => {
+                navigation.goBack();
+              });
+            });
           });
           setCompletedDeviceConnection(false);
         }, 5000);
@@ -368,52 +388,36 @@ const Form2 = ({
   };
 
   const batteryUpdateApi = () => {
-    getLocalDB('@customerLoginDetails', custLoginData => {
-      let payload = {
-        user_id: allData.cust_id,
-        devid: allData.dev_id,
-        singlecapa: batteryCapacity,
-        make: batteryMake,
-        model: batteryModel,
-        parallelnos: numberInParalell,
-        totalcap: totalBatteryCapacity,
-        battype: selectedValue.name,
-        batage: year,
-        maxvolt: maxVolt,
-        minvolt: minVolt,
-        token: custLoginData.token,
-      };
-      console.log('custLoginData', payload);
-      NetInfo.fetch().then(state => {
-        if (state.isInternetReachable) {
-          setLoader(true);
-          MiddleWareForAuth('POST', UPDATE_BATTERY, payload, (res, err) => {
-            setLoader(false);
-            setLoader(false);
-            if (err === null) {
-              if (res !== null && res.data) {
-                if (res.data.status === 'Success') {
-                  console.log('customerUPDATE_BATTERY RES=>', res.data);
-                  navigation.goBack();
-                } else {
-                  if (res.data && res.data.message) {
-                    // showToaster('error', res.data.message);
-                  }
-                }
-              }
-            } else {
-              console.error(
-                'Device Connection Csutomer Details Save  Error',
-                err,
-              );
-              showToaster('error', 'Something went wrong');
-            }
-          });
-        } else {
-          Alert.alert('Warning', 'No Internet Connection');
-        }
-      });
-    });
+    // NetInfo.fetch().then(state => {
+    //   if (state.isInternetReachable) {
+    //     setLoader(true);
+    //     MiddleWareForAuth('POST', UPDATE_BATTERY, payload, (res, err) => {
+    //       setLoader(false);
+    //       setLoader(false);
+    //       if (err === null) {
+    //         if (res !== null && res.data) {
+    //           if (res.data.status === 'Success') {
+    //             console.log('customerUPDATE_BATTERY RES=>', res.data);
+    //             navigation.goBack();
+    //           } else {
+    //             if (res.data && res.data.message) {
+    //               // showToaster('error', res.data.message);
+    //             }
+    //           }
+    //         }
+    //       } else {
+    //         console.error(
+    //           'Device Connection Csutomer Details Save  Error',
+    //           err,
+    //         );
+    //         showToaster('error', 'Something went wrong');
+    //       }
+    //     });
+    //   } else {
+    //     Alert.alert('Warning', 'No Internet Connection');
+    //   }
+    // });
+    // });
   };
 
   const handleMaxVolt = data => {

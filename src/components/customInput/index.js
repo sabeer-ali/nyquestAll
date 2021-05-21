@@ -16,6 +16,7 @@ export default CustomInput = props => {
             placeholderTextColor={color.black}
             value={props.value && props.value}
             onChangeText={text => props.onChange && props.onChange(text)}
+            editable={props.editable}
           />
           <Text style={Styles.validation}>
             {props.validation && props.validation}
@@ -29,6 +30,7 @@ export default CustomInput = props => {
           value={props.value && props.value}
           onChangeText={text => props.onChange && props.onChange(text)}
           keyboardType={props.keyboardType && props.keyboardType}
+          editable={props.editable}
         />
       ) : (
         <View style={Styles.container}>
@@ -39,6 +41,7 @@ export default CustomInput = props => {
             value={props.value && props.value}
             onChangeText={text => props.onChange && props.onChange(text)}
             onFocus={() => props.onfocus && props.onfocus()}
+            editable={props.editable}
           />
         </View>
       )}

@@ -56,6 +56,7 @@ const DealerLogin = ({setOtpPage, toaster, setDealerCodes}) => {
                 res.data.code === '10'
               ) {
                 setDealerCodes(dealerCode);
+                Alert.alert('success', res.data.message);
                 setOtpPage(true);
               } else {
                 console.error('OTP Send Error', res.data.message);
@@ -123,6 +124,7 @@ const DealerOTP = ({navigation, toaster, dealerCodes}) => {
             res.data.code &&
             res.data.code === '10'
           ) {
+            Alert.alert('success', res.data.message);
           } else {
             console.error('OTP Send Error', res.data.message);
             toaster('error', res.data.message);

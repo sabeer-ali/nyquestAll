@@ -97,8 +97,8 @@ export default InstallationDetailsScreen = ({route, navigation}) => {
         dataName: 'Deployment Info',
         dataSet: [
           {name: 'Deployment Date', value: deploy_date},
-          {name: 'GPS Latitude', value: depl_gps_long},
-          {name: 'GPS Longitude', value: depl_gps_lat},
+          {name: 'GPS Latitude', value: depl_gps_lat},
+          {name: 'GPS Longitude', value: depl_gps_long},
           {name: 'Device Id', value: dev_id},
         ],
         icon: locationIcon,

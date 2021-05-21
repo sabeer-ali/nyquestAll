@@ -2,6 +2,7 @@ const logoWithText = require('./logoWithText/Group134.png');
 const customerIcon = require('./customerIcon/Vector.png');
 const dealerIcon = require('./dealerIcon/dealer.png');
 const checkboxIcon = require('./checkboxIcon/checked.png');
+const checkboxBlankIcon = require('./checkBoxBlankIcon/check_box_outline_blank.png');
 const logoIcon = require('./logoIcon/logo.png');
 const notificationIcon = require('./notificationIcon/notificationIcon.png');
 const searchIcon = require('./searchIcon/search.png');
@@ -77,6 +78,7 @@ const customer2Icon = require('./commonIcons/customer2Icon/Vector.png');
 const dashboardNoDeviceConfigImage = require('./dashboardNoDeviceConfigImage/Group204.png');
 
 export {
+  checkboxBlankIcon,
   dashboardNoDeviceConfigImage,
   customer2Icon,
   singleSettingsIcon,

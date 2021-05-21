@@ -94,11 +94,16 @@ const CalanderView = ({handleModal, handleDate}) => {
       date = selectedEndDate;
     }
 
-    if (!date || date !== null) {
-      handleDate(date);
-      handleModal(false);
-    } else {
+    console.log('date ===>', date);
+    if (date === '') {
       Alert.alert('Warning', 'please selesct a DATE');
+    } else {
+      if (date !== '' && date !== null) {
+        handleDate(date);
+        handleModal(false);
+      } else {
+        Alert.alert('Warning', 'please selesct a DATE');
+      }
     }
   };
   return (
