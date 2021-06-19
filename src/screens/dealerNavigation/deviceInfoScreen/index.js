@@ -284,12 +284,14 @@ export default function DeviceInfoScreen({
                 bgColor="#5BBDC0"
                 time={
                   deviceDetails !== null
-                    ? deviceDetails.last_log_date.split(' ')[1]
+                    ? deviceDetails.last_log_date !== null &&
+                      deviceDetails.last_log_date.split(' ')[1]
                     : 'N.A'
                 }
                 date={
                   deviceDetails !== null
-                    ? deviceDetails.last_log_date.split(' ')[0]
+                    ? deviceDetails.last_log_date !== null &&
+                      deviceDetails.last_log_date.split(' ')[0]
                     : 'N.A'
                 }
               />

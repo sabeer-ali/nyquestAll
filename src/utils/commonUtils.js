@@ -44,6 +44,9 @@ const getLocalDB = async (key, callback) => {
 const removeLocalDB = async (key, callback) => {
   try {
     await AsyncStorage.removeItem(key);
+    AsyncStorage.getAllKeys().then(re => {
+      console.error('Remove Async Data', re);
+    });
     if (callback) callback();
   } catch (err) {
     console.error('Remove Async Data', err);

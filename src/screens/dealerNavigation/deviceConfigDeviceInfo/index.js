@@ -439,6 +439,7 @@ const ConnectionStatus = ({
     StoreLocalDB('@deviceDetailsFromQr', deviceDetails, res => {
       ConnectDevice_Stage_1(deviceTypeApi, res => {
         if (res && res !== null) {
+          Alert.alert('Device Response', JSON.stringify(res));
           setConnectionConfirm(true);
           setResponse(true);
           StoreLocalDB('@res_devCommunication_stage_1', res);
@@ -460,6 +461,7 @@ const ConnectionStatus = ({
                   setConnectionConfirm(true);
                   setConnectionStatus(false);
                   setStepsDetsils(true);
+                  setModal(false);
                 },
               },
             ],
@@ -507,6 +509,64 @@ const Steps = ({
   setConnectionStatus,
   setModal,
 }) => {
+  const handleConfig = () => {
+    getLocalDB('@deviceComData', res => {
+      console.log('res @deviceComData in FORM 2', res);
+      if (res == null) {
+        saveDeviceComDatas();
+      }
+      setCustomerDetails(false);
+      setStepsDetsils(false);
+      setConnectionStatus(true);
+    });
+  };
+
+  const saveDeviceComDatas = callback => {
+    getLocalDB('@ReconfigData', localdata => {
+      console.log('@delaerLoginDetails ==> ', localdata);
+      let data = {
+        email: '',
+        custname: '',
+        mobno: '',
+        batage: '',
+        battype: '',
+        battotalcap: '',
+        batmake: '',
+        batmodel: '',
+        batparallelnos: '',
+        batmaxvolt: '',
+        batminvolt: '',
+        invcap: '',
+        invdesc: '',
+        userid: localdata.userid,
+        devid: localdata.devid,
+        paneldesc: '',
+        paneltotalcap: '',
+        panelsinglecapa: '',
+        panelparallelnos: '',
+        panelseriesnos: '',
+        paneltilt: '13',
+        panelorien: 'South',
+        equalization_interval: '10',
+        absorption_interval: '30',
+        absorption_duration: '5',
+        depl_gps_lat: '',
+        depl_gps_long: '',
+        custid: '-1',
+        replace: '0',
+        olddevid: '',
+        token: localdata.token,
+        nickname: '',
+      };
+
+      console.log('data in 000003', data);
+
+      StoreLocalDB('@deviceComData', data, res => {
+        if (callback) callback();
+      });
+    });
+  };
+
   return (
     <ScrollView>
       <CustomWrapper ph25 pv2>
@@ -545,11 +605,7 @@ const Steps = ({
             text="Configure"
             backgroundStyle={CommonStyles.buttonBgStyle}
             textStyle={CommonStyles.buttonTextStyle}
-            onpress={() => {
-              setCustomerDetails(false);
-              setStepsDetsils(false);
-              setConnectionStatus(true);
-            }}
+            onpress={() => handleConfig()}
           />
         </View>
       </CustomWrapper>

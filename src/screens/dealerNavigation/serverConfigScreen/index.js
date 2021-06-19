@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {View, Text, Image, ScrollView} from 'react-native';
+import {View, Text, Image, ScrollView, Alert} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Button, Menu, Divider, Provider} from 'react-native-paper';
 
@@ -228,7 +228,10 @@ const Form5 = ({navigation, setStep, deviceCommData, reconfigData}) => {
 
       console.log('deviceComServerData in FORM 5 ==>', deviceComServerData);
       StoreLocalDB('@deviceComData', deviceComServerData, res => {
-        if (deviceCommData.deviceType === 4) {
+        if (
+          deviceCommData.deviceType === 4 ||
+          deviceCommData.deviceType === 3
+        ) {
           setLoader(false);
           navigation.navigate('dealerDeviceConfigMenu');
         } else {
@@ -384,25 +387,25 @@ const Form4 = ({setStep, deviceCommData, reconfigData}) => {
 
   React.useEffect(() => {
     setTotalSolarModuleWattage(
-      Number(solarModuleWattage * modulesInSeries * modulesInParelell).toFixed(
-        2,
-      ),
+      Number(
+        Number(solarModuleWattage * modulesInSeries * modulesInParelell) / 1000,
+      ).toFixed(2),
     );
   }, [modulesInSeries]);
 
   React.useEffect(() => {
     setTotalSolarModuleWattage(
-      Number(solarModuleWattage * modulesInSeries * modulesInParelell).toFixed(
-        2,
-      ),
+      Number(
+        Number(solarModuleWattage * modulesInSeries * modulesInParelell) / 1000,
+      ).toFixed(2),
     );
   }, [modulesInParelell]);
 
   React.useEffect(() => {
     setTotalSolarModuleWattage(
-      Number(solarModuleWattage * modulesInSeries * modulesInParelell).toFixed(
-        2,
-      ),
+      Number(
+        Number(solarModuleWattage * modulesInSeries * modulesInParelell) / 1000,
+      ).toFixed(2),
     );
   }, [solarModuleWattage]);
 
@@ -443,7 +446,10 @@ const Form4 = ({setStep, deviceCommData, reconfigData}) => {
       console.log('deviceComServerData FORM 4 ==>', deviceComServerData);
 
       StoreLocalDB('@deviceComData', deviceComServerData, res => {
-        if (deviceCommData.deviceType === 4) {
+        if (
+          deviceCommData.deviceType === 4 ||
+          deviceCommData.deviceType === 3
+        ) {
           setLoader(false);
           setStep(5);
         } else {
@@ -453,8 +459,16 @@ const Form4 = ({setStep, deviceCommData, reconfigData}) => {
               {
                 sessionId: deviceCommData.sessionId,
                 solarCapacity: totalSolarModuleWattage,
-                mainChargeIN: deviceCommData.deviceType == 1 ? '11.2' : '22.4',
-                mainChargeOUT: deviceCommData.deviceType == 1 ? '12' : '24',
+                mainChargeIN:
+                  deviceCommData.deviceType == 1 ||
+                  deviceCommData.deviceType == 5
+                    ? '11.2'
+                    : '22.4',
+                mainChargeOUT:
+                  deviceCommData.deviceType == 1 ||
+                  deviceCommData.deviceType == 5
+                    ? '12'
+                    : '24',
               },
               res => {
                 console.log('REs stage 5 IN SOLAR', res);
@@ -490,7 +504,7 @@ const Form4 = ({setStep, deviceCommData, reconfigData}) => {
         <View style={Styles.wrappper}>
           <CustomInput
             form
-            placeholder="Solar Module Wattage (kW)"
+            placeholder="Solar Module Wattage (W)"
             value={solarModuleWattage.toString()}
             onChange={value => setSolarModuleWattage(value)}
             keyboardType={'number-pad'}
@@ -537,19 +551,29 @@ const Form4 = ({setStep, deviceCommData, reconfigData}) => {
 };
 
 const Form3 = ({setStep, deviceCommData, reconfigData}) => {
-  console.log('props in form 3', reconfigData);
+  console.log('props in form 3', deviceCommData);
 
   const [deviceComServerData, setDeviceComServerData] = useState(null);
-  const [upsVA, setUpsVA] = useState(reconfigData ? reconfigData.invcap : '');
+  const [upsVA, setUpsVA] = useState(
+    deviceCommData.deviceType === 5 || deviceCommData.deviceType === 6
+      ? '800'
+      : reconfigData
+      ? reconfigData.invcap
+      : '',
+  );
   const [upsMake, setUpsMake] = useState(
-    reconfigData
+    deviceCommData.deviceType === 5 || deviceCommData.deviceType === 6
+      ? 'iCUBE 1000'
+      : reconfigData
       ? reconfigData.invdesc !== ''
         ? reconfigData.invdesc.split(',')[0]
         : ''
       : '',
   );
   const [upsModel, setUpsModel] = useState(
-    reconfigData
+    deviceCommData.deviceType === 5 || deviceCommData.deviceType === 6
+      ? 'iCUBE 1000'
+      : reconfigData
       ? reconfigData.invdesc !== ''
         ? reconfigData.invdesc.split(',')[1]
         : ''
@@ -581,6 +605,7 @@ const Form3 = ({setStep, deviceCommData, reconfigData}) => {
     }
 
     console.log('deviceCommData.deviceType ---->>', deviceCommData.deviceType);
+
     if (deviceCommData.deviceType !== 4) {
       if (upsMake === '') {
         validate.status = false;
@@ -612,11 +637,27 @@ const Form3 = ({setStep, deviceCommData, reconfigData}) => {
         validate.status = false;
         validate.msg = 'UPS Model -> Field Cannot Be Empty';
       }
+
       if (deviceCommData.deviceType === 4) {
         if (upsVA < 3000 || upsVA > 25000) {
           validate.status = false;
           validate.msg = 'Please Check the Range in HV ';
         }
+      }
+      console.log('Inside 120 V', upsVA);
+
+      if (deviceCommData.deviceType == 3) {
+        if (upsVA < 2000 || upsVA > 3000) {
+          validate.status = false;
+          validate.msg = 'Please Check the Range in HV - 120 V';
+        }
+      }
+    }
+
+    if (deviceCommData.deviceType == 3) {
+      if (upsVA < 2000 || upsVA > 3000) {
+        validate.status = false;
+        validate.msg = 'Please Check the Range in HV - 120 V';
       }
     }
 
@@ -642,61 +683,164 @@ const Form3 = ({setStep, deviceCommData, reconfigData}) => {
             if (isValid) {
               let dcOverload = DcOverload();
               let acOverload = AcOverload();
-              console.log('AC = DC => ', dcOverload, acOverload);
+              console.log('invdesc,invcap ', upsMake + ',' + upsModel, upsVA);
 
               deviceComServerData.invdesc = upsMake + ',' + upsModel;
               deviceComServerData.invcap = upsVA;
 
-              StoreLocalDB('@deviceComData', deviceComServerData, res => {
-                setTimeout(() => {
-                  UPS_Config_Stage_4(
-                    'LV',
-                    {
-                      sessionId: deviceCommData.sessionId,
-                      dcOverload,
-                      acOverload,
-                    },
-                    res => {
-                      console.log('res in dtg 4 UPS Config ', res);
-                      setStep(4);
-                    },
-                  );
-                  setLoader(false);
-                }, 5000);
-              });
+              if (upsMake !== '' && upsModel !== '' && upsVA !== '') {
+                StoreLocalDB('@deviceComData', deviceComServerData, res => {
+                  getLocalDB('@deviceComData', reslocal => {
+                    console.log("'@deviceComData' in FORM  3 ", reslocal);
+
+                    getLocalDB('@replaceDvice', reslocal1 => {
+                      console.log("'@replaceDvice' in FORM  3 ", reslocal1);
+
+                      if (reslocal1 !== null) {
+                        reslocal1.invdesc = upsMake + ',' + upsModel;
+                        reslocal1.invcap = upsVA;
+                        StoreLocalDB('@replaceDvice', reslocal1);
+                      }
+
+                      setTimeout(() => {
+                        UPS_Config_Stage_4(
+                          'LV',
+                          {
+                            sessionId: deviceCommData.sessionId,
+                            dcOverload,
+                            acOverload,
+                          },
+                          res => {
+                            console.log('res in dtg 4 UPS Config ', res);
+                            setStep(4);
+                          },
+                        );
+                        setLoader(false);
+                      }, 5000);
+                    });
+                  });
+                });
+              } else {
+                Alert.alert('Warning', 'Values Cannot Be empty');
+              }
             }
           } else {
             setValidate(false);
           }
-        } else if (deviceCommData.deviceType == 4) {
+        } else if (
+          deviceCommData.deviceType == 4 ||
+          deviceCommData.deviceType == 3
+        ) {
           deviceComServerData.invdesc = upsMake + ',' + upsModel;
           deviceComServerData.invcap = upsVA;
           StoreLocalDB('@deviceComData', deviceComServerData, res => {
             setStep(4);
             setLoader(false);
           });
-        } else {
-          if (upsVA >= 1200 && upsVA <= 2000) {
-            setValidate(true);
-            setTimeout(() => {
-              UPS_Config_Stage_4(
-                'LV',
-                {
-                  sessionId: deviceCommData.sessionId,
-                  dcOverload,
-                  acOverload,
-                },
-                res => {
-                  console.log('res in dtg 4 UPS Config ', res);
-                  setStep(4);
-                },
-              );
-              setLoader(false);
-            }, 5000);
+        } else if (
+          deviceCommData.deviceType === 5 ||
+          deviceCommData.deviceType === 6
+        ) {
+          let dcOverload = DcOverload();
+          let acOverload = AcOverload();
+          console.log('invdesc,invcap ', upsMake + ',' + upsModel, upsVA);
+
+          deviceComServerData.invdesc = upsMake + ',' + upsModel;
+          deviceComServerData.invcap = upsVA;
+
+          if (upsMake !== '' && upsModel !== '' && upsVA !== '') {
+            StoreLocalDB('@deviceComData', deviceComServerData, res => {
+              getLocalDB('@deviceComData', reslocal => {
+                console.log("'@deviceComData' in FORM  3 ", reslocal);
+
+                getLocalDB('@replaceDvice', reslocal1 => {
+                  console.log("'@replaceDvice' in FORM  3 ", reslocal1);
+
+                  if (reslocal1 !== null) {
+                    reslocal1.invdesc = upsMake + ',' + upsModel;
+                    reslocal1.invcap = upsVA;
+                    StoreLocalDB('@replaceDvice', reslocal1);
+                  }
+
+                  setTimeout(() => {
+                    UPS_Config_Stage_4(
+                      'LV',
+                      {
+                        sessionId: deviceCommData.sessionId,
+                        dcOverload,
+                        acOverload,
+                      },
+                      res => {
+                        console.log('res in dtg 4 UPS Config ', res);
+                        setStep(4);
+                      },
+                    );
+                    setLoader(false);
+                  }, 5000);
+                });
+              });
+            });
+          } else if (upsVA >= 1200 && upsVA <= 2000) {
+            // setValidate(true);
+
+            deviceComServerData.invdesc = upsMake + ',' + upsModel;
+            deviceComServerData.invcap = upsVA;
+
+            StoreLocalDB('@deviceComData', deviceComServerData, res => {
+              setTimeout(() => {
+                UPS_Config_Stage_4(
+                  'LV',
+                  {
+                    sessionId: deviceCommData.sessionId,
+                    dcOverload,
+                    acOverload,
+                  },
+                  res => {
+                    console.log('res in dtg 4 UPS Config ', res);
+                    setStep(4);
+                    setLoader(false);
+                  },
+                );
+                setLoader(false);
+              }, 5000);
+            });
           } else {
             console.log('setValidate False');
           }
           // setLoader(false);
+        } else if (deviceCommData.deviceType === 2) {
+          let dcOverload = DcOverload();
+          let acOverload = AcOverload();
+          console.log('invdesc,invcap ', upsMake + ',' + upsModel, upsVA);
+
+          deviceComServerData.invdesc = upsMake + ',' + upsModel;
+          deviceComServerData.invcap = upsVA;
+          if (upsVA >= 1200 && upsVA <= 2000) {
+            // setValidate(true);
+
+            deviceComServerData.invdesc = upsMake + ',' + upsModel;
+            deviceComServerData.invcap = upsVA;
+
+            StoreLocalDB('@deviceComData', deviceComServerData, res => {
+              setTimeout(() => {
+                UPS_Config_Stage_4(
+                  'LV',
+                  {
+                    sessionId: deviceCommData.sessionId,
+                    dcOverload,
+                    acOverload,
+                  },
+                  res => {
+                    console.log('res in dtg 4 UPS Config ', res);
+                    setStep(4);
+                    setLoader(false);
+                  },
+                );
+                setLoader(false);
+              }, 5000);
+            });
+          } else {
+          }
         }
         // setLoader(false);
       } else {
@@ -725,6 +869,11 @@ const Form3 = ({setStep, deviceCommData, reconfigData}) => {
             placeholder="UPS Make"
             value={upsMake}
             onChange={value => setUpsMake(value)}
+            editable={
+              deviceCommData.deviceType === 5 || deviceCommData.deviceType === 6
+                ? false
+                : true
+            }
           />
         </View>
         <View style={Styles.wrappper}>
@@ -733,6 +882,11 @@ const Form3 = ({setStep, deviceCommData, reconfigData}) => {
             placeholder="UPS Model"
             value={upsModel}
             onChange={value => setUpsModel(value)}
+            editable={
+              deviceCommData.deviceType === 5 || deviceCommData.deviceType === 6
+                ? false
+                : true
+            }
           />
         </View>
         <View style={Styles.wrappper}>
@@ -742,6 +896,11 @@ const Form3 = ({setStep, deviceCommData, reconfigData}) => {
             value={upsVA.toString()}
             onChange={value => setUpsVA(value)}
             keyboardType={'number-pad'}
+            editable={
+              deviceCommData.deviceType === 5 || deviceCommData.deviceType === 6
+                ? false
+                : true
+            }
           />
         </View>
         <Text
@@ -750,7 +909,7 @@ const Form3 = ({setStep, deviceCommData, reconfigData}) => {
             !isValid && {color: 'red', fontWeight: 'bold'},
           ]}>
           Value range for iCON 12V - 600 to 1100 & for iCON 24V - 1200 to 2000.
-          For HV 3000 - 25000.
+          For HV 3000 - 25000.For ICON 120V HV 2000 - 3000
         </Text>
       </View>
       <View style={{flex: 0.4}}>
@@ -772,6 +931,7 @@ const Form3 = ({setStep, deviceCommData, reconfigData}) => {
 };
 
 const Form2 = ({setStep, deviceTypeApi, deviceCommData, reconfigData}) => {
+  console.log('deviceTypeApi,deviceCommData', deviceTypeApi, deviceCommData);
   const deviceList = {
     iconLv12: [
       {
@@ -812,6 +972,32 @@ const Form2 = ({setStep, deviceTypeApi, deviceCommData, reconfigData}) => {
     ],
   };
 
+  const listHV120 = [
+    {
+      name: '48V',
+      minVoltage: 48,
+      maxVoltage: 54.96,
+      ranges: {maxVolt: {max: 55, min: 54}, minVolt: {max: 50, min: 48}},
+    },
+    {
+      name: '72V',
+      minVoltage: 72,
+      maxVoltage: 82.44,
+      ranges: {maxVolt: {max: 82.5, min: 81}, minVolt: {max: 75, min: 72}},
+    },
+    {
+      name: '96V',
+      minVoltage: 96,
+      maxVoltage: 109.92,
+      ranges: {maxVolt: {max: 110, min: 108}, minVolt: {max: 100, min: 96}},
+    },
+    {
+      name: '120V',
+      minVoltage: 120,
+      maxVoltage: 137.4,
+      ranges: {maxVolt: {max: 137.5, min: 135}, minVolt: {max: 125, min: 120}},
+    },
+  ];
   const listHV = [
     {
       name: '48V',
@@ -867,21 +1053,25 @@ const Form2 = ({setStep, deviceTypeApi, deviceCommData, reconfigData}) => {
   const reconfigBatteryType = () => {
     const {deviceType} = deviceCommData;
 
-    if (deviceType === 1) {
+    if (deviceType === 1 || deviceType === 5) {
       let index = deviceList.iconLv12.findIndex(
         i => i.name === reconfigData.battype,
       );
       return deviceList.iconLv12[index];
-    } else if (deviceType === 2) {
+    } else if (deviceType === 2 || deviceType === 6) {
       let index = deviceList.iconLv24.findIndex(
         i => i.name === reconfigData.battype,
       );
       return deviceList.iconLv24[index];
     } else if (deviceType === 4) {
-      let index = deviceList.listHV.findIndex(
-        i => i.name === reconfigData.battype,
-      );
-      return listHV[index];
+      if (reconfigData !== null) {
+        // let index = deviceList.listHV.findIndex(
+        //   i => i.name == reconfigData.battype,
+        // );
+        // return listHV[index];
+      } else {
+        console.log('deviceList.listHV ==>', deviceList.listHV);
+      }
     }
   };
 
@@ -890,7 +1080,6 @@ const Form2 = ({setStep, deviceTypeApi, deviceCommData, reconfigData}) => {
   const [batteryMake, setBatteryMake] = React.useState(
     reconfigData ? reconfigData.batmake && reconfigData.batmake : '',
   );
-  console.log('batteryMake ==>', batteryMake);
   const [batteryModel, setBatteryModel] = React.useState(
     reconfigData ? reconfigData.batmodel : '',
   );
@@ -959,6 +1148,7 @@ const Form2 = ({setStep, deviceTypeApi, deviceCommData, reconfigData}) => {
     });
 
     getLocalDB('@deviceComData', localData => {
+      // console.log('002 localData', localData);
       setDeviceComServerData(localData);
     });
   }, []);
@@ -1058,12 +1248,17 @@ const Form2 = ({setStep, deviceTypeApi, deviceCommData, reconfigData}) => {
       validate.msg = 'Battery Capacity Cannot be Empty';
     }
 
-    console.log('deviceDetailsFromQr ====>', deviceDetailsFromQr.dev_category);
-    if (deviceDetailsFromQr.dev_category === 'L') {
+    // console.log('deviceDetailsFromQr ====>', deviceDetailsFromQr.dev_category);
+
+    if (
+      deviceDetailsFromQr.dev_category === 'L' ||
+      deviceDetailsFromQr.dev_category === 'LV'
+    ) {
       if (selectedValue === '') {
         validate.status = false;
         validate.msg = 'Must choose Battery Type in LV';
       }
+
       if (selectedValue !== '') {
         if (
           maxVolt > selectedValue.ranges.maxVolt.max ||
@@ -1080,34 +1275,66 @@ const Form2 = ({setStep, deviceTypeApi, deviceCommData, reconfigData}) => {
           validate.status = false;
           validate.msg = `In MIN VOLT -> Min Voltage is ${selectedValue.ranges.minVolt.min} and Max Voltage ${selectedValue.ranges.minVolt.max}`;
         }
+
+        if (
+          (deviceTypeApi === 'LV' &&
+            deviceCommData.deviceType == 5 &&
+            batteryCapacity <= 20) ||
+          batteryCapacity >= 300
+        ) {
+          validate.status = false;
+          validate.msg = 'Range must be (20 - 300 ) ICUBE 1000 (12V)';
+        } else if (
+          (deviceTypeApi === 'LV' &&
+            deviceCommData.deviceType == 6 &&
+            batteryCapacity <= 20) ||
+          batteryCapacity >= 300
+        ) {
+          validate.status = false;
+          validate.msg = 'Range must be (20 - 300 ) ICUBE 2000 (24V)';
+        }
       } else {
         validate.status = false;
         validate.msg = 'Must choose Battery Type';
       }
     } else if (deviceDetailsFromQr.dev_category === 'H') {
-      if (selectedValue1 === '') {
-        validate.status = false;
-        validate.msg = 'Must choose Battery Type in HV';
+      if (reconfigData == null) {
+        if (selectedValue1 === '') {
+          validate.status = false;
+          validate.msg = 'Must choose Battery Type in HV';
+        }
       }
 
-      if (selectedValue1 !== '') {
-        if (
-          maxVolt > selectedValue1.ranges.maxVolt.max ||
-          maxVolt < selectedValue1.ranges.maxVolt.min
-        ) {
-          validate.status = false;
-          validate.msg = `In MAX VOLT -> Min Voltage is ${selectedValue1.ranges.maxVolt.min} and Max Voltage ${selectedValue1.ranges.maxVolt.max}`;
-        }
-        if (
-          minVolt > selectedValue1.ranges.minVolt.max ||
-          minVolt < selectedValue1.ranges.minVolt.min
-        ) {
-          validate.status = false;
-          validate.msg = `In MIN VOLT -> Min Voltage is ${selectedValue1.ranges.minVolt.min} and Max Voltage ${selectedValue1.ranges.minVolt.max}`;
-        }
-      } else {
+      if (
+        (deviceTypeApi === 'HV' &&
+          deviceCommData.deviceType == 3 &&
+          batteryCapacity <= 20) ||
+        batteryCapacity >= 300
+      ) {
         validate.status = false;
-        validate.msg = 'Must choose Battery Type in HV';
+        validate.msg = 'Range must be (20 - 300 ) HV';
+      }
+
+      if (reconfigData == null) {
+        if (selectedValue1 !== '') {
+          if (
+            maxVolt > selectedValue1.ranges.maxVolt.max ||
+            maxVolt < selectedValue1.ranges.maxVolt.min
+          ) {
+            validate.status = false;
+            validate.msg = `In MAX VOLT -> Min Voltage is ${selectedValue1.ranges.maxVolt.min} and Max Voltage ${selectedValue1.ranges.maxVolt.max}`;
+          }
+          if (
+            minVolt > selectedValue1.ranges.minVolt.max ||
+            minVolt < selectedValue1.ranges.minVolt.min
+          ) {
+            validate.status = false;
+            validate.msg = `In MIN VOLT -> Min Voltage is ${selectedValue1.ranges.minVolt.min} and Max Voltage ${selectedValue1.ranges.minVolt.max}`;
+          }
+        } else {
+          validate.status = false;
+          validate.msg = 'Must choose Battery Type in HV';
+        }
       }
     }
 
@@ -1123,16 +1350,23 @@ const Form2 = ({setStep, deviceTypeApi, deviceCommData, reconfigData}) => {
       if (isValid)
         AsyncStorage.getItem('@res_devCommunication_stage_1').then(resDb => {
           const jsonValue = JSON.parse(resDb);
-          // console.log('resDb from local ==> ', resDb);
+          console.log('resDb from local ==> ', deviceComServerData);
           // storing data for Server
           deviceComServerData.batmake = batteryMake;
           deviceComServerData.batmodel = batteryModel;
-          deviceComServerData.battype = selectedValue.name;
+          deviceComServerData.battype =
+            deviceTypeApi == 'HV' ? '' : selectedValue.name;
           deviceComServerData.batmaxvolt = maxVolt;
           deviceComServerData.batminvolt = minVolt;
           deviceComServerData.batage = year;
           deviceComServerData.batparallelnos = numberInParalell;
           deviceComServerData.battotalcap = totalBatteryCapacity;
+
+          console.log(
+            'deviceComServerData REZZZZZZ ==> 22222 ',
+            deviceTypeApi == 'HV',
+            selectedValue1,
+          );
 
           StoreLocalDB('@deviceComData', deviceComServerData, res => {
             console.log(
@@ -1153,7 +1387,8 @@ const Form2 = ({setStep, deviceTypeApi, deviceCommData, reconfigData}) => {
                     batteryMaxVoltage: maxVolt,
                     batteryAh: Number(batteryCapacity) * numberInParalell,
                     batteryAge: year,
-                    forceTripExileVoltage: deviceType === 1 ? '12.0' : '24.0',
+                    forceTripExileVoltage:
+                      deviceType === 1 || deviceType === 5 ? '12.0' : '24.0',
                     noOfFts: '03',
                   };
 
@@ -1220,7 +1455,11 @@ const Form2 = ({setStep, deviceTypeApi, deviceCommData, reconfigData}) => {
               isVisible={isVisible}
               toggleVisible={toggleVisible}
               onToggleSelect={onToggleSelect}
-              list={deviceType == 1 ? deviceList.iconLv12 : deviceList.iconLv24}
+              list={
+                deviceType == 1 || deviceType == 5
+                  ? deviceList.iconLv12
+                  : deviceList.iconLv24
+              }
             />
           </View>
         )}
@@ -1241,7 +1480,13 @@ const Form2 = ({setStep, deviceTypeApi, deviceCommData, reconfigData}) => {
             isVisible={isVisible1}
             toggleVisible={toggleVisible1}
             onToggleSelect={onToggleSelect1}
-            list={deviceTypeApi === 'HV' && listHV}
+            list={
+              deviceTypeApi === 'HV' && deviceCommData.deviceType != '3'
+                ? listHV
+                : deviceTypeApi === 'HV' &&
+                  deviceCommData.deviceType == '3' &&
+                  listHV120
+            }
           />
         </View>
 

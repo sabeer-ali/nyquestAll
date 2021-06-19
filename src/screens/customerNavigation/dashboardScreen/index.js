@@ -113,8 +113,16 @@ const BottomSection = ({navigation, setData}) => {
       'hardwareBackPress',
       backAction,
     );
-    return () => backHandler.remove();
+
+    return () => {
+      backHandler.remove();
+      console.log('Un mounted');
+    };
   }, []);
+
+  React.useEffect(() => {
+    getDeviceListApi();
+  }, [navigation.isFocused()]);
 
   const handlePagination = async () => {
     await setPageNum(pageNum + 1);

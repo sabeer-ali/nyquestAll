@@ -64,7 +64,9 @@ const BottomSection = ({navigation}) => {
     setTimeout(() => {
       DeviceCommunication_wifisetup(
         deviceCommunicationData.deviceType === 1 ||
-          deviceCommunicationData.deviceType === 2
+          deviceCommunicationData.deviceType === 2 ||
+          deviceCommunicationData.deviceType === 5 ||
+          deviceCommunicationData.deviceType === 6
           ? 'LV'
           : 'HV',
         {

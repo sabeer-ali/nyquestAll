@@ -498,7 +498,7 @@ export const UPS_Config_Stage_4 = async (type, data, callback) => {
 };
 
 export const Battery_Config_Stage_3 = async (type, data, callback) => {
-  console.log('Connection....Battery_Config_Stage_3');
+  console.log('Connection....Battery_Config_Stage_3 dev type is ==>', type);
   const device = type === 'LV' ? SYNC_WORD_LV : SYNC_WORD_HV;
   const syncWord = device;
   const DATA_CONSTANT1 = CONSTANT2;

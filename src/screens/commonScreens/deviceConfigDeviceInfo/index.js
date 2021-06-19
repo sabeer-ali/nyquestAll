@@ -212,6 +212,12 @@ const CustomerForm = ({
     };
 
     StoreLocalDB('@deviceComData', data, res => {
+      getLocalDB('@deviceComData', resServerData => {
+        console.log(
+          'resServerData ==> ********************************',
+          resServerData,
+        );
+      });
       if (callback) callback();
     });
   };

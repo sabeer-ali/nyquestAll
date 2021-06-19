@@ -91,7 +91,10 @@ const CalanderView = ({handleModal, handleDate}) => {
     } else if (selectedStartDate !== null && selectedEndDate === null) {
       date = selectedEndDate;
     } else if (selectedStartDate !== null && selectedEndDate !== null) {
-      date = selectedEndDate;
+      let date1 = moment(selectedStartDate).format('DD-MM-YYYY hh:mm:ss'); //+ ',' + selectedEndDate
+      let date2 = moment(selectedEndDate).format('DD-MM-YYYY hh:mm:ss'); //+ ',' + selectedEndDate
+      date = date1 + ',' + date2;
+      console.log('Final Date ==>', date);
     }
 
     console.log('date ===>', date);

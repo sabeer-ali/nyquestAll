@@ -136,29 +136,71 @@ const Form2 = ({
     },
   ];
 
+  const [localData, setLocalData] = React.useState(null);
+
+  React.useEffect(() => {
+    setLocalData(allData);
+  }, []);
+
+  React.useEffect(() => {
+    console.log('allData ===> 111', allData);
+    if (localData) {
+      console.log('localData.bat_desc ===>', localData.bat_desc.split(',')[0]);
+      setBatteryMake(localData.bat_desc.split(',')[0]);
+    }
+
+    return () => {
+      console.log('Un Mounted');
+    };
+  }, [allData]);
+
   const [isVisible, setVisible] = React.useState(false);
   const [selectedValue, setSelectedValue] = React.useState('');
 
   const [isVisible1, setVisible1] = React.useState(false);
   const [selectedValue1, setSelectedValue1] = React.useState('');
 
-  const [maxVolt, setMaxVolt] = React.useState(0.0);
-  const [minVolt, setMinVolt] = React.useState(0.0);
+  const [maxVolt, setMaxVolt] = React.useState(
+    localData !== null ? localData.max_volt : 0.0,
+  );
+  const [minVolt, setMinVolt] = React.useState(
+    localData !== null ? localData.min_volt : 0.0,
+  );
 
   const [deviceType, setDeviceType] = React.useState(1);
   const [year, setYear] = React.useState(1);
-  const [numberInParalell, setNumberInParalell] = React.useState(1);
+  const [numberInParalell, setNumberInParalell] = React.useState(
+    localData !== null ? localData.parallel_nos : 1,
+  );
 
-  const [batteryCapacity, setBatteryCapacity] = React.useState('');
-  const [totalBatteryCapacity, setTotalBatteryCapacity] = React.useState(0.0);
+  const [totalBatteryCapacity, setTotalBatteryCapacity] = React.useState(
+    localData !== null ? localData.total_capa : 0.0,
+  );
+
+  const [batteryCapacity, setBatteryCapacity] = React.useState(
+    // deviceTypeApi === 'HV'
+    //   ? (Number(totalBatteryCapacity) / Number(numberInParalell)).toString()
+    //   :
+    '',
+  );
 
   const [batteryMake, setBatteryMake] = React.useState('');
-  const [batteryModel, setBatteryModel] = React.useState('');
+
+  const [batteryModel, setBatteryModel] = React.useState(
+    // localData &&
+    //   localData !== null &&
+    //   localData.bat_desc !== '' &&
+    //   localData.bat_desc.split(',').length > 1
+    //   ? localData.bat_desc.split(',')[1]
+    //   :
+    '',
+  );
 
   const [deviceDetailsFromQr, setDeviceDetailsFromQr] = React.useState(null);
 
   const [isLoading, setLoader] = React.useState(false);
   const [sessionId, setSessionId] = React.useState('');
+
   const [
     completedDeviceConnection,
     setCompletedDeviceConnection,
@@ -335,8 +377,9 @@ const Form2 = ({
   const handleContinue = () => {
     handleValidation(isValid => {
       if (isValid) {
+        console.log('deviceType ==>', deviceTypeApi, deviceType);
         let datas =
-          deviceTypeApi == 'HV'
+          deviceTypeApi == 'HV' || deviceType === 3 || deviceType === 4
             ? {
                 sessionId: sessionId,
                 batteryMaxVoltage: maxVolt,
@@ -349,38 +392,50 @@ const Form2 = ({
                 batteryMaxVoltage: maxVolt,
                 batteryAh: Number(batteryCapacity) * numberInParalell,
                 batteryAge: year,
-                forceTripExileVoltage: deviceType === 1 ? '12.0' : '24.0',
+                forceTripExileVoltage:
+                  deviceType === 1 || deviceType === 5 ? '12.0' : '24.0',
                 noOfFts: '03',
               };
 
         setLoader(true);
         setTimeout(() => {
           setLoader(false);
-          Battery_Config_Stage_3(deviceTypeApi, datas, res => {
-            console.log('Res success stage -- > Battery Update', res);
-            // batteryUpdateApi();
-            setCompletedDeviceConnection(true);
-            getLocalDB('@customerLoginDetails', custLoginData => {
-              let payload = {
-                user_id: allData.cust_id,
-                devid: allData.dev_id,
-                singlecapa: batteryCapacity,
-                make: batteryMake,
-                model: batteryModel,
-                parallelnos: numberInParalell,
-                totalcap: totalBatteryCapacity,
-                battype: selectedValue.name,
-                batage: year,
-                maxvolt: maxVolt,
-                minvolt: minVolt,
-                token: custLoginData.token,
-              };
-              console.log('custLoginData', payload);
-              StoreLocalDB('@customerUpdateBatter', payload, res => {
-                navigation.goBack();
+          Battery_Config_Stage_3(
+            deviceTypeApi === ''
+              ? deviceType === 6 ||
+                deviceType === 5 ||
+                deviceType === 1 ||
+                deviceType === 2
+                ? 'LV'
+                : 'HV'
+              : deviceTypeApi,
+            datas,
+            res => {
+              console.log('Res success stage -- > Battery Update', res);
+              // batteryUpdateApi();
+              setCompletedDeviceConnection(true);
+              getLocalDB('@customerLoginDetails', custLoginData => {
+                let payload = {
+                  user_id: allData.cust_id,
+                  devid: allData.dev_id,
+                  singlecapa: batteryCapacity,
+                  make: batteryMake,
+                  model: batteryModel,
+                  parallelnos: numberInParalell,
+                  totalcap: totalBatteryCapacity,
+                  battype: selectedValue.name,
+                  batage: year,
+                  maxvolt: maxVolt,
+                  minvolt: minVolt,
+                  token: custLoginData.token,
+                };
+                console.log('custLoginData', payload);
+                StoreLocalDB('@customerUpdateBatter', payload, res => {
+                  navigation.goBack();
+                });
               });
-            });
-          });
+            },
+          );
           setCompletedDeviceConnection(false);
         }, 5000);
       }
@@ -462,14 +517,25 @@ const Form2 = ({
               isVisible={isVisible}
               toggleVisible={toggleVisible}
               onToggleSelect={onToggleSelect}
-              list={deviceType == 1 ? deviceList.iconLv12 : deviceList.iconLv24}
+              list={
+                deviceType == 1 || deviceType == 5
+                  ? deviceList.iconLv12
+                  : deviceList.iconLv24
+              }
             />
           </View>
         )}
 
         <View style={Styles.wrappper}>
           <CustomDropdown
-            isDisable={deviceType === 1 || deviceType === 2 ? true : false}
+            isDisable={
+              deviceType === 1 ||
+              deviceType === 2 ||
+              deviceType === 5 ||
+              deviceType === 6
+                ? true
+                : false
+            }
             placeholder="Battery Volt"
             value={
               deviceDetailsFromQr !== null
@@ -492,7 +558,7 @@ const Form2 = ({
           <CustomInput
             form
             placeholder="Max Volt"
-            value={maxVolt !== '' ? maxVolt.toString() : maxVolt}
+            value={maxVolt !== '' ? maxVolt.toString() : ''}
             onChange={value => handleMaxVolt(value)}
             keyboardType={'number-pad'}
           />
@@ -502,7 +568,7 @@ const Form2 = ({
           <CustomInput
             form
             placeholder="Min Volt"
-            value={minVolt !== '' ? minVolt.toString() : minVolt}
+            value={minVolt !== '' ? minVolt.toString() : ''}
             onChange={value => handleMinVolt(value)}
             keyboardType="number-pad"
           />

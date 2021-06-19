@@ -159,17 +159,143 @@ const ImagePreview = () => {
   );
 };
 
-const ConfirmPopUp = ({setExitConfig, setconfigStatus, setModal}) => {
+const ConfirmPopUp = ({
+  setExitConfig,
+  setconfigStatus,
+  setModal,
+  choosedDeviceDetails,
+}) => {
   const [isLoading, setLoader] = React.useState(false);
+  const [exitDone, setExitDone] = React.useState(false);
+  const [nickNameApi, setNickNameApi] = React.useState(false);
+  const [bateryUpdate, setBatteryUpdateApi] = React.useState(false);
+
+  const batterUpdateApi = (payload, cb) => {
+    MiddleWareForAuth('POST', UPDATE_BATTERY, payload, (res, err) => {
+      setLoader(false);
+      if (err === null) {
+        if (res !== null && res.data) {
+          if (res.data.code == '10') {
+            console.log('customerUPDATE_BATTERY RES=>', res.data);
+            // navigation.navigate('customerMyAccount');
+            if (cb) cb(true);
+          } else {
+            if (res.data && res.data.message) {
+              // showToaster('error', res.data.message);
+              if (cb) cb(false);
+            }
+          }
+        }
+      } else {
+        console.error('Device Connection Csutomer Details Save  Error', err);
+        // showToaster('error', 'Something went wrong');
+        if (cb) cb(false);
+      }
+    });
+  };
+
+  const handleNickNameChangeApi = (resNickName, cb) => {
+    MiddleWareForAuth('POST', CHANGE_NICKNAME, resNickName, (res, err) => {
+      setLoader(false);
+      if (err === null) {
+        if (res !== null && res.data) {
+          if (res.data.code == '10') {
+            console.log('customer CHANGE_NICKNAME RES=>', res.data);
+            if (cb) cb(true);
+            // navigation.navigate('customerMyAccount');
+          } else {
+            if (res.data && res.data.message) {
+              console.error(res.data.message);
+              if (cb) cb(false);
+            }
+          }
+        }
+      } else {
+        console.error('Device Connection Csutomer Details Save  Error', err);
+        // showToaster('error', 'Something went wrong');
+        if (cb) cb(false);
+      }
+    });
+  };
+
+  const handelBatteryUpdate = () => {
+    setLoader(true);
+    if (bateryUpdate) {
+      getLocalDB('@customerUpdateBatter', resBatteryData => {
+        if (resBatteryData !== null) {
+          batterUpdateApi(resBatteryData, resBattery => {
+            setLoader(false);
+            console.log('resBattery ==>', resBattery);
+            if (resBattery) {
+              Alert.alert('Battery Details is Updated');
+              setBatteryUpdateApi(false);
+            } else {
+              Alert.alert('Battery Details NOT  Updated');
+              setBatteryUpdateApi(false);
+            }
+          });
+        } else {
+          console.log('NO BAt Values To Updated');
+          setBatteryUpdateApi(false);
+        }
+      });
+    }
+
+    setTimeout(() => {
+      setLoader(false);
+      console.log('batterUpdateApi -- nickNameApi', bateryUpdate, nickNameApi);
+
+      setconfigStatus(true);
+    }, 2000);
+  };
+
+  const handelNickNameUpdate = () => {
+    NetInfo.fetch()
+      .then(state => {
+        if (state.isInternetReachable) {
+          setLoader(true);
+          getLocalDB('@nickName', resNickName => {
+            if (resNickName !== null) {
+              handleNickNameChangeApi(resNickName, nickNameStatus => {
+                setLoader(false);
+                console.log('resNick', nickNameStatus);
+                if (nickNameStatus) {
+                  Alert.alert('Nick Name is Updated');
+                  setNickNameApi(false);
+                  setBatteryUpdateApi(true);
+                } else {
+                  Alert.alert('Nick Name NOT  Updated');
+                  setNickNameApi(false);
+                  setBatteryUpdateApi(true);
+                }
+              });
+            } else {
+              console.log('NO Nickname Values To Updated');
+              setLoader(false);
+              setNickNameApi(false);
+              setBatteryUpdateApi(true);
+            }
+          });
+        } else {
+          Alert.alert('Warning', 'No Internet Connection');
+        }
+      })
+      .finally(() => {
+        console.log('ALL Reeee Doneee.........', bateryUpdate);
+      });
+  };
+
   const handleExitConfig = () => {
-    // console.log('200', deviceCommunicationData);
     setLoader(true);
     AsyncStorage.getItem('@customerDeviceManager').then(resDb => {
       const jsonValue = JSON.parse(resDb);
       console.log('isWifiUpdate', jsonValue);
       setTimeout(() => {
         DeviceCommunication_ExitConfig(
-          jsonValue.deviceType === 1 || jsonValue.deviceType === 2
+          jsonValue.deviceType === 1 ||
+            jsonValue.deviceType === 2 ||
+            jsonValue.deviceType === 5 ||
+            jsonValue.deviceType === 6
             ? 'LV'
             : 'HV',
           {
@@ -178,19 +304,34 @@ const ConfirmPopUp = ({setExitConfig, setconfigStatus, setModal}) => {
           resWifi => {
             console.log('res EXIT Config ===> ', resWifi);
             // setExitConfig(false);
-            setconfigStatus(true);
+            // setconfigStatus(true);
+            setNickNameApi(true);
+            setExitDone(true);
           },
         );
         setLoader(false);
       }, 5000);
     });
   };
+
   return (
     <View style={{marginVertical: 40}}>
-      <CustomHeaderWithDesc
-        headerText="Exit Configuration"
-        descText="Are you sure? Do you want to disconnect from device hotspot ‘SOLICON’?"
-      />
+      {nickNameApi ? (
+        <CustomHeaderWithDesc
+          headerText="Exit Configuration"
+          descText="Nick Name Update in SERVER"
+        />
+      ) : bateryUpdate ? (
+        <CustomHeaderWithDesc
+          headerText="Exit Configuration"
+          descText="Battery Update in SERVER"
+        />
+      ) : (
+        <CustomHeaderWithDesc
+          headerText="Exit Configuration"
+          descText="Are you sure? Do you want to disconnect from device hotspot ‘SOLICON’?"
+        />
+      )}
       {isLoading ? (
         <Loader />
       ) : (
@@ -222,7 +363,11 @@ const ConfirmPopUp = ({setExitConfig, setconfigStatus, setModal}) => {
             uppercase={false}
             mode="contained"
             onPress={() => {
-              handleExitConfig();
+              exitDone && nickNameApi
+                ? handelNickNameUpdate()
+                : exitDone && bateryUpdate
+                ? handelBatteryUpdate()
+                : handleExitConfig();
             }}
             style={{
               backgroundColor: '#E28534',
@@ -230,7 +375,11 @@ const ConfirmPopUp = ({setExitConfig, setconfigStatus, setModal}) => {
               borderRadius: 10,
               height: 44,
             }}>
-            Yes
+            {exitDone && nickNameApi
+              ? 'Nick Name Update'
+              : exitDone && bateryUpdate
+              ? 'Battery Update'
+              : 'Yes'}
           </Button>
         </View>
       )}
@@ -238,7 +387,7 @@ const ConfirmPopUp = ({setExitConfig, setconfigStatus, setModal}) => {
   );
 };
 
-const ConfigStatusPopUp = ({navigation}) => {
+const ConfigStatusPopUp = ({navigation, choosedDeviceDetails}) => {
   const batterUpdateApi = payload => {
     MiddleWareForAuth('POST', UPDATE_BATTERY, payload, (res, err) => {
       setLoader(false);
@@ -284,40 +433,44 @@ const ConfigStatusPopUp = ({navigation}) => {
   };
 
   const handleContinue = () => {
-    getLocalDB('@customerUpdateBatter', resBatteryData => {
-      getLocalDB('@nickName', resNickName => {
-        NetInfo.fetch()
-          .then(state => {
-            if (state.isInternetReachable) {
-              setLoader(true);
-
-              if (resBatteryData && resNickName) {
-                if (resBatteryData) {
-                  let payload = resBatteryData;
-                  batterUpdateApi(payload);
-                }
-                if (resNickName) {
-                  handleNickNameChangeApi(resNickName);
-                }
-              } else if (resBatteryData && !resNickName) {
-                batterUpdateApi(payload);
-              } else if (!resBatteryData && resNickName) {
-                handleNickNameChangeApi(resNickName);
-              }
-            } else {
-              Alert.alert('Warning', 'No Internet Connection');
-            }
-          })
-          .finally(() => {
-            console.log('FIMNALLLLllllllllllllllllllllllllllllllllllllllll');
-            removeLocalDB('@customerUpdateBatter', res => {
-              removeLocalDB('@nickName', res1 => {
-                navigation.navigate('customerMyAccount');
-              });
-            });
-          });
+    // getLocalDB('@customerUpdateBatter', resBatteryData => {
+    //   getLocalDB('@nickName', resNickName => {
+    //     NetInfo.fetch()
+    //       .then(state => {
+    //         if (state.isInternetReachable) {
+    //           setLoader(true);
+    //           console.log(
+    //             '001 API CALLS ===========================> ',
+    //             resBatteryData,
+    //             resNickName,
+    //           );
+    //           // if (resBatteryData && resNickName) {
+    //           //   if (resBatteryData) {
+    //           //     let payload = resBatteryData;
+    //           //     batterUpdateApi(payload);
+    //           //   }
+    //           //   if (resNickName) {
+    //           //     handleNickNameChangeApi(resNickName);
+    //           //   }
+    //           // } else if (resBatteryData && !resNickName) {
+    //           //   batterUpdateApi(payload);
+    //           // } else if (!resBatteryData && resNickName) {
+    //           //   handleNickNameChangeApi(resNickName);
+    //           // }
+    //         } else {
+    //           Alert.alert('Warning', 'No Internet Connection');
+    //         }
+    //       })
+    //       .finally(() => {
+    //         console.log('FIMNALLLLllllllllllllllllllllllllllllllllllllllll');
+    removeLocalDB('@customerUpdateBatter', res => {
+      removeLocalDB('@nickName', res1 => {
+        navigation.navigate('customerMyAccount');
       });
     });
+    //       });
+    //   });
+    // });
   };
 
   const [isLoading, setLoader] = React.useState(false);
@@ -336,18 +489,22 @@ const ConfigStatusPopUp = ({navigation}) => {
         }}>
         <CarouselCards />
 
-        <Button
-          uppercase={false}
-          mode="contained"
-          onPress={() => handleContinue()}
-          style={{
-            backgroundColor: '#E28534',
-            width: '100%',
-            borderRadius: 10,
-            height: 44,
-          }}>
-          {isLoading ? 'Syn data...' : 'Done'}
-        </Button>
+        {isLoading ? (
+          <Loader />
+        ) : (
+          <Button
+            uppercase={false}
+            mode="contained"
+            onPress={() => handleContinue()}
+            style={{
+              backgroundColor: '#E28534',
+              width: '100%',
+              borderRadius: 10,
+              height: 44,
+            }}>
+            Done
+          </Button>
+        )}
       </View>
     </ScrollView>
   );
@@ -427,16 +584,17 @@ const BottomSection = ({
   setChangeNickName,
 }) => {
   const handelWifiNavigation = () => {
-    getLocalDB('@customerDeviceDetailsFromQr', res => {
-      if (choosedDeviceDetails) {
-        res.choosedDeviceDetails = choosedDeviceDetails;
-      }
-
-      navigation.navigate('wifiSetup', {
-        deviceDetails: res,
-        wifiUpdate: true,
-      });
+    console.log('choosedDeviceDetails', choosedDeviceDetails);
+    navigation.navigate('wifiSetup', {
+      deviceDetails: choosedDeviceDetails,
+      wifiUpdate: true,
     });
+
+    // getLocalDB('@customerDeviceDetailsFromQr', res => {
+    //   if (choosedDeviceDetails) {
+    //     res.choosedDeviceDetails = choosedDeviceDetails;
+    //   }
+    // });
   };
   return (
     <CustomWrapper flex={1}>
@@ -564,6 +722,13 @@ const customerDeviceConfigMenuScreen = ({navigation, route}) => {
                   <ConfigStatusPopUp
                     navigation={navigation}
                     setNavTohome={setNavTohome}
+                    choosedDeviceDetails={choosedDeviceDetails}
+                  />
+                ) : changeNickName ? (
+                  <ChangeNickName
+                    setModal={setModal}
+                    choosedDeviceDetails={choosedDeviceDetails}
+                    setChangeNickName={setChangeNickName}
                   />
                 ) : changeNickName ? (
                   <ChangeNickName
@@ -576,6 +741,7 @@ const customerDeviceConfigMenuScreen = ({navigation, route}) => {
                     setExitConfig={setExitConfig}
                     setconfigStatus={setconfigStatus}
                     setModal={setModal}
+                    choosedDeviceDetails={choosedDeviceDetails}
                   />
                 )}
               </View>

@@ -55,7 +55,7 @@ const CustomSteps = ({header, desc}) => {
 const StepsComponent = ({navigation, setModal, selectedDevice}) => {
   const [isConnectionConfirm, setConnectionConfirm] = React.useState(false);
   const handleConfig = () => {
-    console.log('selectedDevice 222', selectedDevice);
+    console.log('selectedDevice 333', selectedDevice);
     Alert.alert(
       'Warning',
       'Are You sure device is connected ? please make sure.',
@@ -71,42 +71,39 @@ const StepsComponent = ({navigation, setModal, selectedDevice}) => {
     );
   };
 
+  const connectionDeviceSetup = () => {};
   const connectionSetup = async () => {
-    getLocalDB('@customerDeviceDetailsFromQr', res => {
-      console.log('res ---->', res);
-      let deviceTypeApi =
-        selectedDevice.dev_category == 'iCON 12 V' ||
-        selectedDevice.dev_category == 'iCON 24 V'
-          ? 'LV'
-          : selectedDevice.dev_category == 'iCON 240 V'
-          ? 'HV'
-          : 'LV';
-      if (deviceTypeApi) console.log('deviceTypeApi', deviceTypeApi);
-      if (res !== null) {
-        ConnectDevice_Stage_1(deviceTypeApi, res => {
-          if (res && res !== null) {
-            StoreLocalDB('@customerDeviceManager', res, callback => {
-              setModal(false);
-              navigation.navigate('customerDeviceConfigMenu', {
-                deviceTypeApi: deviceTypeApi,
-                choosedDeviceDetails: selectedDevice,
-              });
-            });
-          } else {
-            Alert.alert(
-              'Warning',
-              'Connection Could not Established. Please Try Again',
-              [
-                {
-                  text: 'OK',
-                  onPress: () => {},
-                },
-              ],
-            );
-          }
+    // getLocalDB('@customerDeviceDetailsFromQr', res => {
+    console.log('res deviceTypeApi ---->', selectedDevice.dev_category);
+    let deviceTypeApi =
+      selectedDevice.dev_category == 'iCON 12 V' ||
+      selectedDevice.dev_category == 'iCON 24 V'
+        ? 'LV'
+        : selectedDevice.dev_category == 'iCON 240 V' ||
+          selectedDevice.dev_category == 'iCON 120 V'
+        ? 'HV'
+        : 'LV';
+    if (deviceTypeApi) console.log('deviceTypeApi', deviceTypeApi);
+    ConnectDevice_Stage_1(deviceTypeApi, res => {
+      if (res && res !== null) {
+        StoreLocalDB('@customerDeviceManager', res, callback => {
+          setModal(false);
+          navigation.navigate('customerDeviceConfigMenu', {
+            deviceTypeApi: deviceTypeApi,
+            choosedDeviceDetails: selectedDevice,
+          });
         });
       } else {
-        Alert.alert('No Data Available.');
+        Alert.alert(
+          'Warning',
+          'Connection Could not Established. Please Try Again',
+          [
+            {
+              text: 'OK',
+              onPress: () => {},
+            },
+          ],
+        );
       }
     });
   };

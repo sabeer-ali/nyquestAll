@@ -23,8 +23,6 @@ import {
 } from '../../../assets';
 
 export default DashboardScreen = ({navigation}) => {
-  React.useEffect(() => {}, []);
-
   const getDashboardDetails = () => {
     let endPoints = '';
     MiddleWareForAuth('GET', endPoints, null, (res, err) => {

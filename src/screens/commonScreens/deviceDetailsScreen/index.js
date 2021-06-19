@@ -98,11 +98,21 @@ export default function DeviceDetailsScreen({
     console.log('type', type);
     setLoader(true);
     let graph = type ? type : graphType;
-    console.log('graph', date);
-    let localUrl = date ? '/graphdatauser_date/' : '/graphdatauser_term/';
-
+    let localUrl = date ? '/graphdata_period/' : '/graphdata/';
+    if (date) {
+      console.log('graph', graph.split(','));
+      graph = graph.split(',')[0] + '/' + graph.split(',')[1];
+    }
     getLocalDB('@customerLoginDetails', res => {
-      let endPoints = localUrl + res.cust_id + '/' + graph + '/' + res.token;
+      let endPoints =
+        localUrl +
+        res.cust_id +
+        '/' +
+        route.params.deviceDetails.location_id +
+        '/' +
+        graph +
+        '/' +
+        res.token;
       console.log('END Points', endPoints);
 
       MiddleWareForAuth('GET', endPoints, null, (res, err) => {
@@ -113,10 +123,11 @@ export default function DeviceDetailsScreen({
               console.log('res.data Graph', res.data.data);
 
               console.log(
-                'in Details Screen Graph ===> ',
-                res.data.data.summarydata,
+                'in Details Screen Graph summarydata ===> ',
+                res.data.data.summarydata.totalsav,
               );
               setGraphDetails(res.data.data.summarydata);
+              let data = null;
 
               if (res.data && res.data.data && res.data.data.summarydata) {
                 console.log(
@@ -124,13 +135,13 @@ export default function DeviceDetailsScreen({
                   res.data.data.summarydata,
                 );
                 const {result, total} = generateCombineArray(
-                  res.data.data.summarydata.solarsav.y,
                   res.data.data.summarydata.utilitysav.y,
+                  res.data.data.summarydata.solarsav.y,
                 );
                 console.log('TOTAL ===> ', result, total);
 
                 if (result && total > 0) {
-                  let data = {
+                  data = {
                     labels: res.data.data.summarydata.utilitysav.x,
                     // legend: ['Solar Saving', 'Utility Saving'],
                     // datasets: [0, 100, 200, 300, 400],
@@ -138,6 +149,8 @@ export default function DeviceDetailsScreen({
                     barColors: ['#F5A266', '#839ACF'],
                   };
                   setGraphData(data);
+                } else {
+                  setGraphData(null);
                 }
               }
             } else {
@@ -152,13 +165,9 @@ export default function DeviceDetailsScreen({
             }
           }
         } else {
+          setGraphDetails(null);
+          setGraphData(null);
           console.error('Device VAlidation API Graph Error', err);
-          if (err) {
-            console.error(
-              'Device VAlidation API Graph Error 2222222222222',
-              err,
-            );
-          }
           // showToaster('error', 'Something went wrong');
         }
       });
@@ -190,12 +199,9 @@ export default function DeviceDetailsScreen({
     } else if (value === 'Last 12 months') {
       type = 'month';
     } else {
-      type = moment(value).format('YYYY-MM-DD');
+      type = value;
       isDate = true;
     }
-
-    console.log('type ----------->', type);
-
     setGraphType(type);
     graphListApi(type, isDate);
   };
@@ -328,7 +334,16 @@ export default function DeviceDetailsScreen({
                 onPress={() => setModal(true)}
                 style={Styles.pickerContainer}>
                 <Text style={Styles.pickerText}>
-                  {graphType.charAt(0).toUpperCase() + '' + graphType.slice(1)}
+                  {graphType !== 'lifetime' &&
+                  graphType !== 'today' &&
+                  graphType !== 'week' &&
+                  graphType !== 'month'
+                    ? graphType.split(',')[0].split(' ')[0] +
+                      ' - ' +
+                      graphType.split(',')[1].split(' ')[0]
+                    : graphType.charAt(0).toUpperCase() +
+                      '' +
+                      graphType.slice(1)}
                 </Text>
                 <Image source={arrowDownIcon} />
               </TouchableOpacity>
@@ -366,6 +381,7 @@ export default function DeviceDetailsScreen({
                   </View>
                 )}
               </ScrollView>
+
               {graphData !== null && (
                 <CustomWrapper flexDirectionRow spaceEvently mb3>
                   <CustomWrapper flexDirectionRow>
@@ -378,6 +394,7 @@ export default function DeviceDetailsScreen({
                       }}></View>
                     <Text style={{marginLeft: 15}}>Solar Savings</Text>
                   </CustomWrapper>
+
                   <CustomWrapper flexDirectionRow>
                     <View
                       style={{
@@ -393,39 +410,40 @@ export default function DeviceDetailsScreen({
             </View>
 
             <View style={Styles.secondaryListing}>
-              {graphDetails !== null && (
+              {graphDetails !== null ? (
                 <CustomSecondaryList
                   text1="Total"
                   text2="Savings"
                   image={solarSavingIcon}
                   bgColor="#F8AB9B"
-                  value={graphDetails.totalsav.toString()}
-                  // params="kWh"
+                  value={
+                    graphDetails !== null
+                      ? graphDetails.totalsav.toString()
+                      : 'N.A'
+                  }
                 />
-              )}
-              {graphDetails !== null && (
+              ) : null}
+              {graphDetails !== null ? (
                 <CustomSecondaryList
                   text1="Co2"
                   text2="Savings"
                   image={co2Icon}
                   bgColor="#6F6F6F"
-                  value={graphDetails.co2save.toString()}
-                  // params="kg"
+                  value={graphDetails !== null ? graphDetails.co2save : 'N.A'}
                 />
-              )}
+              ) : null}
             </View>
 
             <View style={[Styles.secondaryListing, {paddingBottom: 25}]}>
-              {graphDetails !== null && (
+              {graphDetails !== null ? (
                 <CustomSecondaryList
                   text1="Trees"
                   text2="Saved"
                   image={treeIcon}
                   bgColor="#F8AB9B"
-                  value={graphDetails.treesav.toString()}
-                  // params="Trees"
+                  value={graphDetails !== null ? graphDetails.treesav : 'N.A'}
                 />
-              )}
+              ) : null}
             </View>
           </View>
         </View>

@@ -133,6 +133,7 @@ const HomeScreen = ({navigation}) => {
         return true;
       }
     };
+
     const backHandler = BackHandler.addEventListener(
       'hardwareBackPress',
       backAction,
@@ -142,6 +143,10 @@ const HomeScreen = ({navigation}) => {
       console.log('Unmounted HOME');
     };
   }, []);
+
+  React.useEffect(() => {
+    handleGetListAPI();
+  }, [navigation.isFocused()]);
 
   const handleLogout = () => {
     logOut('@delaerLoginDetails', () => {

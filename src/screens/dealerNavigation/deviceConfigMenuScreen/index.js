@@ -31,8 +31,14 @@ import {
   MiddleWareForAuth,
   SAVED_DEVICE_DEPLOY,
 } from '../../../utils/apiServices';
-import {getLocalDB, Loader, toaster} from '../../../utils/commonUtils';
+import {
+  getLocalDB,
+  Loader,
+  removeLocalDB,
+  toaster,
+} from '../../../utils/commonUtils';
 import {DeviceCommunication_ExitConfig} from '../../../utils/deviceConfigs/deviceConfig';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ImagePreview = () => {
   return (
@@ -72,7 +78,12 @@ const DeviceInfo = ({navigation, setExitConfig, deviceTypeApi}) => {
       getLocalDB('@res_devCommunication_stage_1').then(resDb => {
         console.log('11 00 22', resDb);
         DeviceCommunication_ExitConfig(
-          resDb.deviceType === 1 || resDb.deviceType === 2 ? 'LV' : 'HV',
+          resDb.deviceType === 1 ||
+            resDb.deviceType === 2 ||
+            resDb.deviceType === 5 ||
+            resDb.deviceType === 6
+            ? 'LV'
+            : 'HV',
           {
             sessionId: resDb.sessionId,
           },
@@ -94,7 +105,6 @@ const DeviceInfo = ({navigation, setExitConfig, deviceTypeApi}) => {
             getLocalDB('@deviceComData', resCommonServerData => {
               resCommonServerData.reconfigure = '1';
               console.log('Reconfigure Data=== >', resCommonServerData);
-
               if (
                 resCommonServerData.batage !== '' &&
                 resCommonServerData.batmake !== '' &&
@@ -110,6 +120,20 @@ const DeviceInfo = ({navigation, setExitConfig, deviceTypeApi}) => {
                       if (res !== null && res.data) {
                         if (res.data.code == '10') {
                           console.log('res.data in EXit Config', res.data);
+                          AsyncStorage.removeItem('@ReconfigData').then(
+                            res1 => {
+                              console.log('res.data in EXit Config res1', res1);
+                              AsyncStorage.removeItem('@deviceComData').then(
+                                res2 => {
+                                  console.log(
+                                    'res.data in EXit Config res2',
+                                    res2,
+                                  );
+                                },
+                              );
+                            },
+                          );
+
                           setExitConfig(true);
                         } else {
                           if (res.data && res.data.msg && res.data.msg) {
@@ -160,10 +184,13 @@ const DeviceInfo = ({navigation, setExitConfig, deviceTypeApi}) => {
                   res.reconfigure = '0';
                   res.olddevid = resReplaceDev.customerData.deviceId;
                   res.custid = resReplaceDev.customerData.customerid;
+                  if (res.invcap == '' && res.invdesc == '') {
+                    console.log('Data is Empty FUNDED');
+                    res.invcap = resReplaceDev.invcap;
+                    res.invdesc = resReplaceDev.invdesc;
+                  }
                 }
-
                 console.log('Final Data Server Data ==> ', res);
-
                 if (
                   res.batage !== '' &&
                   res.batmake !== '' &&
@@ -179,6 +206,22 @@ const DeviceInfo = ({navigation, setExitConfig, deviceTypeApi}) => {
                         if (res !== null && res.data) {
                           if (res.data.code == '10') {
                             console.log('res.data in EXit Config', res.data);
+                            AsyncStorage.removeItem('@replaceDvice').then(
+                              res3 => {
+                                console.log(
+                                  'res.data in @replaceDvice res3',
+                                  res3,
+                                );
+                                AsyncStorage.removeItem('@deviceComData').then(
+                                  res4 => {
+                                    console.log(
+                                      'res.data in @deviceComData res4',
+                                      res4,
+                                    );
+                                  },
+                                );
+                              },
+                            );
                             setExitConfig(true);
                           } else {
                             if (res.data && res.data.msg && res.data.msg) {
@@ -217,6 +260,14 @@ const DeviceInfo = ({navigation, setExitConfig, deviceTypeApi}) => {
             });
           }
         });
+        // .finally(() => {
+        //   removeLocalDB('@ReconfigData', res => {
+        //     console.log('Removed @ReconfigData');
+        //     removeLocalDB('@deviceComData', res1 => {
+        //       console.log('Removed @deviceComData');
+        //     });
+        //   });
+        // });
       } else {
         alert('No Internet Connection');
       }

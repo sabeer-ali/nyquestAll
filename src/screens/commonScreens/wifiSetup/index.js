@@ -31,8 +31,9 @@ const DeviceInfo = ({
   isConnected,
   navigation,
   isWifiUpdate,
+  isLoadingForExit,
 }) => {
-  console.log('deviceDetails', deviceDetails);
+  console.log('deviceDetails in 2nd popup', deviceDetails);
   const [isLoading, setLoader] = React.useState(false);
 
   const handleExitConfig = () => {
@@ -84,9 +85,15 @@ const DeviceInfo = ({
           <CustomList
             deviceInfo
             deviceName={
-              deviceDetails !== null ? deviceDetails.devicetype : 'NA'
+              deviceDetails !== null ? deviceDetails.dev_category : 'NA'
             }
-            deviceId={deviceDetails !== null ? deviceDetails.deviceId : 'NA'}
+            deviceId={
+              deviceDetails !== null
+                ? deviceDetails.dev_id
+                  ? deviceDetails.dev_id
+                  : deviceDetails.deviceId
+                : 'NA'
+            }
             colorChanged="#7AB78C"
             icon={iconLVIcon}
             iconBgColor={'#C4C4C4'}
@@ -95,23 +102,24 @@ const DeviceInfo = ({
           <CustomList
             deviceInfo
             deviceName={
-              deviceDetails !== null ? deviceDetails.devicetype : 'NA'
+              deviceDetails !== null ? deviceDetails.dev_category : 'NA'
             }
-            deviceId={deviceDetails !== null ? deviceDetails.deviceId : 'NA'}
+            deviceId={
+              deviceDetails !== null
+                ? deviceDetails.dev_id
+                  ? deviceDetails.dev_id
+                  : deviceDetails.deviceId
+                : 'NA'
+            }
             // deviceConfigStatus={isData ? 'CONFIGURED' : 'NOT CONFIGURED'}
             colorChanged="#7AB78C"
             icon={iconLVIcon}
-            iconBgColor={
-              '#C4C4C4'
-              // deviceDetails !== null
-              //   ? deviceDetails.dev_category === 'H' && '#e746451a'
-              //   : '#C4C4C4'
-            }
+            iconBgColor={'#C4C4C4'}
           />
         )}
       </View>
       <CustomWrapper ph3>
-        {isLoading ? (
+        {isLoading || isLoadingForExit ? (
           <Loader />
         ) : (
           <CustomButton
@@ -183,7 +191,10 @@ const BottomSection = ({navigation, deviceDetails, isWifiUpdate}) => {
         console.log('isWifiUpdate', jsonValue);
         setTimeout(() => {
           DeviceCommunication_wifisetup(
-            jsonValue.deviceType === 1 || jsonValue.deviceType === 2
+            jsonValue.deviceType === 1 ||
+              jsonValue.deviceType === 2 ||
+              jsonValue.deviceType === 5 ||
+              jsonValue.deviceType === 6
               ? 'LV'
               : 'HV',
             {
@@ -289,6 +300,7 @@ const BottomSection = ({navigation, deviceDetails, isWifiUpdate}) => {
                       deviceDetails={deviceDetails}
                       isWifiUpdate={isWifiUpdate}
                       setModal={setModal}
+                      isLoadingForExit={isLoading}
                     />
                   </>
                 ) : (
