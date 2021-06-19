@@ -25,7 +25,13 @@ import {
   CustomWrapper,
 } from '../../../components';
 import {color, CommonStyles} from '../../../utils/CommonStyles';
-import {iconLVIcon, closeIcon, successCircleIcon} from '../../../assets';
+import {
+  iconLVIcon,
+  closeIcon,
+  successCircleIcon,
+  checkboxIcon,
+  checkboxBlankIcon,
+} from '../../../assets';
 import {ConnectDevice_Stage_1} from '../../../utils/deviceConfigs/deviceConfig';
 import {
   getLocalDB,
@@ -128,6 +134,7 @@ const CustomerForm = ({
   const [isLoading, setLoader] = React.useState(false);
   const [isLocationAdd, setLocationAdd] = React.useState(false);
   const [geoLocationDetails, setGeoLocationDetails] = React.useState(null);
+  const [isEditMode, setEditMode] = React.useState(false);
 
   React.useEffect(() => {
     requestGpsPermission();
@@ -322,9 +329,24 @@ const CustomerForm = ({
   };
 
   return (
-    <ScrollView style={{paddingHorizontal: 25, marginTop: 40}}>
+    <ScrollView style={{paddingHorizontal: 25, marginTop: 10}}>
+      <CustomWrapper mv3>
+        <CustomWrapper flexDirectionRow vCenter>
+          <TouchableOpacity onPress={() => setEditMode(!isEditMode)}>
+            {isEditMode ? (
+              <Image source={checkboxIcon} />
+            ) : (
+              <Image source={checkboxBlankIcon} />
+            )}
+          </TouchableOpacity>
+          <CustomWrapper ml1>
+            <Text>Enable access to customer registration.</Text>
+          </CustomWrapper>
+        </CustomWrapper>
+      </CustomWrapper>
       <View>
         <CustomHeaderWithDesc
+          noStyle
           headerText="Customer Details"
           descText="Enter customer details"
         />
@@ -339,6 +361,7 @@ const CustomerForm = ({
               form
               placeholder="Name"
               onChange={value => setName(value)}
+              editable={isEditMode}
             />
           </View>
           <View style={Styles.inputContainer}>
@@ -347,6 +370,7 @@ const CustomerForm = ({
               placeholder="Mobile"
               onChange={value => setMobileNumber(value)}
               keyboardType={'number-pad'}
+              editable={isEditMode}
             />
           </View>
           <View style={Styles.inputContainer}>
@@ -354,6 +378,7 @@ const CustomerForm = ({
               form
               placeholder="Email"
               onChange={value => setEmail(value)}
+              editable={isEditMode}
             />
           </View>
 
@@ -567,37 +592,46 @@ const DeviceInfo = ({
 
   React.useEffect(() => {
     console.log('deviceDetails for replace ', deviceDetails);
-    getLocalDB('@replaceDvice', reslocal => {
-      console.log('reslocal 111110000 ==>', reslocal);
-      if (reslocal.isReplace) {
-        setReplace(true);
-        getLocalDB('@deviceComData', resOldServerData => {
-          let newServerData = {...resOldServerData};
-          console.log('resOldServerData', resOldServerData);
-          newServerData.olddevid = resOldServerData.devid;
-          newServerData.devid = '';
-          newServerData.replace = 1;
-          newServerData.custid = deviceDetails.customerid;
-        });
-        // StoreLocalDB('@deviceComData', newServerData);
-      } else {
-        setReplace(false);
-      }
-    });
+    // getLocalDB('@replaceDvice', reslocal => {
+    //   console.log('reslocal 111110000 ==>', reslocal);
+    //   if (reslocal.isReplace) {
+    //     setReplace(true);
+    //     getLocalDB('@deviceComData', resOldServerData => {
+    //       let newServerData = {...resOldServerData};
+    //       console.log('resOldServerData', resOldServerData);
+    //       newServerData.olddevid = resOldServerData.devid;
+    //       newServerData.devid = '';
+    //       newServerData.replace = 1;
+    //       newServerData.custid = deviceDetails.customerid;
+    //     });
+    //     // StoreLocalDB('@deviceComData', newServerData);
+    //   } else {
+    //     setReplace(false);
+    //   }
+    // });
   }, []);
 
   const replaceDevice = () => {
-    StoreLocalDB(
-      '@replaceDvice',
-      {isReplace: true, customerData: deviceDetails},
-      res => {
-        if (res !== null) {
-        } else {
-          setModal(true);
-          setReDeploy(true);
-        }
-      },
+    console.log(
+      'deviceDetails customerid',
+      deviceDetails,
+      deviceDetails.customerid,
     );
+    if (deviceDetails.customerid != -1) {
+      StoreLocalDB(
+        '@replaceDvice',
+        {isReplace: true, customerData: deviceDetails},
+        res => {
+          if (res !== null) {
+          } else {
+            setModal(true);
+            setReDeploy(true);
+          }
+        },
+      );
+    } else {
+      Alert.alert('Warning', 'No Customer ID Found');
+    }
   };
 
   const handleconfig = () => {
@@ -814,7 +848,7 @@ const DeviceConfigDeviceInfoScreen = ({navigation, route}) => {
             isData={isData}
             setReConfig={setReConfig}
             setReDeploy={setReDeploy}
-            deviceDetails={deviceDetails}
+            deviceDetails={route && route.params && route.params.deviceDetails}
           />
         }
       />

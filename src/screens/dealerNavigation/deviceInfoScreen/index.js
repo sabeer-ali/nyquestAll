@@ -98,11 +98,6 @@ export default function DeviceInfoScreen({
     let localUrl = date ? '/graphdatauser_date/' : '/graphdatauser_term/';
 
     getLocalDB('@delaerLoginDetails', res => {
-      console.log(
-        '@delaerLoginDetails ------------------------------------- >',
-        res.cust_id,
-      );
-
       let endPoints = localUrl + res.cust_id + '/' + graph + '/' + res.token;
 
       MiddleWareForAuth('GET', endPoints, null, (res, err) => {
@@ -129,7 +124,7 @@ export default function DeviceInfoScreen({
                   let data = {
                     labels: res.data.data.summarydata.utilitysav.x,
                     // legend: ['Solar Saving', 'Utility Saving'],
-                    datasets: [0, 50, 150, 200, 250, 300, 350],
+                    // datasets: [0, 50, 150, 200, 250, 300, 350],
                     data: result,
                     barColors: ['#839ACF', '#F5A266'],
                   };
@@ -192,8 +187,6 @@ export default function DeviceInfoScreen({
       type = moment(value).format('YYYY-MM-DD');
       isDate = true;
     }
-
-    console.log('type ----------->', type);
 
     setGraphType(type);
     graphListApi(type, isDate);

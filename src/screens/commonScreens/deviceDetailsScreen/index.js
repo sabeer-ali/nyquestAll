@@ -73,9 +73,9 @@ export default function DeviceDetailsScreen({
           if (res !== null && res.data) {
             setLoader(false);
             if (res.data.code == '10') {
-              console.log('res.data getdevicestatusdtls', res.data.data);
+              // console.log('res.data getdevicestatusdtls', res.data.data);
               setDeviceDetails(res.data.data[0]);
-              console.log('in Details Screen ===> ', res.data.data[0]);
+              // console.log('in Details Screen ===> ', res.data.data[0]);
               if (callback) callback(res.data.data[0]);
             } else {
               if (res.data && res.data.message) {
@@ -121,7 +121,7 @@ export default function DeviceDetailsScreen({
               if (res.data && res.data.data && res.data.data.summarydata) {
                 console.log(
                   'res.data.data.summarydata.utilitysav.x',
-                  res.data.data.summarydata.utilitysav,
+                  res.data.data.summarydata,
                 );
                 const {result, total} = generateCombineArray(
                   res.data.data.summarydata.solarsav.y,
@@ -133,9 +133,9 @@ export default function DeviceDetailsScreen({
                   let data = {
                     labels: res.data.data.summarydata.utilitysav.x,
                     // legend: ['Solar Saving', 'Utility Saving'],
-                    datasets: [0, 50, 150, 200, 250, 300, 350],
+                    // datasets: [0, 100, 200, 300, 400],
                     data: result,
-                    barColors: ['#839ACF', '#F5A266'],
+                    barColors: ['#F5A266', '#839ACF'],
                   };
                   setGraphData(data);
                 }
@@ -147,10 +147,7 @@ export default function DeviceDetailsScreen({
                   'in Details Screen NOT "10" => 2 API  Error',
                   res.data.message,
                 );
-                console.error(
-                  'in Details Screen NOT "10" API  Error',
-                  err.response.data,
-                );
+                console.error('in Details Screen NOT "10" API  Error', err);
               }
             }
           }
@@ -214,7 +211,6 @@ export default function DeviceDetailsScreen({
     barPercentage: 1,
     useShadowColorFromDataset: false, // optional
   };
-
   return (
     <ScrollView style={{flex: 1}}>
       {isLoading ? (
@@ -239,13 +235,25 @@ export default function DeviceDetailsScreen({
             {
               <CustomList
                 customerName={
-                  deviceDetails !== null ? deviceDetails.username : 'N.A'
+                  deviceDetails !== null
+                    ? deviceDetails.username && deviceDetails.username
+                    : 'N.A'
                 }
-                deviceName="iCON LV"
+                deviceName={
+                  deviceDetails !== null
+                    ? deviceDetails.devname && deviceDetails.devname
+                    : 'N.A'
+                }
                 deviceNickName={
-                  deviceDetails !== null ? deviceDetails.nick_name : 'N.A'
+                  deviceDetails !== null
+                    ? deviceDetails.nick_name && deviceDetails.nick_name
+                    : 'N.A'
                 }
-                deviceId={deviceDetails !== null ? deviceDetails.dev_id : 'N.A'}
+                deviceId={
+                  deviceDetails !== null
+                    ? deviceDetails.dev_id && deviceDetails.dev_id
+                    : 'N.A'
+                }
                 bgColor="#F5F8FF"
                 navigateNext={false}
                 icon={iconLVIcon}
@@ -262,7 +270,7 @@ export default function DeviceDetailsScreen({
                   bgColor="#F3937E"
                   value={
                     deviceDetails !== null
-                      ? deviceDetails.solartoday && deviceDetails.solartoday
+                      ? deviceDetails.solartoday.toString()
                       : '0'
                   }
                   // params="kWh"
@@ -338,7 +346,7 @@ export default function DeviceDetailsScreen({
                     showValuesOnTopOfBars={false}
                     data={graphData}
                     width={graphData.data.length * 80}
-                    height={250}
+                    height={300}
                     chartConfig={chartConfig}
                     barPercentage={10}
                   />
@@ -378,7 +386,7 @@ export default function DeviceDetailsScreen({
                         width: 16,
                         borderRadius: 4,
                       }}></View>
-                    <Text style={{marginLeft: 15}}>Solar Savings</Text>
+                    <Text style={{marginLeft: 15}}>Utility Savings</Text>
                   </CustomWrapper>
                 </CustomWrapper>
               )}

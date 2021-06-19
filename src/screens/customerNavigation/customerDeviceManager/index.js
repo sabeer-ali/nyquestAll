@@ -81,33 +81,33 @@ const StepsComponent = ({navigation, setModal, selectedDevice}) => {
           : selectedDevice.dev_category == 'iCON 240 V'
           ? 'HV'
           : 'LV';
-      if (deviceTypeApi)
-        if (res !== null) {
-          ConnectDevice_Stage_1(deviceTypeApi, res => {
-            if (res && res !== null) {
-              StoreLocalDB('@customerDeviceManager', res, callback => {
-                setModal(false);
-                navigation.navigate('customerDeviceConfigMenu', {
-                  deviceTypeApi: deviceTypeApi,
-                  choosedDeviceDetails: selectedDevice,
-                });
+      if (deviceTypeApi) console.log('deviceTypeApi', deviceTypeApi);
+      if (res !== null) {
+        ConnectDevice_Stage_1(deviceTypeApi, res => {
+          if (res && res !== null) {
+            StoreLocalDB('@customerDeviceManager', res, callback => {
+              setModal(false);
+              navigation.navigate('customerDeviceConfigMenu', {
+                deviceTypeApi: deviceTypeApi,
+                choosedDeviceDetails: selectedDevice,
               });
-            } else {
-              Alert.alert(
-                'Warning',
-                'Connection Could not Established. Please Try Again',
-                [
-                  {
-                    text: 'OK',
-                    onPress: () => {},
-                  },
-                ],
-              );
-            }
-          });
-        } else {
-          Alert.alert('No Data Available.');
-        }
+            });
+          } else {
+            Alert.alert(
+              'Warning',
+              'Connection Could not Established. Please Try Again',
+              [
+                {
+                  text: 'OK',
+                  onPress: () => {},
+                },
+              ],
+            );
+          }
+        });
+      } else {
+        Alert.alert('No Data Available.');
+      }
     });
   };
 
@@ -239,7 +239,7 @@ const BottomSection = ({navigation, setModal, setSteps, setSelectedDevice}) => {
             <CustomList
               key={index}
               customerName={item.nick_name}
-              deviceName={item.dev_category === 'L' ? 'ICON LV' : 'ICON HV'}
+              deviceName={item.dev_category}
               deviceId={item.dev_id}
               onpress={() => {
                 setSelectedDevice(item);

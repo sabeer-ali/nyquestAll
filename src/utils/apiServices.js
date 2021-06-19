@@ -23,6 +23,7 @@ const FORGOT_PASSWORD_OTP =
 const VALIDATE_FORGOT_PASSWORD_OTP = '/validateOTPforgotpass';
 const UPDATE_PASSWORD = '/updatepasswordreset';
 const UPDATE_BATTERY = '/changebattery';
+const CHANGE_NICKNAME = '/changenickname';
 
 const MiddleWareForAuth = async (
   method,
@@ -77,6 +78,7 @@ const POSTRequest = (endPont, params, callback, noBaseUrl) => {
 };
 
 export {
+  CHANGE_NICKNAME,
   UPDATE_BATTERY,
   DEALER_RECONFIG,
   DEALER_SEARCH,
