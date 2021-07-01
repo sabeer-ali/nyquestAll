@@ -260,6 +260,7 @@ export default function DeviceInfoScreen({
                       ? deviceDetails.solartoday && deviceDetails.solartoday
                       : '0'
                   }
+                  width50
                   // params="kWh"
                 />
               )}
@@ -272,6 +273,7 @@ export default function DeviceInfoScreen({
                   value={
                     deviceDetails !== null ? deviceDetails.dev_state : 'N.A'
                   }
+                  width50
                 />
               )}
             </View>
@@ -294,6 +296,7 @@ export default function DeviceInfoScreen({
                       deviceDetails.last_log_date.split(' ')[0]
                     : 'N.A'
                 }
+                width50
               />
               <CustomSecondaryList
                 text1="Battery"
@@ -303,6 +306,7 @@ export default function DeviceInfoScreen({
                 value={
                   deviceDetails !== null ? deviceDetails.batterystatus : 'N.A'
                 }
+                width50
               />
             </View>
 
@@ -364,6 +368,7 @@ export default function DeviceInfoScreen({
                   bgColor="#F8AB9B"
                   value={graphDetails.totalsav.toString()}
                   // params="kWh"
+                  width50
                 />
               )}
               {graphDetails !== null && (
@@ -374,6 +379,7 @@ export default function DeviceInfoScreen({
                   bgColor="#6F6F6F"
                   value={graphDetails.co2save.toString()}
                   // params="kg"
+                  width50
                 />
               )}
             </View>
@@ -387,6 +393,7 @@ export default function DeviceInfoScreen({
                   bgColor="#F8AB9B"
                   value={graphDetails.treesav.toString()}
                   // params="Trees"
+                  width50
                 />
               )}
             </View>

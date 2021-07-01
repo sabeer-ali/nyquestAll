@@ -71,6 +71,7 @@ export default DashboardScreen = ({navigation}) => {
       <View style={Styles.bottomSection}>
         <View style={Styles.secondaryListing}>
           <CustomSecondaryList
+          width50
             text1="Solar"
             text2="Today"
             image={configDeviceIcons}
@@ -79,6 +80,7 @@ export default DashboardScreen = ({navigation}) => {
             params="kWh"
           />
           <CustomSecondaryList
+          width50
             text1="Device"
             text2="Status"
             image={healthIcon}
@@ -88,6 +90,7 @@ export default DashboardScreen = ({navigation}) => {
         </View>
         <View style={Styles.secondaryListing}>
           <CustomSecondaryList
+          width50
             text1="Last"
             text2="Update"
             image={timeIcon}
@@ -97,6 +100,7 @@ export default DashboardScreen = ({navigation}) => {
           />
 
           <CustomSecondaryList
+          width50
             text1="Total"
             text2="Savings"
             image={solarSavingIcon}
@@ -107,6 +111,7 @@ export default DashboardScreen = ({navigation}) => {
         </View>
         <View style={Styles.secondaryListing}>
           <CustomSecondaryList
+          width50
             text1="Co2"
             text2="Savings"
             image={co2Icon}
@@ -116,6 +121,7 @@ export default DashboardScreen = ({navigation}) => {
           />
 
           <CustomSecondaryList
+          width50
             text1="Trees"
             text2="Saved"
             image={treeIcon}

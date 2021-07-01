@@ -29,7 +29,6 @@ const Styles = StyleSheet.create({
     paddingVertical: 5,
     flexDirection: 'row',
     justifyContent: 'space-between',
-
     shadowColor: '#243A5E',
     shadowOffset: {
       width: 0,
@@ -60,9 +59,9 @@ const Styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#51648B',
     borderRadius: 38,
-    width: 185,
+    width: '60%',
     height: 45,
-    paddingHorizontal: 10,
+    paddingHorizontal: 10,    
   },
   pickerText: {
     fontFamily: primaryFont,

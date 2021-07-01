@@ -62,6 +62,7 @@ const BottomSection = ({searchResult, navigation, isLoading}) => {
                   <Loader />
                 ) : (
                   <CustomList
+                    showShadow
                     customerName={item.customer}
                     deviceName={
                       item.dev_category === 'L' ? 'ICON LV' : 'ICON HV'
@@ -293,6 +294,7 @@ const HomeScreen = ({navigation}) => {
   const renderItem = ({item, index}) => {
     return (
       <CustomList
+      showShadow
         customerName={item.customer}
         deviceName={item.dev_category === 'L' ? 'ICON LV' : 'ICON HV'}
         deviceNickName={item.nick_name}
