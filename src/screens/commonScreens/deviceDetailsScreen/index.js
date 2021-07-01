@@ -270,6 +270,7 @@ export default function DeviceDetailsScreen({
             <View style={Styles.secondaryListing}>
               {deviceDetails !== null && (
                 <CustomSecondaryList
+                  width50
                   text1="Solar"
                   text2="Today"
                   image={solarIcon}
@@ -279,11 +280,11 @@ export default function DeviceDetailsScreen({
                       ? deviceDetails.solartoday.toString()
                       : '0'
                   }
-                  // params="kWh"
                 />
               )}
               {deviceDetails !== null && (
                 <CustomSecondaryList
+                  width50
                   text1="Device"
                   text2="Status"
                   image={healthIcon}
@@ -297,6 +298,7 @@ export default function DeviceDetailsScreen({
 
             <View style={Styles.secondaryListing}>
               <CustomSecondaryList
+                width50
                 text1="Last"
                 text2="Update"
                 image={timeIcon}
@@ -315,6 +317,7 @@ export default function DeviceDetailsScreen({
                 }
               />
               <CustomSecondaryList
+                width50
                 text1="Battery"
                 text2="Status"
                 image={batteryIcon}
@@ -412,6 +415,7 @@ export default function DeviceDetailsScreen({
             <View style={Styles.secondaryListing}>
               {graphDetails !== null ? (
                 <CustomSecondaryList
+                  width50
                   text1="Total"
                   text2="Savings"
                   image={solarSavingIcon}
@@ -425,6 +429,7 @@ export default function DeviceDetailsScreen({
               ) : null}
               {graphDetails !== null ? (
                 <CustomSecondaryList
+                  width50
                   text1="Co2"
                   text2="Savings"
                   image={co2Icon}
@@ -437,10 +442,11 @@ export default function DeviceDetailsScreen({
             <View style={[Styles.secondaryListing, {paddingBottom: 25}]}>
               {graphDetails !== null ? (
                 <CustomSecondaryList
+                  width50
                   text1="Trees"
                   text2="Saved"
                   image={treeIcon}
-                  bgColor="#F8AB9B"
+                  bgColor="#9CD09F"
                   value={graphDetails !== null ? graphDetails.treesav : 'N.A'}
                 />
               ) : null}

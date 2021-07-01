@@ -25,6 +25,7 @@ const Styles = StyleSheet.create({
     color: color.black,
     borderBottomWidth: 1,
     borderBottomColor: '#BDBDBD',
+    lineHeight: 17,
   },
   label: {
     fontFamily: primaryFont,

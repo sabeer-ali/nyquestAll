@@ -5,6 +5,7 @@ import Styles from './styles';
 export default CustomButton = ({
   text,
   icon,
+  iconBg,
   onpress,
   backgroundStyle,
   textStyle,
@@ -21,7 +22,8 @@ export default CustomButton = ({
       onPress={() => onpress && onpress()}>
       {icon && (
         <View>
-          <View style={Styles.iconContainer}>
+          <View
+            style={[Styles.iconContainer, iconBg && {backgroundColor: iconBg}]}>
             <Image source={icon} />
           </View>
         </View>

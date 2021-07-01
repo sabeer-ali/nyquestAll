@@ -37,7 +37,6 @@ const DeviceInfo = ({
   const [isLoading, setLoader] = React.useState(false);
 
   const handleExitConfig = () => {
-    // console.log('200', deviceCommunicationData);
     setLoader(true);
     if (isWifiUpdate) {
     } else {
@@ -47,7 +46,10 @@ const DeviceInfo = ({
           console.log('isWifiUpdate', jsonValue);
           setTimeout(() => {
             DeviceCommunication_ExitConfig(
-              jsonValue.deviceType === 1 || jsonValue.deviceType === 2
+              jsonValue.deviceType === 1 ||
+                jsonValue.deviceType === 2 ||
+                jsonValue.deviceType === 5 ||
+                jsonValue.deviceType === 6
                 ? 'LV'
                 : 'HV',
               {
@@ -217,7 +219,12 @@ const BottomSection = ({navigation, deviceDetails, isWifiUpdate}) => {
       setTimeout(() => {
         getLocalDB('@res_devCommunication_stage_1_customer_main', resDb => {
           DeviceCommunication_wifisetup(
-            resDb.deviceType === 1 || resDb.deviceType === 2 ? 'LV' : 'HV',
+            resDb.deviceType === 1 ||
+              resDb.deviceType === 2 ||
+              resDb.deviceType === 5 ||
+              resDb.deviceType === 6
+              ? 'LV'
+              : 'HV',
             {
               sessionId: resDb.sessionId,
               wifiSSID: selectedWifi !== '' ? selectedWifi : ssid,

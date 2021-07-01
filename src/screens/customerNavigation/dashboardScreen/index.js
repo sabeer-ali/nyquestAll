@@ -86,6 +86,7 @@ const BottomSection = ({navigation, setData}) => {
   const [isLoading, setLoader] = React.useState(false);
   const [deviceCount, setDeviceCount] = React.useState(0);
   const [pageNum, setPageNum] = React.useState(0);
+  const [isFetching, setFetching] = React.useState(false);
 
   const flatListRef = React.useRef();
 
@@ -176,12 +177,20 @@ const BottomSection = ({navigation, setData}) => {
     });
   };
 
+  const onRefresh = () => {
+    setFetching(true);
+    getDeviceListApi(false, () => {
+      setFetching(false);
+    });
+  };
+
   const renderItem = data => {
     const {item} = data;
     return (
       <CustomList
+        showShadow
         customerName={item.nick_name}
-        deviceName={item.dev_category} //=== 'L' ? 'ICON LV' : 'ICON HV'
+        deviceName={item.dev_category}
         deviceNickName={item.nick_name}
         deviceId={item.dev_id}
         onpress={() => navigation.push('deviceDetails', {deviceDetails: item})}
@@ -198,7 +207,7 @@ const BottomSection = ({navigation, setData}) => {
         <Text style={Styles.configDevice}>Configured Devices</Text>
 
         <View style={Styles.deviceCountContainer}>
-          <Text style={Styles.deviceCount}>
+          <Text style={[Styles.deviceCount, {color: color.darkBlue2}]}>
             {deviceList.length.toString().length < 2
               ? '0' + deviceList.length
               : deviceList.length}{' '}
@@ -216,6 +225,8 @@ const BottomSection = ({navigation, setData}) => {
           keyExtractor={(item, index) => index}
           onEndReached={() => deviceList.length > 8 && handlePagination()}
           onEndReachedThreshold={0}
+          onRefresh={() => onRefresh()}
+          refreshing={isFetching}
           onScrollToIndexFailed={info => {
             const wait = new Promise(resolve => setTimeout(resolve, 700));
             wait.then(() => {
@@ -251,6 +262,7 @@ const TopSection = ({navigation, isData}) => {
       </RowLine>
       <CustomWrapper ph2 mt2>
         <CustomHeaderWithDesc
+          noStyle
           headerText="Welcome"
           descText={isData ? 'Your Device' : 'Add Your Device'}
           white

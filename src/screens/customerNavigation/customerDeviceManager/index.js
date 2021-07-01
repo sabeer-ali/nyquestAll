@@ -201,7 +201,6 @@ const BottomSection = ({navigation, setModal, setSteps, setSelectedDevice}) => {
 
   const getDeviceListApi = () => {
     getLocalDB('@customerLoginDetails', resLogin => {
-      console.log('resLogin ====> ', resLogin);
       const endPoints = `${GET_DEVICE_FOR_CUSTOMER}${'/'}${
         resLogin.cust_id
       }${'/'}${resLogin.token}`;
@@ -234,6 +233,7 @@ const BottomSection = ({navigation, setModal, setSteps, setSelectedDevice}) => {
           console.log('item 1201', item);
           return (
             <CustomList
+              showShadow
               key={index}
               customerName={item.nick_name}
               deviceName={item.dev_category}
@@ -265,11 +265,14 @@ const TopSection = ({navigation}) => {
           leftIconAction={() => navigation.goBack()}
         />
       </CustomWrapper>
-      <CustomHeaderWithDesc
-        white
-        headerText="My Account"
-        descText="Manage your device & account here"
-      />
+      <CustomWrapper pl15>
+        <CustomHeaderWithDesc
+          noStyle
+          white
+          headerText="My Account"
+          descText="You can update battery parameters, wifi settings & device nickname here."
+        />
+      </CustomWrapper>
     </CustomWrapper>
   );
 };
@@ -281,7 +284,7 @@ export default function CustomerDeviceManager({navigation}) {
 
   console.log('selectedDevice', selectedDevice);
   return (
-    <CustomWrapper flex={1}>
+    <CustomWrapper flex={1} bg={'red'}>
       <TopBottomLayout
         topHeight={3}
         bottomHeight={9}

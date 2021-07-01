@@ -31,6 +31,7 @@ export default CustomInput = props => {
           onChangeText={text => props.onChange && props.onChange(text)}
           keyboardType={props.keyboardType && props.keyboardType}
           editable={props.editable}
+          secureTextEntry={props.secure}
         />
       ) : (
         <View style={Styles.container}>

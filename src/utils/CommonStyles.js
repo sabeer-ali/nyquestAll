@@ -1,8 +1,45 @@
 const primaryColor = '#243A5E';
 const secondaryColor = '#F5F8FF';
-const color = {black: '#212121', grey: '#757575'};
+const color = {
+  black: '#212121',
+  grey: '#757575',
+  grey2: '#8B8B8B',
+  darkBlue: '#51648B',
+  darkBlue2: '#7F91BB',
+  orange: '#E28534',
+};
 
 const CommonStyles = {
+  shadow: {
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 6,
+    },
+    shadowOpacity: 0.37,
+    shadowRadius: 7.49,
+
+    elevation: 12,
+  },
+  custom1FontStyle: {
+    fontFamily: primaryFont,
+    fontWeight: '500',
+    fontSize: 15,
+    lineHeight: 18,
+  },
+  secondaryFontStyle: {
+    fontFamily: primaryFont,
+    fontWeight: '500',
+    fontSize: 16,
+    lineHeight: 20,
+    color: '#fff',
+  },
+  primaryFontStyle: {
+    fontFamily: primaryFont,
+    fontWeight: '500',
+    fontSize: 14,
+    lineHeight: 17,
+  },
   halfmodalButton: {
     height: 44,
     width: '47%',

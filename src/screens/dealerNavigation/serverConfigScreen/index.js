@@ -555,15 +555,17 @@ const Form3 = ({setStep, deviceCommData, reconfigData}) => {
 
   const [deviceComServerData, setDeviceComServerData] = useState(null);
   const [upsVA, setUpsVA] = useState(
-    deviceCommData.deviceType === 5 || deviceCommData.deviceType === 6
+    deviceCommData.deviceType === 5
       ? '800'
+      : deviceCommData.deviceType === 6
+      ? '1500'
       : reconfigData
       ? reconfigData.invcap
       : '',
   );
   const [upsMake, setUpsMake] = useState(
     deviceCommData.deviceType === 5 || deviceCommData.deviceType === 6
-      ? 'iCUBE 1000'
+      ? 'Energy 24by7'
       : reconfigData
       ? reconfigData.invdesc !== ''
         ? reconfigData.invdesc.split(',')[0]
@@ -571,8 +573,10 @@ const Form3 = ({setStep, deviceCommData, reconfigData}) => {
       : '',
   );
   const [upsModel, setUpsModel] = useState(
-    deviceCommData.deviceType === 5 || deviceCommData.deviceType === 6
+    deviceCommData.deviceType === 5
       ? 'iCUBE 1000'
+      : deviceCommData.deviceType === 6
+      ? 'iCUBE 2000'
       : reconfigData
       ? reconfigData.invdesc !== ''
         ? reconfigData.invdesc.split(',')[1]

@@ -95,9 +95,9 @@ const HomeScreen = ({navigation}) => {
   const [searchModal, setSearchModal] = React.useState(false);
   const [searchResult, setSearchResult] = React.useState([]);
   const flatListRef = React.useRef();
+  const [isFetched, setFetch] = React.useState(false);
 
   React.useEffect(() => {
-    console.log('navigation.isFocused()', navigation.isFocused());
     setSearchModal(false);
     if (!searchModal) {
       setSearchResult([]);
@@ -142,6 +142,8 @@ const HomeScreen = ({navigation}) => {
       backHandler.remove();
       console.log('Unmounted HOME');
     };
+
+    StoreLocalDB('@AlertStatus', true);
   }, []);
 
   React.useEffect(() => {
@@ -305,6 +307,13 @@ const HomeScreen = ({navigation}) => {
     );
   };
 
+  onRefresh = () => {
+    setFetch(true);
+    handleGetListAPI(false, () => {
+      setFetch(false);
+    });
+  };
+
   return (
     <View style={Styles.container}>
       <Toast ref={ref => Toast.setRef(ref)} />
@@ -344,6 +353,8 @@ const HomeScreen = ({navigation}) => {
             keyExtractor={(item, index) => index}
             onEndReached={() => deviceList.length > 9 && handlePagination()}
             onEndReachedThreshold={0}
+            onRefresh={() => onRefresh()}
+            refreshing={isFetched}
             onScrollToIndexFailed={info => {
               const wait = new Promise(resolve => setTimeout(resolve, 700));
               wait.then(() => {

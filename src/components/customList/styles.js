@@ -74,6 +74,7 @@ const Styles = StyleSheet.create({
     minHeight: 92,
     alignItems: 'center',
     marginVertical: 5,
+    marginHorizontal: 3,
   },
   imageContainer: {
     width: 66,
@@ -155,6 +156,16 @@ const Styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: 'bold',
     color: '#000',
+  },
+  shadowStyle: {
+    shadowColor: '#243A5E',
+    shadowOffset: {
+      width: 0,
+      height: 5,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 2.84,
+    elevation: 3,
   },
 });
 

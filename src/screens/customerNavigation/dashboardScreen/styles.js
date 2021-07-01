@@ -79,6 +79,11 @@ const Styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  deviceCount: {
+    fontFamily: primaryFont,
+    fontSize: 12,
+    fontWeight: '600',
+  },
 });
 
 export default Styles;

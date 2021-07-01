@@ -4,6 +4,7 @@ import {
   primaryColor,
   secondaryColor,
   primaryFont,
+  color,
 } from '../../utils/CommonStyles';
 
 const Styles = StyleSheet.create({
@@ -109,6 +110,31 @@ const Styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
   },
+  underlineStyleBase: {
+    color: '#000',
+    borderTopWidth: 0,
+    borderLeftWidth: 0,
+    borderRightWidth: 0,
+    borderBottomColor: '#000',
+  },
+  keeploggedIn: {
+    fontFamily: primaryFont,
+    color: color.grey2,
+    fontSize: 12,
+    fontWeight: '500',
+    lineHeight: 15,
+  },
+  loginBtn: {
+    fontFamily: primaryFont,
+    fontWeight: '500',
+    fontSize: 16,
+    lineHeight: 20,
+    color: '#fff',
+  },
+  underlineStyleHighLighted: {
+    color: '#000',
+  },
+  btnStyle: {},
 });
 
 export default Styles;

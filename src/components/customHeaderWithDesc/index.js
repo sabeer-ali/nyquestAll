@@ -3,7 +3,6 @@ import {View, Text} from 'react-native';
 import Styles from './styles';
 
 const CustomHeaderWithDesc = ({headerText, descText, white, noStyle}) => {
-  console.log('headerText, descText, white', headerText, descText, white);
   return (
     <View style={noStyle ? {} : {paddingHorizontal: 25}}>
       {headerText && (

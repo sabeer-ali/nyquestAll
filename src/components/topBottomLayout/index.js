@@ -5,7 +5,7 @@ import {arrowBackIcon} from '../../assets';
 
 export default function topBottomLayout(props) {
   return (
-    <ScrollView contentContainerStyle={{flex: 1}}>
+    <View style={{flex: 1}}>
       <View style={Styles.container}>
         {props.backButtonType === 'backArrow' && (
           <View style={Styles.headerSection}>
@@ -37,6 +37,6 @@ export default function topBottomLayout(props) {
           </View>
         )}
       </View>
-    </ScrollView>
+    </View>
   );
 }

@@ -29,7 +29,7 @@ import {
   CustomWrapper,
   CustomHeader,
 } from '../../components';
-import {closeIcon, logoIcon} from '../../assets';
+import {closeIcon, eyeIcon, logoIcon} from '../../assets';
 import {color, CommonStyles} from '../../utils/CommonStyles';
 import {StoreLocalDB, getLocalDB} from '../../utils/localDB';
 import {
@@ -103,55 +103,60 @@ const ResetPassword = ({
   };
 
   return (
-    <CustomWrapper ph25 btrr25 btlr25 bg="#fff">
+    <CustomWrapper btrr25 btlr25 bg="#fff">
       <CustomHeader
         rightIcon={closeIcon}
         rightIconAction={() => {
-          setForgotPasswdMode(false);
           setModal(false);
+          setForgotPasswdMode(false);
+          setOtpMode(false);
+          setResetPassword(false);
         }}
       />
-      <CustomHeaderWithDesc
-        headerText="Reset Password"
-        descText="Enter new password"
-      />
-
-      <CustomWrapper h150 spaceEvently>
-        <CustomInput
-          form
-          placeholder="New Password"
-          value={newPassword}
-          onChange={passwd => setNewPassword(passwd)}
+      <CustomWrapper ph25>
+        <CustomHeaderWithDesc
+          noStyle
+          headerText="Reset Password"
+          descText="Enter new password"
         />
-        <CustomInput
-          form
-          placeholder="Confirm Password"
-          value={cPassword}
-          onChange={cPasswd => setConfirmNewPassword(cPasswd)}
-        />
-      </CustomWrapper>
 
-      <CustomWrapper pb2>
-        {isLoading ? (
-          <Loader />
-        ) : (
-          <Button
-            uppercase={false}
-            mode="contained"
-            style={[
-              CommonStyles.buttonBgStyle,
-              {
-                backgroundColor: '#E28534',
-                width: '100%',
-                alignSelf: 'center',
-                marginVertical: 30,
-              },
-            ]}
-            labelStyle={Styles.modalButtonLabel}
-            onPress={() => handleSubmit()}>
-            Done
-          </Button>
-        )}
+        <CustomWrapper h200 spaceEvently>
+          <CustomInput
+            form
+            placeholder="New Password"
+            value={newPassword}
+            onChange={passwd => setNewPassword(passwd)}
+          />
+          <CustomInput
+            form
+            placeholder="Confirm Password"
+            value={cPassword}
+            onChange={cPasswd => setConfirmNewPassword(cPasswd)}
+          />
+        </CustomWrapper>
+
+        <CustomWrapper pb2>
+          {isLoading ? (
+            <Loader />
+          ) : (
+            <Button
+              uppercase={false}
+              mode="contained"
+              style={[
+                CommonStyles.buttonBgStyle,
+                {
+                  backgroundColor: '#E28534',
+                  width: '100%',
+                  alignSelf: 'center',
+                  marginVertical: 30,
+                },
+              ]}
+              labelStyle={CommonStyles.secondaryFontStyle}
+              onPress={() => handleSubmit()}>
+              Done
+            </Button>
+          )}
+        </CustomWrapper>
       </CustomWrapper>
     </CustomWrapper>
   );
@@ -166,6 +171,7 @@ const ForgotPasswordOtp = ({
 }) => {
   const [otp, setOtp] = React.useState('');
   const [isLoading, setLoader] = React.useState(false);
+  const [isValid, setValidation] = React.useState(true);
 
   const handleSubmit = () => {
     handleValidateOTP(data => {
@@ -179,41 +185,50 @@ const ForgotPasswordOtp = ({
   const handleValidateOTP = callback => {
     NetInfo.fetch().then(state => {
       let payload = {otp: otp};
-      if (state.isInternetReachable) {
-        setLoader(true);
-        MiddleWareForAuth(
-          'POST',
-          VALIDATE_FORGOT_PASSWORD_OTP,
-          payload,
-          (res, err) => {
-            setLoader(false);
-            if (err !== null) {
-              console.log('REs VALIDATE_FORGOT_PASSWORD_OTP API Errr => ', err);
-              Alert.alert('Warning', err.text);
-            } else {
-              console.log(
-                'REs VALIDATE_FORGOT_PASSWORD_OTP Success => ',
-                res.data,
-              );
-              if (res.data.status === 'error') {
-                Alert.alert('Warning', res.data.text);
+
+      if (otp !== '') {
+        if (state.isInternetReachable) {
+          setLoader(true);
+          MiddleWareForAuth(
+            'POST',
+            VALIDATE_FORGOT_PASSWORD_OTP,
+            payload,
+            (res, err) => {
+              setLoader(false);
+              if (err !== null) {
+                console.log(
+                  'REs VALIDATE_FORGOT_PASSWORD_OTP API Errr => ',
+                  err,
+                );
+                Alert.alert('Warning', err.text);
               } else {
-                if (res.data.code === 10 && res.data.status === 'valid') {
-                  if (callback) callback(res.data.userid);
+                console.log(
+                  'REs VALIDATE_FORGOT_PASSWORD_OTP Success => ',
+                  res.data,
+                );
+                if (res.data.status === 'error') {
+                  Alert.alert('Warning', res.data.text);
                 } else {
-                  Alert.alert('Warning', 'Please Retry Again');
+                  if (res.data.code === 10 && res.data.status === 'valid') {
+                    if (callback) callback(res.data.userid);
+                  } else {
+                    // Alert.alert('Warning', 'Please Retry Again');
+                    setValidation(false);
+                  }
                 }
               }
-            }
-          },
-        );
+            },
+          );
+        } else {
+          Alert.alert('Warning', 'No Internet Connection');
+        }
       } else {
-        Alert.alert('Warning', 'No Internet Connection');
+        setValidation(false);
       }
     });
   };
   return (
-    <CustomWrapper ph25 bg="#fff" btrr25 btlr25>
+    <CustomWrapper bg="#fff" btrr25 btlr25>
       <CustomHeader
         rightIcon={closeIcon}
         rightIconAction={() => {
@@ -225,55 +240,78 @@ const ForgotPasswordOtp = ({
         headerText="Forgot Password"
         descText="Enter the OTP to continue"
       />
-      <OTPInputView
-        style={{width: '80%', height: 90}}
-        pinCount={4}
-        code={otp} //You can supply this prop or not. The component will be used as a controlled / uncontrolled component respectively.
-        onCodeChanged={code => setOtp(code)}
-        autoFocusOnLoad
-        codeInputFieldStyle={Styles.underlineStyleBase}
-        codeInputHighlightStyle={Styles.underlineStyleHighLighted}
-        onCodeFilled={code => {
-          console.log(`Code is ${code}, you are good to go!`);
-        }}
-      />
-      <Text style={[CommonStyles.primaryFontStyle, {color: color.grey}]}>
-        We have sent an OTP to your registered mobile number & email. Enter the
-        4 digit OTP to reset password.
-      </Text>
-
-      <CustomWrapper pv2 pt3>
-        <Text style={[CommonStyles.primaryFontStyle, {color: color.orange}]}>
-          Resend OTP
-        </Text>
-      </CustomWrapper>
-      <CustomWrapper pb2>
-        {isLoading ? (
-          <Loader />
-        ) : (
-          <Button
-            uppercase={false}
-            mode="contained"
+      <RowLine center>
+        <OTPInputView
+          style={{width: '85%', height: 90}}
+          pinCount={4}
+          code={otp} //You can supply this prop or not. The component will be used as a controlled / uncontrolled component respectively.
+          onCodeChanged={code => {
+            setOtp(code);
+            setValidation(true);
+          }}
+          autoFocusOnLoad
+          codeInputFieldStyle={Styles.underlineStyleBase}
+          codeInputHighlightStyle={Styles.underlineStyleHighLighted}
+          onCodeFilled={code => {
+            console.log(`Code is ${code}, you are good to go!`);
+          }}
+          editable={true}
+        />
+      </RowLine>
+      <CustomWrapper ph3>
+        {!isValid && (
+          <Text
             style={[
-              CommonStyles.buttonBgStyle,
-              {
-                backgroundColor: '#E28534',
-                width: '100%',
-                alignSelf: 'center',
-                marginVertical: 30,
-              },
-            ]}
-            labelStyle={Styles.modalButtonLabel}
-            onPress={() => handleSubmit()}>
-            Reset
-          </Button>
+              CommonStyles.secondaryFontStyle,
+              {color: 'red', fontSize: 12},
+            ]}>
+            Invalid OTP
+          </Text>
         )}
+      </CustomWrapper>
+      <CustomWrapper ph3 pt2>
+        <Text style={[CommonStyles.primaryFontStyle, {color: color.grey}]}>
+          We have sent an OTP to your registered mobile number & email. Enter
+          the 4 digit OTP to reset password.
+        </Text>
+        <CustomWrapper pv2>
+          <Text style={[CommonStyles.primaryFontStyle, {color: color.orange}]}>
+            Resend OTP
+          </Text>
+        </CustomWrapper>
+        <CustomWrapper pb2>
+          {isLoading ? (
+            <Loader />
+          ) : (
+            <Button
+              uppercase={false}
+              mode="contained"
+              style={[
+                CommonStyles.buttonBgStyle,
+                {
+                  backgroundColor: '#E28534',
+                  width: '100%',
+                  alignSelf: 'center',
+                  marginVertical: 30,
+                },
+              ]}
+              labelStyle={CommonStyles.secondaryFontStyle}
+              onPress={() => handleSubmit()}>
+              Reset
+            </Button>
+          )}
+        </CustomWrapper>
       </CustomWrapper>
     </CustomWrapper>
   );
 };
 
-const ForgotPassword = ({setForgotPasswdMode, setModal, setOtpMode}) => {
+const ForgotPassword = ({
+  setForgotPasswdMode,
+  setModal,
+  setOtpMode,
+  setResetPassword,
+}) => {
   const [usermailOrPass, setUserMailOrPassword] = React.useState('');
   const [isLoading, setLoader] = React.useState(false);
 
@@ -281,6 +319,7 @@ const ForgotPassword = ({setForgotPasswdMode, setModal, setOtpMode}) => {
     handleForgotPasswordOTP(() => {
       setForgotPasswdMode(false);
       setOtpMode(true);
+      setResetPassword(false);
     });
   };
 
@@ -317,14 +356,16 @@ const ForgotPassword = ({setForgotPasswdMode, setModal, setOtpMode}) => {
     });
   };
   return (
-    <CustomWrapper ph25 pb1 btlr25 btrr25 bg="#fff">
+    <CustomWrapper pb1 btlr25 btrr25 bg="#fff">
       <CustomHeader
         rightIcon={closeIcon}
         rightIconAction={() => {
           setForgotPasswdMode(false);
           setModal(false);
+          setResetPassword(false);
         }}
       />
+
       <CustomHeaderWithDesc
         headerText="Forgot Password"
         descText="Enter your registered mobile number or email to continue"
@@ -466,89 +507,109 @@ const NewAccount = ({setForgotPasswdMode, setModal, setOtpMode}) => {
   };
 
   return (
-    <CustomWrapper ph25 pb1 btlr25 btrr25 bg="#fff">
-      <CustomHeader
-        rightIcon={closeIcon}
-        rightIconAction={() => {
-          setModal(false);
-        }}
-      />
+    <ScrollView>
+      <CustomWrapper pb1 btlr25 btrr25 bg="#fff">
+        <CustomWrapper mv3>
+          <CustomHeaderWithDesc
+            descText="Enter details to continue"
+            headerText="Create Account"
+          />
+        </CustomWrapper>
 
-      <CustomWrapper ph2>
-        <CustomWrapper pv3 h450 vSpaceBetween>
-          <CustomInput
-            form
-            placeholder="Name"
-            value={name}
-            onChange={value => setName(value)}
+        <View style={{position: 'absolute', right: 10, top: 10}}>
+          <CustomHeader
+            rightIcon={closeIcon}
+            rightIconAction={() => {
+              setModal(false);
+            }}
           />
-          <CustomInput
-            form
-            placeholder="Mobile"
-            value={mobile}
-            onChange={value => setMobile(value)}
-          />
-          <CustomInput
-            form
-            placeholder="Email"
-            value={email}
-            onChange={value => setEmail(value)}
-          />
-          <CustomInput
-            form
-            placeholder="Password"
-            value={password}
-            onChange={value => setPassword(value)}
-          />
-          <CustomInput
-            form
-            placeholder="Confirm Password"
-            value={cPassword}
-            onChange={value => setCPassword(value)}
-          />
-        </CustomWrapper>
-        <CustomWrapper pv2>
-          <Text
-            style={[
-              CommonStyles.primaryFontStyle,
-              {
-                color: color.grey,
-                lineHeight: 20,
-                fontSize: 12,
-                paddingRight: 40,
-              },
-            ]}></Text>
-        </CustomWrapper>
-        {isLoading ? (
-          <Loader />
-        ) : (
-          <Button
-            uppercase={false}
-            mode="contained"
-            style={[
-              CommonStyles.buttonBgStyle,
-              {
-                backgroundColor: '#E28534',
-                width: '100%',
-                alignSelf: 'center',
-                marginBottom: 5,
-              },
-            ]}
-            labelStyle={Styles.modalButtonLabel}
-            onPress={() => {
-              handleSubmitApi();
-            }}>
-            Register
-          </Button>
-        )}
-        <CustomWrapper flexDirectionRow pv2>
-          <Text>Already have an acoount? </Text>
-          <TouchableOpacity>
-            <Text>Login</Text>
-          </TouchableOpacity>
+        </View>
+
+        <CustomWrapper ph2>
+          <CustomWrapper pv3 h450 vSpaceBetween>
+            <CustomInput
+              form
+              placeholder="Name"
+              value={name}
+              onChange={value => setName(value)}
+            />
+            <CustomInput
+              form
+              placeholder="Mobile"
+              value={mobile}
+              onChange={value => setMobile(value)}
+            />
+            <CustomInput
+              form
+              placeholder="Email"
+              value={email}
+              onChange={value => setEmail(value)}
+            />
+            <CustomInput
+              form
+              placeholder="Password"
+              value={password}
+              onChange={value => setPassword(value)}
+            />
+            <CustomInput
+              form
+              placeholder="Confirm Password"
+              value={cPassword}
+              onChange={value => setCPassword(value)}
+            />
+          </CustomWrapper>
+          {/* <CustomWrapper pv2 bg="red">
+            <Text
+              style={[
+                CommonStyles.primaryFontStyle,
+                {
+                  color: color.grey,
+                  lineHeight: 20,
+                  fontSize: 12,
+                  paddingRight: 40,
+                },
+              ]}></Text>
+          </CustomWrapper> */}
+          {isLoading ? (
+            <Loader />
+          ) : (
+            <Button
+              uppercase={false}
+              mode="contained"
+              style={[
+                CommonStyles.buttonBgStyle,
+                {
+                  backgroundColor: '#E28534',
+                  width: '100%',
+                  alignSelf: 'center',
+                  marginBottom: 5,
+                },
+              ]}
+              labelStyle={Styles.modalButtonLabel}
+              onPress={() => {
+                handleSubmitApi();
+              }}>
+              Register
+            </Button>
+          )}
+          <CustomWrapper flexDirectionRow pv2 center>
+            <Text
+              style={[
+                CommonStyles.primaryFontStyle,
+                {color: color.grey, paddingRight: 15},
+              ]}>
+              Already have an acoount?
+            </Text>
+            <TouchableOpacity onPress={() => setModal(false)}>
+              <Text
+                style={[CommonStyles.primaryFontStyle, {color: color.orange}]}>
+                Login
+              </Text>
+            </TouchableOpacity>
+          </CustomWrapper>
         </CustomWrapper>
       </CustomWrapper>
-    </CustomWrapper>
+    </ScrollView>
   );
 };
 
@@ -638,42 +699,54 @@ const LoginForm = ({
   };
 
   return (
-    <ScrollView contentContainerStyle={{flex: 1}}>
+    <ScrollView contentContainerStyle={{}}>
       {isLoading ? (
         <Loader />
       ) : (
         <CustomWrapper>
           <CustomWrapper pt1>
             <CustomHeaderWithDesc
+              noStyle
               headerText="Login"
               descText="Please sign in to continue"
             />
           </CustomWrapper>
-          <CustomWrapper h200 spaceEvently pv2>
+          <CustomWrapper h200 spaceEvently>
             <CustomInput
               form
               placeholder="Mobile/ Email"
               value={userName}
               onChange={userName => setUserName(userName)}
             />
-            <CustomInput
-              form
-              placeholder="Password"
-              value={password}
-              onChange={pass => setPassword(pass.trim())}
-              showSecure
-              secure={isSecureInput}
-              handleSecure={() => setSecureInput(!isSecureInput)}
-            />
+            <CustomWrapper>
+              <RowLine>
+                <View style={{width: '100%'}}>
+                  <CustomInput
+                    form
+                    placeholder="Password"
+                    value={password}
+                    onChange={pass => setPassword(pass.trim())}
+                    showSecure
+                    secure={isSecureInput}
+                  />
+                </View>
+                <TouchableOpacity
+                  style={{position: 'absolute', right: 0}}
+                  onPress={() => setSecureInput(!isSecureInput)}>
+                  <Image source={eyeIcon} />
+                </TouchableOpacity>
+              </RowLine>
+            </CustomWrapper>
           </CustomWrapper>
 
-          <RowLine mv2>
+          <RowLine mb3>
             <CheckBox
               disabled={false}
               onTintColor="#51648B"
               onFillColor="#51648B"
               value={isloggedIn}
               onValueChange={newValue => setloggedIn(newValue)}
+              style={{marginLeft: -5}}
             />
             <Text style={Styles.keeploggedIn}>Keep me logged in.</Text>
           </RowLine>
@@ -692,7 +765,7 @@ const LoginForm = ({
               alignSelf: 'center',
             },
           ]}
-          labelStyle={Styles.modalButtonLabel}
+          labelStyle={Styles.loginBtn}
           onPress={() => {
             handleLoggedIn();
           }}>
@@ -704,14 +777,19 @@ const LoginForm = ({
             onPress={() => {
               setModal(true);
               setForgotPasswdMode(true);
+              setNewAccount(false);
             }}>
-            <Text style={CommonStyles.primaryFontStyle}>Forgot Password?</Text>
+            <Text
+              style={[CommonStyles.primaryFontStyle, {color: color.darkBlue}]}>
+              Forgot Password?
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             onPress={() => {
               setModal(true);
               setNewAccount(true);
+              setForgotPasswdMode(false);
             }}>
             <Text
               style={[CommonStyles.primaryFontStyle, {color: color.orange}]}>
@@ -727,7 +805,7 @@ const LoginForm = ({
 const TopSection = () => {
   return (
     <View style={{marginHorizontal: 20, marginVertical: 25}}>
-      <Image source={logoIcon} />
+      <Image source={logoIcon} style={{width: 60, height: 60}} />
     </View>
   );
 };
@@ -744,7 +822,7 @@ export default CustomerLoginScreen = ({navigation}) => {
     <View style={{flex: 1}}>
       <TopBottomLayout
         topHeight={2}
-        bottomHeight={10}
+        bottomHeight={8}
         backButtonType="backArrow"
         backButtonAction={() => navigation.goBack()}
         topSection={<TopSection />}
@@ -758,26 +836,28 @@ export default CustomerLoginScreen = ({navigation}) => {
         }
       />
       {isModal && (
-        // <CustomTopBottomModalLayout
-        //   topStyle={{flex: isOtpMode ? 2 : isResetPassword ? 2.4 : 1.8}}
-        //   bottomStyle={{flex: 1}}>
         <Modal visible={isModal} animationType="slide" transparent={true}>
           <View style={{flex: 1}}>
             <TouchableOpacity
+              onPress={() => setModal(false)}
               style={{
                 flex: 1,
                 backgroundColor: '#000000a6',
               }}
             />
-            <View style={{backgroundColor: '#000000a6'}}>
-              {isForgotPasswdMode && !isOtpMode && !isResetPassword && (
+            <View
+              style={{
+                backgroundColor: '#000000a6',
+              }}>
+              {isForgotPasswdMode && !isOtpMode && !isResetPassword ? (
                 <ForgotPassword
                   setForgotPasswdMode={setForgotPasswdMode}
                   setModal={setModal}
                   setOtpMode={setOtpMode}
+                  setResetPassword={setResetPassword}
                 />
-              )}
-              {isOtpMode && (
+              ) : null}
+              {isOtpMode && !isNewAccount ? (
                 <ForgotPasswordOtp
                   setForgotPasswdMode={setForgotPasswdMode}
                   setModal={setModal}
@@ -785,7 +865,7 @@ export default CustomerLoginScreen = ({navigation}) => {
                   setResetPassword={setResetPassword}
                   setResetPasswordData={setResetPasswordData}
                 />
-              )}
+              ) : null}
               {isResetPassword && (
                 <ResetPassword
                   setForgotPasswdMode={setForgotPasswdMode}
@@ -796,11 +876,15 @@ export default CustomerLoginScreen = ({navigation}) => {
                 />
               )}
 
-              {isNewAccount && <NewAccount setModal={setModal} />}
+              {isNewAccount && (
+                <NewAccount
+                  setModal={setModal}
+                  setResetPassword={setResetPassword}
+                />
+              )}
             </View>
           </View>
         </Modal>
-        // </CustomTopBottomModalLayout>
       )}
 
       <Toast ref={ref => Toast.setRef(ref)} style={{zIndex: 100}} />

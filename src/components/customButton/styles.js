@@ -1,6 +1,10 @@
 import React from 'react';
 import {StyleSheet} from 'react-native';
-import {primaryColor, secondaryColor} from '../../utils/CommonStyles';
+import {
+  primaryColor,
+  primaryFont,
+  secondaryColor,
+} from '../../utils/CommonStyles';
 
 const Styles = StyleSheet.create({
   buttonBackground: {
@@ -24,10 +28,11 @@ const Styles = StyleSheet.create({
   },
   text: {
     marginLeft: 24,
-    fontFamily: 'Montserrat',
+    fontFamily: primaryFont,
     color: '#212121',
     fontSize: 15,
     fontWeight: '500',
+    lineHeight: 18,
   },
   iconContainer: {
     backgroundColor: '#7F91BB',

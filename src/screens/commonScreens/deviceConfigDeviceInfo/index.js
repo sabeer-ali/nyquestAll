@@ -8,8 +8,9 @@ import {
   Alert,
   TouchableOpacity,
   ScrollView,
+  Dimensions,
 } from 'react-native';
-import {Button} from 'react-native-paper';
+import {Button, Snackbar} from 'react-native-paper';
 // import Geolocation from '@react-native-community/geolocation';
 import Geolocation from 'react-native-geolocation-service';
 import Toast from 'react-native-toast-message';
@@ -384,10 +385,9 @@ const ConnectionStatus = ({
   const [deviceTypeApi, setDeviceType] = useState(
     deviceDetails.dev_category === 'L' ? 'LV' : 'HV',
   );
+  console.log('deviceTypeApi', deviceTypeApi);
   useEffect(() => {
     NetInfo.fetch().then(state => {
-      console.log('Connection type', state.type);
-      console.log('Is connected?', state.isInternetReachable);
       Alert.alert(
         'WArning',
         'Are You Sure Device is Connected (Please check the Wifi) If not Connected please click "No" and go to wifi settings then selected after that click again config button. Then select "Yes". Want to Continue?',
@@ -566,7 +566,11 @@ const DeviceInfo = ({
   const [locationAdd, setLocationAdd] = React.useState(false);
   const [nickname, setNickName] = React.useState('');
   const [isLoading, setLoader] = React.useState(false);
-  console.log('deviceDetails', deviceDetails);
+
+  const [snackBarVisible, setSnackBarVisible] = React.useState(false);
+  const onToggleSnackBar = () => setSnackBarVisible(!snackBarVisible);
+  const onDismissSnackBar = () => setSnackBarVisible(false);
+
   const requestGpsPermission = async callback => {
     try {
       const granted = await PermissionsAndroid.request(
@@ -614,7 +618,6 @@ const DeviceInfo = ({
     if (deviceDetails.customerid == -1) {
       requestGpsPermission(gpsdata => {
         getLocalDB('@customerLoginDetails', localData => {
-          console.log('1110000', gpsdata);
           const payload = {
             userid: localData.cust_id,
             deviceid: deviceDetails.deviceId,
@@ -627,10 +630,12 @@ const DeviceInfo = ({
           console.log('Payload ==>', payload);
 
           NetInfo.fetch().then(state => {
-            console.log('Connection type', state.type);
-            console.log('Is connected?', state.isInternetReachable);
             if (state.isInternetReachable) {
-              setLoader(true);
+              // setLoader(true);
+              setLoader(false);
+              setLocationAdd(true);
+              setStepsDetsils(true);
+              setModal(true);
               MiddleWareForAuth(
                 'POST',
                 ADD_CUSTOMER_DEVICE,
@@ -667,13 +672,31 @@ const DeviceInfo = ({
         });
       });
     } else {
-      Alert.alert('Warning', 'This Device Already assigned');
+      // Alert.alert('Warning', 'This Device Already assigned');
+      onToggleSnackBar();
     }
   };
 
   return (
     <ScrollView>
-      <View style={Styles.deviceInfoContainer}>
+      <Snackbar
+        visible={snackBarVisible}
+        onDismiss={onDismissSnackBar}
+        style={{
+          backgroundColor: '#243A5E',
+          height: 100,
+          top:
+            Dimensions.get('screen').height * 0.7 -
+            Dimensions.get('screen').height,
+        }}
+        action={{
+          label: 'Ok',
+          onPress: () => onDismissSnackBar(),
+        }}>
+        This Device Already assigned.
+      </Snackbar>
+
+      <View style={[Styles.deviceInfoContainer]}>
         <Text style={Styles.heading}>Device Info</Text>
         <Text style={Styles.desc}>
           {isData
@@ -717,7 +740,10 @@ const DeviceInfo = ({
             <CustomButton
               text="Configure"
               width100
-              backgroundStyle={[CommonStyles.buttonBgStyle, {width: 250}]}
+              backgroundStyle={[
+                CommonStyles.buttonBgStyle,
+                {width: Dimensions.get('screen').width * 0.9},
+              ]}
               textStyle={CommonStyles.buttonTextStyle}
               onpress={() => handleconfigApi()}
             />

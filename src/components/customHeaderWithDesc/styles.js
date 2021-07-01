@@ -20,6 +20,7 @@ const Styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 22,
     color: color.black,
+    lineHeight: 27,
   },
   desc: {
     fontFamily: primaryFont,

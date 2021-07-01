@@ -11,9 +11,16 @@ const Styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
     color: '#fff',
+    lineHeight: 20,
   },
+  leftIconStyle: {},
+  rightIconStyle: {},
   iconStyle: {
     padding: 10,
+    // paddingVertical: 10,
+    // paddingLeft: 10,
+    right: 15,
+    top: 20,
   },
 });
 

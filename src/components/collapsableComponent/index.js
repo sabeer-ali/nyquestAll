@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import {View, Text, Image, TouchableOpacity} from 'react-native';
 import {arrowDownIcon, arrowUpIcon, locationIcon} from '../../assets';
+import {color, CommonStyles} from '../../utils/CommonStyles';
 import Styles from './styles';
 
 export default collapsableComponent = ({icon, text, data}) => {
@@ -10,7 +11,7 @@ export default collapsableComponent = ({icon, text, data}) => {
       onPress={() => setCollapse(!isCollapse)}
       style={
         isCollapse
-          ? [Styles.container, {backgroundColor: '#fff'}]
+          ? [Styles.container, {backgroundColor: '#fff'}, CommonStyles.shadow]
           : Styles.container
       }>
       <View
@@ -26,7 +27,9 @@ export default collapsableComponent = ({icon, text, data}) => {
         </View>
 
         <View style={Styles.secondContainer}>
-          <Text style={Styles.textStyle}>{text}</Text>
+          <Text style={[CommonStyles.custom1FontStyle, {color: color.black}]}>
+            {text}
+          </Text>
         </View>
         <View style={Styles.thirdContainer}>
           <Image source={isCollapse ? arrowUpIcon : arrowDownIcon} />
@@ -34,7 +37,7 @@ export default collapsableComponent = ({icon, text, data}) => {
       </View>
 
       {isCollapse && (
-        <View style={Styles.boxContainerCollapse}>
+        <View style={[Styles.boxContainerCollapse]}>
           {data && data.length
             ? data.map((item, index) => {
                 return (

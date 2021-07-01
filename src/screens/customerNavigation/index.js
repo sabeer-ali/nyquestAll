@@ -4,7 +4,7 @@ import InstallationDetailsScreen from './installationDetailsScreen';
 import CustomerDashboardScreen from './dashboardScreen';
 import SupportDetailsScreen from './supportDetailsScreen';
 import DeviceConfigScreen from './deviceConfigScreen';
-import DeviceConfigDeviceInfoScreen from './deviceConfigDeviceInfo';
+// import DeviceConfigDeviceInfoScreen from './deviceConfigDeviceInfo';
 import deviceConfigCustomerDetailsScreen from './deviceConfigCustomerDetailsScreen';
 import deviceConfigStepsScreen from './deviceConfigStepsScreen';
 import deviceConfigMenuScreen from './deviceConfigMenuScreen';

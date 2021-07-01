@@ -4,8 +4,8 @@ import {BottomNavigation} from 'react-native-paper';
 import {color, CommonStyles} from '../../../utils/CommonStyles';
 import {
   dashboardIcon,
-  singleSettingsIcon,
-  customer2Icon,
+  supportExclamation,
+  customerSmallIcon,
 } from '../../../assets';
 
 import {
@@ -21,8 +21,18 @@ const BottomNavigator = ({navigation}) => {
       key: 'dashboard',
       icon: dashboardIcon,
     },
-    {key: 'settings', icon: singleSettingsIcon},
-    {key: 'myAccount', icon: customer2Icon},
+    {key: 'settings', icon: supportExclamation},
+    {
+      key: 'myAccount',
+      icon: data => {
+        return (
+          <Image
+            source={customerSmallIcon}
+            style={{width: 20, height: 20, tintColor: data.color}}
+          />
+        );
+      },
+    },
   ]);
 
   const renderScene = BottomNavigation.SceneMap({

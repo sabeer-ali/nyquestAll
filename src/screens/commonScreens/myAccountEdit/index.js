@@ -81,7 +81,7 @@ const BottomSection = ({navigation, loginData}) => {
   };
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
-      <CustomWrapper ph2 mt3>
+      <CustomWrapper pl1 mt3>
         <CustomHeaderWithDesc
           noStyle
           headerText="Edit Account"
@@ -112,7 +112,8 @@ const BottomSection = ({navigation, loginData}) => {
           ) : (
             <Button
               mode="contained"
-              style={Styles.modalButton}
+              uppercase={false}
+              style={[Styles.modalButton, {textTransform: 'capitalize'}]}
               labelStyle={Styles.modalButtonLabel}
               onPress={() => editAccountApi()}>
               Done
@@ -126,7 +127,7 @@ const BottomSection = ({navigation, loginData}) => {
 
 const TopSection = ({navigation}) => {
   return (
-    <CustomWrapper>
+    <CustomWrapper ph2>
       <CustomHeader
         leftIcon={arrowBackIcon}
         leftIconAction={() => navigation.goBack()}
@@ -135,13 +136,16 @@ const TopSection = ({navigation}) => {
         <View
           style={{
             backgroundColor: 'rgba(127, 145, 187, 0.2);',
-            width: 60,
-            height: 60,
+            width: 80,
+            height: 80,
             borderRadius: 8,
             justifyContent: 'center',
             alignItems: 'center',
           }}>
-          <Image source={customer2Icon} />
+          <Image
+            source={customer2Icon}
+            style={{width: 20, height: 20, tintColor: '#fff'}}
+          />
         </View>
       </CustomWrapper>
     </CustomWrapper>

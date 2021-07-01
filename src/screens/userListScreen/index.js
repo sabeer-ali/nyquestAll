@@ -7,7 +7,7 @@ import {
   CustomWrapper,
   LogoWithTextComponent,
 } from '../../components';
-import {dealerIcon} from '../../assets';
+import {customerIcon, dealerIcon} from '../../assets';
 import {primaryColor} from '../../utils/CommonStyles';
 import {getLocalDB} from '../../utils/commonUtils';
 
@@ -33,15 +33,15 @@ const UserListScreen = ({navigation}) => {
   };
 
   return (
-    <View style={Styles.container}>
+    <View style={[Styles.container]}>
       <StatusBar animated={true} backgroundColor={primaryColor} />
 
-      <View style={Styles.topSection}>
+      <View style={[Styles.topSection]}>
         <LogoWithTextComponent />
       </View>
 
       <View style={[Styles.bottomSection]}>
-        <CustomWrapper ph2>
+        <CustomWrapper ph1>
           <Text style={Styles.login}>Login</Text>
           <Text style={Styles.loginDescription}>
             Select user type to continue
@@ -51,16 +51,17 @@ const UserListScreen = ({navigation}) => {
         <CustomWrapper style={Styles.buttonContainer} mt3 ph1>
           <CustomButton
             width100
-            text="Dealer"
-            icon={dealerIcon}
-            onpress={() => handleDealerLogin()}
+            text="Customer"
+            icon={customerIcon}
+            iconBg={'#7f91bb33'}
+            onpress={() => handleCustomerLogin()}
           />
-
           <CustomButton
             width100
-            text="Customer"
+            text="Dealer"
             icon={dealerIcon}
-            onpress={() => handleCustomerLogin()}
+            iconBg={'#7f91bb33'}
+            onpress={() => handleDealerLogin()}
           />
         </CustomWrapper>
       </View>

@@ -20,12 +20,12 @@ export default CustomHeader = ({
         {leftIcon && (
           <TouchableOpacity
             onPress={() => leftIconAction && leftIconAction()}
-            style={Styles.iconStyle}>
+            style={[Styles.leftIconStyle]}>
             <Image source={leftIcon} />
           </TouchableOpacity>
         )}
       </View>
-      <View style={{left: -30}}>
+      <View style={{}}>
         {centerText && <Text style={Styles.centerText}>{centerText}</Text>}
       </View>
       {/* <View>
@@ -41,7 +41,7 @@ export default CustomHeader = ({
         {rightIcon && (
           <TouchableOpacity
             onPress={() => rightIconAction && rightIconAction()}
-            style={Styles.iconStyle}>
+            style={rightIcon && leftIcon ? Styles.rightIconStyle : leftIcon}>
             {rightIcon && <Image source={rightIcon} />}
           </TouchableOpacity>
         )}

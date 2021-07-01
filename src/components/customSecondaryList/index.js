@@ -11,9 +11,16 @@ export default CustomSecondaryList = ({
   params,
   time,
   date,
+  bg,
+  width50,
 }) => {
   return (
-    <View style={Styles.container}>
+    <View
+      style={[
+        Styles.container,
+        bg && {backgroundColor: bg},
+        width50 && {width: '48%'},
+      ]}>
       <View style={Styles.topSection}>
         <View>
           <Text style={Styles.text1}>{text1}</Text>

@@ -9,6 +9,7 @@ import {
   batteryInfoIcon,
   upsInfoIcon,
   solarModuleIcon,
+  upsInfo2,
 } from '../../../assets';
 import {getLocalDB, Loader} from '../../../utils/commonUtils';
 import {MiddleWareForAuth} from '../../../utils/apiServices';
@@ -118,7 +119,7 @@ export default InstallationDetailsScreen = ({route, navigation}) => {
           {name: 'Manufacturer', value: inverter_desc},
           {name: 'Capacity', value: inverter_capa},
         ],
-        icon: upsInfoIcon,
+        icon: upsInfo2,
       },
       {
         dataName: 'Solar Module Info',

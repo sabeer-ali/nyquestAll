@@ -241,6 +241,7 @@ const PasswordComponent = ({setModal, navigation}) => {
         ) : (
           <Button
             mode="contained"
+            uppercase={false}
             style={Styles.modalButton}
             labelStyle={Styles.modalButtonLabel}
             onPress={() => changePasswordApi()}>

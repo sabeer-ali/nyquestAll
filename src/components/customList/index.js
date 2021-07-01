@@ -29,15 +29,24 @@ export default CustomList = ({
   deviceConfigStatus,
   config,
   colorChanged,
+  showShadow,
 }) => (
   <TouchableOpacity
     onPress={() => onpress && onpress()}
     style={
       bgColor
-        ? [Styles.deviceListContainer, {backgroundColor: bgColor}]
+        ? [
+            Styles.deviceListContainer,
+            showShadow && Styles.shadowStyle,
+            {backgroundColor: bgColor},
+          ]
         : defaultList && !bgColor
-        ? [Styles.deviceListContainer, {backgroundColor: 'transparent'}]
-        : Styles.deviceListContainer
+        ? [
+            Styles.deviceListContainer,
+            showShadow && Styles.shadowStyle,
+            {backgroundColor: 'transparent'},
+          ]
+        : [Styles.deviceListContainer, showShadow && Styles.shadowStyle]
     }>
     <View
       style={defaultList ? Styles.imageSectionDefault : Styles.imageSection}>

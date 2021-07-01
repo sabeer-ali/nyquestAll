@@ -76,8 +76,15 @@ const singleSettingsIcon = require('./commonIcons/singleSettingsIcon/Vector.png'
 const customer2Icon = require('./commonIcons/customer2Icon/Vector.png');
 
 const dashboardNoDeviceConfigImage = require('./dashboardNoDeviceConfigImage/Group204.png');
+const eyeIcon = require('./commonIcons/eyeIcon/Vector.png');
+const upsInfo2 = require('./upsInfoIcon/Group182.png');
+const supportExclamation = require('./commonIcons/supportExclamationIcon/mdi_contact_support.png');
+const customerSmallIcon = require('./customerSmallIcon/Vector.png');
 
 export {
+  customerSmallIcon,
+  supportExclamation,
+  upsInfo2,
   checkboxBlankIcon,
   dashboardNoDeviceConfigImage,
   customer2Icon,
@@ -139,4 +146,5 @@ export {
   contactSupportIcon,
   arrowBackIcon,
   infoIcon,
+  eyeIcon,
 };

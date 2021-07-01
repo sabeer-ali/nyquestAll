@@ -19,7 +19,6 @@ const Styles = StyleSheet.create({
     paddingBottom: 40,
   },
   bottomSection: {
-    flex: 0.8,
     backgroundColor: secondaryColor,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
@@ -36,6 +35,7 @@ const Styles = StyleSheet.create({
     fontSize: 22,
     color: '#212121',
     marginTop: 40,
+    lineHeight: 27,
   },
   loginDescription: {
     fontFamily: primaryFont,
@@ -43,6 +43,7 @@ const Styles = StyleSheet.create({
     fontSize: 15,
     color: '#757575',
     marginTop: 8,
+    lineHeight: 18,
   },
 });
 
