@@ -799,7 +799,7 @@ const DeviceInfo = ({
       <View style={Styles.deviceDetailsContainer}>
         <CustomList
           deviceInfo
-          deviceName={deviceDetails !== null ? deviceDetails.devicetype : 'NA'}
+          deviceName={deviceDetails !== null ? deviceDetails.dev_category : 'NA'}
           deviceId={deviceDetails !== null ? deviceDetails.deviceId : 'NA'}
           deviceConfigStatus={isData ? 'CONFIGURED' : 'NOT CONFIGURED'}
           colorChanged="#7AB78C"

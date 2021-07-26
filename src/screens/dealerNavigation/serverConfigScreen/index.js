@@ -1002,6 +1002,7 @@ const Form2 = ({setStep, deviceTypeApi, deviceCommData, reconfigData}) => {
       ranges: {maxVolt: {max: 137.5, min: 135}, minVolt: {max: 125, min: 120}},
     },
   ];
+  
   const listHV = [
     {
       name: '48V',

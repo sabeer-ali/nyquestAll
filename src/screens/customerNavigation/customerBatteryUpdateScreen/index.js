@@ -136,6 +136,33 @@ const Form2 = ({
     },
   ];
 
+  const listHV120 = [
+    {
+      name: '48V',
+      minVoltage: 48,
+      maxVoltage: 54.96,
+      ranges: {maxVolt: {max: 55, min: 54}, minVolt: {max: 50, min: 48}},
+    },
+    {
+      name: '72V',
+      minVoltage: 72,
+      maxVoltage: 82.44,
+      ranges: {maxVolt: {max: 82.5, min: 81}, minVolt: {max: 75, min: 72}},
+    },
+    {
+      name: '96V',
+      minVoltage: 96,
+      maxVoltage: 109.92,
+      ranges: {maxVolt: {max: 110, min: 108}, minVolt: {max: 100, min: 96}},
+    },
+    {
+      name: '120V',
+      minVoltage: 120,
+      maxVoltage: 137.4,
+      ranges: {maxVolt: {max: 137.5, min: 135}, minVolt: {max: 125, min: 120}},
+    },
+  ];
+
   const [localData, setLocalData] = React.useState(null);
 
   React.useEffect(() => {
@@ -518,9 +545,9 @@ const Form2 = ({
               toggleVisible={toggleVisible}
               onToggleSelect={onToggleSelect}
               list={
-                deviceType == 1 || deviceType == 5
-                  ? deviceList.iconLv12
-                  : deviceList.iconLv24
+                deviceType == 1 || deviceType == 5 
+                  ? deviceList.iconLv12 : deviceType == 3 ? 
+                  listHV120 : deviceList.iconLv24
               }
             />
           </View>
