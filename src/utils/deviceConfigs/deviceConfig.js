@@ -683,7 +683,7 @@ export const DeviceCommunication_Stage_2 = async (type, data, callback) => {
   const eepRom = EEPROM;
   const dataLength = decToHex(34);
   const serverIp = ascii_to_hexa(SERVER_IP.toString());
-  const serverPort = decToHex(SERVER_PORT);
+  const serverPort = decToHex(type === 'LV' ? SERVER_PORT : SERVER_PORT_HV);
 
   let payload = '';
 

@@ -37,7 +37,7 @@ export default CustomHeader = ({
           </TouchableOpacity>
         )}
       </View> */}
-      <View>
+      <View style={{top: 10, right: 10}}>
         {rightIcon && (
           <TouchableOpacity
             onPress={() => rightIconAction && rightIconAction()}

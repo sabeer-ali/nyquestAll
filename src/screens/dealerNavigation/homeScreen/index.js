@@ -17,6 +17,7 @@ import {
   notificationIcon,
   iconLVIcon,
   logoutIcon,
+  icubeIcon
 } from '../../../assets';
 import {
   CustomHeader,
@@ -303,7 +304,7 @@ const HomeScreen = ({navigation}) => {
           navigation.push('dealerDeviceInfo', {deviceDetails: item})
         }
         navigateNext
-        icon={iconLVIcon}
+        icon={item.description === "iCUBE 2000"? icubeIcon :  iconLVIcon}
         iconBgColor={item.dev_category === 'L' ? '#DBD3EB' : '#C4C4C4'}
       />
     );

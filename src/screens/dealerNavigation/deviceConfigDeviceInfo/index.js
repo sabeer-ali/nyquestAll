@@ -31,6 +31,9 @@ import {
   successCircleIcon,
   checkboxIcon,
   checkboxBlankIcon,
+  icubeConfigIcon,
+  icubeUnconfigIcon,
+  icubeStepsImage,
 } from '../../../assets';
 import {ConnectDevice_Stage_1} from '../../../utils/deviceConfigs/deviceConfig';
 import {
@@ -78,6 +81,7 @@ const ReconfigRedeployComponent = ({
                 backgroundColor: '#E28534',
                 width: '90%',
                 alignSelf: 'center',
+                height: 35,
               },
             ]}
             labelStyle={Styles.modalButtonLabel}
@@ -93,7 +97,10 @@ const ReconfigRedeployComponent = ({
           <Button
             uppercase={false}
             mode="contained"
-            style={[CommonStyles.halfmodalButton, {backgroundColor: '#7F91BB'}]}
+            style={[
+              CommonStyles.halfmodalButton,
+              {backgroundColor: '#7F91BB', height: 40},
+            ]}
             labelStyle={Styles.modalButtonLabel}
             onPress={() => {
               setModal(false);
@@ -104,7 +111,10 @@ const ReconfigRedeployComponent = ({
           <Button
             uppercase={false}
             mode="contained"
-            style={[CommonStyles.halfmodalButton, {backgroundColor: '#E28534'}]}
+            style={[
+              CommonStyles.halfmodalButton,
+              {backgroundColor: '#E28534', height: 40},
+            ]}
             labelStyle={Styles.modalButtonLabel}
             onPress={() => {
               if (isReDeploy) {
@@ -407,7 +417,14 @@ const ConnectionStatus = ({
   const [isConnectionConfirm, setConnectionConfirm] = React.useState(false);
   const [isResponse, setResponse] = React.useState(false);
   const [deviceTypeApi, setDeviceType] = useState(
-    deviceDetails.dev_category === 'L' ? 'LV' : 'HV',
+    deviceDetails.dev_category === 'L'
+      ? 'LV'
+      : deviceDetails.dev_category === 'iCUBE 2000' ||
+        deviceDetails.dev_category === 'iCUBE 1000' ||
+        deviceDetails.dev_category === 'iCON 24 V' ||
+        deviceDetails.dev_category === 'iCON 12 V'
+      ? 'LV'
+      : 'HV',
   );
   console.log('deviceDetails', deviceDetails);
   useEffect(() => {
@@ -437,6 +454,7 @@ const ConnectionStatus = ({
 
   const connectionSetup = () => {
     StoreLocalDB('@deviceDetailsFromQr', deviceDetails, res => {
+      console.log('deviceDetails', deviceTypeApi, deviceDetails);
       ConnectDevice_Stage_1(deviceTypeApi, res => {
         if (res && res !== null) {
           Alert.alert('Device Response', JSON.stringify(res));
@@ -449,6 +467,7 @@ const ConnectionStatus = ({
           setModal(false);
           navigation.navigate('dealerDeviceConfigMenu', {
             deviceTypeApi: deviceTypeApi,
+            deviceDetails: deviceDetails,
           });
         } else {
           Alert.alert(
@@ -508,6 +527,7 @@ const Steps = ({
   setStepsDetsils,
   setConnectionStatus,
   setModal,
+  deviceDetails,
 }) => {
   const handleConfig = () => {
     getLocalDB('@deviceComData', res => {
@@ -579,26 +599,58 @@ const Steps = ({
           }}
         />
         <View style={Styles.headerSection}>
-          <CustomHeaderWithDesc headerText="Steps to follow" />
-        </View>
-        <View style={{paddingHorizontal: 25}}>
-          <CustomSteps
-            header="Step 01"
-            desc="Double press on the pushbutton inside the LED ring."
-          />
-          <CustomSteps
-            header="Step 02"
-            desc="LED start flashes magenta followed by a beep sound. LED colour become stable magenta after a few seconds. Now iCON becomes a master & created a hotspot."
-          />
-          <CustomSteps
-            header="Step 03"
-            desc="Go to Phone Settings > WiFi & connect to Wi-Fi network SOLICON. (Password - solicon123 )"
-          />
-          <CustomSteps
-            header="Step 04"
-            desc="Return to app for configuring your device."
+          <CustomHeaderWithDesc
+            headerText={
+              deviceDetails.dev_category === 'iCUBE 2000' ||
+              deviceDetails.dev_category === 'iCUBE 1000'
+                ? 'Steps to follow – iCUBE'
+                : 'Steps to follow'
+            }
           />
         </View>
+
+        {deviceDetails.dev_category === 'iCUBE 2000' ||
+        deviceDetails.dev_category === 'iCUBE 1000' ? (
+          <View style={{paddingHorizontal: 25}}>
+            <CustomSteps
+              header="Step 01"
+              desc="Double press on the pushbutton in the back side of the iCUBE.."
+            />
+            <Image source={icubeStepsImage} />
+            <CustomSteps
+              header="Step 02"
+              desc="LED ring on the front side starts flashes magenta followed by a beep sound.LED ring colour becomes stable magenta after a few seconds. Now iCON becomes a master & created a hotspot."
+            />
+            <CustomSteps
+              header="Step 03"
+              desc="Go to Phone Settings > WiFi & connect to WiFi network “iCUBE-XXXXX”.(Password – icube1234)"
+            />
+            <CustomSteps
+              header="Step 04"
+              desc="Return to App for configuring your device."
+            />
+          </View>
+        ) : (
+          <View style={{paddingHorizontal: 25}}>
+            <CustomSteps
+              header="Step 01"
+              desc="Double press on the pushbutton inside the LED ring."
+            />
+
+            <CustomSteps
+              header="Step 02"
+              desc="LED start flashes magenta followed by a beep sound. LED colour become stable magenta after a few seconds. Now iCON becomes a master & created a hotspot."
+            />
+            <CustomSteps
+              header="Step 03"
+              desc="Go to Phone Settings > WiFi & connect to Wi-Fi network SOLICON. (Password - solicon123 )"
+            />
+            <CustomSteps
+              header="Step 04"
+              desc="Return to app for configuring your device."
+            />
+          </View>
+        )}
 
         <View style={CommonStyles.buttonWrapper}>
           <CustomButton
@@ -622,7 +674,7 @@ const CustomSteps = ({header, desc}) => {
   );
 };
 
-const ImagePreview = () => {
+const ImagePreview = ({deviceDetails}) => {
   return (
     <View
       style={{
@@ -630,7 +682,16 @@ const ImagePreview = () => {
         justifyContent: 'center',
         alignItems: 'center',
       }}>
-      <Image source={require('../../../assets/demo/iCONprecise1.png')} />
+      {deviceDetails !== null && (
+        <Image
+          source={
+            deviceDetails.dev_category === 'iCUBE 2000' ||
+            deviceDetails.dev_category === 'iCUBE 1000'
+              ? require('../../../assets/icubeHeaderIcons/Group155.png')
+              : require('../../../assets/demo/iCONprecise1.png')
+          }
+        />
+      )}
     </View>
   );
 };
@@ -648,23 +709,6 @@ const DeviceInfo = ({
 
   React.useEffect(() => {
     console.log('deviceDetails for replace ', deviceDetails);
-    // getLocalDB('@replaceDvice', reslocal => {
-    //   console.log('reslocal 111110000 ==>', reslocal);
-    //   if (reslocal.isReplace) {
-    //     setReplace(true);
-    //     getLocalDB('@deviceComData', resOldServerData => {
-    //       let newServerData = {...resOldServerData};
-    //       console.log('resOldServerData', resOldServerData);
-    //       newServerData.olddevid = resOldServerData.devid;
-    //       newServerData.devid = '';
-    //       newServerData.replace = 1;
-    //       newServerData.custid = deviceDetails.customerid;
-    //     });
-    //     // StoreLocalDB('@deviceComData', newServerData);
-    //   } else {
-    //     setReplace(false);
-    //   }
-    // });
   }, []);
 
   const replaceDevice = () => {
@@ -681,6 +725,7 @@ const DeviceInfo = ({
           if (res !== null) {
           } else {
             setModal(true);
+            setReConfig(false);
             setReDeploy(true);
           }
         },
@@ -776,6 +821,7 @@ const DeviceInfo = ({
   };
 
   const handleReConfig = () => {
+    setReDeploy(false);
     getLocalDB('@delaerLoginDetails', localData => {
       console.log('localData ==> Reconfig ', localData);
       console.log('deviceDetails in Reconfig', deviceDetails);
@@ -799,12 +845,21 @@ const DeviceInfo = ({
       <View style={Styles.deviceDetailsContainer}>
         <CustomList
           deviceInfo
-          deviceName={deviceDetails !== null ? deviceDetails.dev_category : 'NA'}
+          deviceName={
+            deviceDetails !== null ? deviceDetails.dev_category : 'NA'
+          }
           deviceId={deviceDetails !== null ? deviceDetails.deviceId : 'NA'}
           deviceConfigStatus={isData ? 'CONFIGURED' : 'NOT CONFIGURED'}
           colorChanged="#7AB78C"
           // onpress={() => navigation.navigate('deviceInfo')}
-          icon={iconLVIcon}
+          icon={
+            deviceDetails.dev_category === 'iCUBE 2000' ||
+            deviceDetails.dev_category === 'iCUBE 1000'
+              ? deviceDetails.deployed === '1'
+                ? icubeConfigIcon
+                : icubeUnconfigIcon
+              : iconLVIcon
+          }
           iconBgColor={
             deviceDetails !== null
               ? deviceDetails.dev_category === 'H' && '#e746451a'
@@ -828,7 +883,7 @@ const DeviceInfo = ({
               mode="contained"
               style={[
                 CommonStyles.halfmodalButton,
-                {backgroundColor: '#7F91BB'},
+                {backgroundColor: '#7F91BB', height: 40},
               ]}
               labelStyle={Styles.modalButtonLabel}
               onPress={() => replaceDevice()}>
@@ -840,7 +895,7 @@ const DeviceInfo = ({
               mode="contained"
               style={[
                 CommonStyles.halfmodalButton,
-                {backgroundColor: '#E28534'},
+                {backgroundColor: '#E28534', height: 40},
               ]}
               labelStyle={Styles.modalButtonLabel}
               onPress={() => handleReConfig()}>
@@ -896,7 +951,7 @@ const DeviceConfigDeviceInfoScreen = ({navigation, route}) => {
         bottomHeight={1}
         backButtonType="backArrow"
         backButtonAction={() => navigation.goBack()}
-        topSection={<ImagePreview />}
+        topSection={<ImagePreview deviceDetails={deviceDetails} />}
         bottomSection={
           <DeviceInfo
             setCustomerDetails={setCustomerDetails}
@@ -942,14 +997,17 @@ const DeviceConfigDeviceInfoScreen = ({navigation, route}) => {
                     toaster={customToasterShow}
                   />
                 )}
+
                 {stepsDetsils && (
                   <Steps
                     setCustomerDetails={setCustomerDetails}
                     setStepsDetsils={setStepsDetsils}
                     setConnectionStatus={setConnectionStatus}
                     setModal={setModal}
+                    deviceDetails={route.params.deviceDetails}
                   />
                 )}
+
                 {connectionStatus && (
                   <ConnectionStatus
                     setCustomerDetails={setCustomerDetails}

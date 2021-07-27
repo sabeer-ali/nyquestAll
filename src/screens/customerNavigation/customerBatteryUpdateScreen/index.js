@@ -510,6 +510,8 @@ const Form2 = ({
     setMinVolt(data);
   };
 
+  console.log('deviceTypeApi ==> 007', deviceTypeApi, deviceType);
+
   return (
     <View style={Styles.InputContainer}>
       <ScrollView style={{flex: 1}}>
@@ -545,9 +547,9 @@ const Form2 = ({
               toggleVisible={toggleVisible}
               onToggleSelect={onToggleSelect}
               list={
-                deviceType == 1 || deviceType == 5 
-                  ? deviceList.iconLv12 : deviceType == 3 ? 
-                  listHV120 : deviceList.iconLv24
+                deviceType == 1 || deviceType == 5
+                  ? deviceList.iconLv12
+                  : deviceList.iconLv24
               }
             />
           </View>
@@ -577,7 +579,9 @@ const Form2 = ({
             isVisible={isVisible1}
             toggleVisible={toggleVisible1}
             onToggleSelect={onToggleSelect1}
-            list={deviceTypeApi === 'HV' && listHV}
+            list={
+              deviceTypeApi === 'HV' ? listHV : deviceType === 3 && listHV120
+            }
           />
         </View>
 

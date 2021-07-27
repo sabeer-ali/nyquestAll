@@ -27,7 +27,13 @@ import {
   CustomButton,
 } from '../../../components';
 import {color, CommonStyles} from '../../../utils/CommonStyles';
-import {iconLVIcon, closeIcon, successCircleIcon} from '../../../assets';
+import {
+  iconLVIcon,
+  closeIcon,
+  successCircleIcon,
+  icubeConfigIcon,
+  icubeUnconfigIcon,
+} from '../../../assets';
 import {ConnectDevice_Stage_1} from '../../../utils/deviceConfigs/deviceConfig';
 import {
   getLocalDB,
@@ -383,9 +389,15 @@ const ConnectionStatus = ({
   const [isConnectionConfirm, setConnectionConfirm] = React.useState(false);
   const [isResponse, setResponse] = React.useState(false);
   const [deviceTypeApi, setDeviceType] = useState(
-    deviceDetails.dev_category === 'L' ? 'LV' : 'HV',
+    deviceDetails.dev_category === 'L' ||
+      deviceDetails.dev_category === 'iCUBE 2000' ||
+      deviceDetails.dev_category === 'iCUBE 1000' ||
+      deviceDetails.dev_category === 'iCON 24 V' ||
+      deviceDetails.dev_category === 'iCON 12 V'
+      ? 'LV'
+      : 'HV',
   );
-  console.log('deviceTypeApi', deviceTypeApi);
+
   useEffect(() => {
     NetInfo.fetch().then(state => {
       Alert.alert(
@@ -540,7 +552,7 @@ const CustomSteps = ({header, desc}) => {
   );
 };
 
-const ImagePreview = () => {
+const ImagePreview = ({deviceDetails}) => {
   return (
     <View
       style={{
@@ -548,7 +560,16 @@ const ImagePreview = () => {
         justifyContent: 'center',
         alignItems: 'center',
       }}>
-      <Image source={require('../../../assets/demo/iCONprecise1.png')} />
+      {deviceDetails !== null && (
+        <Image
+          source={
+            deviceDetails.dev_category === 'iCUBE 2000' ||
+            deviceDetails.dev_category === 'iCUBE 1000'
+              ? require('../../../assets/icubeHeaderIcons/Group155.png')
+              : require('../../../assets/demo/iCONprecise1.png')
+          }
+        />
+      )}
     </View>
   );
 };
@@ -677,6 +698,8 @@ const DeviceInfo = ({
     }
   };
 
+  console.log('deviceDetails 888888888888888', deviceDetails);
+
   return (
     <ScrollView>
       <Snackbar
@@ -704,21 +727,33 @@ const DeviceInfo = ({
             : 'Device need to be configured'}
         </Text>
       </View>
+      {/* Device Config List */}
       <View style={Styles.deviceDetailsContainer}>
-        <CustomList
-          deviceInfo
-          deviceName={deviceDetails !== null ? deviceDetails.devicetype : 'NA'}
-          deviceId={deviceDetails !== null ? deviceDetails.deviceId : 'NA'}
-          deviceConfigStatus={isData ? 'CONFIGURED' : 'NOT CONFIGURED'}
-          colorChanged="#7AB78C"
-          // onpress={() => navigation.navigate('deviceInfo')}
-          icon={iconLVIcon}
-          iconBgColor={
-            deviceDetails !== null
-              ? deviceDetails.dev_category === 'H' && '#e746451a'
-              : '#C4C4C4'
-          }
-        />
+        {deviceDetails !== null && (
+          <CustomList
+            deviceInfo
+            deviceName={
+              deviceDetails !== null ? deviceDetails.dev_category : 'NA'
+            }
+            deviceId={deviceDetails !== null ? deviceDetails.deviceId : 'NA'}
+            deviceConfigStatus={isData ? 'CONFIGURED' : 'NOT CONFIGURED'}
+            colorChanged="#7AB78C"
+            // onpress={() => navigation.navigate('deviceInfo')}
+            icon={
+              deviceDetails.dev_category === 'iCUBE 2000' ||
+              deviceDetails.dev_category === 'iCUBE 1000'
+                ? deviceDetails.deployed === '1'
+                  ? icubeConfigIcon
+                  : icubeUnconfigIcon
+                : iconLVIcon
+            }
+            iconBgColor={
+              deviceDetails !== null
+                ? deviceDetails.dev_category === 'H' && '#e746451a'
+                : '#C4C4C4'
+            }
+          />
+        )}
       </View>
       <CustomInput
         form
@@ -790,7 +825,7 @@ const DeviceConfigDeviceInfoScreen = ({navigation, route}) => {
         bottomHeight={1}
         backButtonType="backArrow"
         backButtonAction={() => navigation.goBack()}
-        topSection={<ImagePreview />}
+        topSection={<ImagePreview deviceDetails={deviceDetails} />}
         bottomSection={
           <DeviceInfo
             setCustomerDetails={setCustomerDetails}

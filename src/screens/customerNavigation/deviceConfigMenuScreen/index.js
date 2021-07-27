@@ -30,6 +30,9 @@ import {
   deviceBlueIcon,
   lockIcon,
   arrowBackIcon,
+  finalSliderGreenImages,
+  finalSliderRedImages,
+  finalSliderBlueImages,
 } from '../../../assets';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
 import {
@@ -514,17 +517,17 @@ const data = [
   {
     body:
       'If the device LED becomes steady Green, then the connections from both the device to wifi router & router to server is a success.',
-    imgUrl: deviceGreenIcon,
+    imgUrl: finalSliderGreenImages,
   },
   {
     body:
       'If the LED color becomes steady Blue, then the connection from the device to wifi router is a success & router to server is a failure',
-    imgUrl: deviceBlueIcon,
+    imgUrl: finalSliderRedImages,
   },
   {
     body:
       'If the LED color becomes steady Red, then the connections from both the device to wifi router & router to the server is a failure. Please retry by configuring wifi again.',
-    imgUrl: deviceRedIcon,
+    imgUrl: finalSliderBlueImages,
   },
 ];
 

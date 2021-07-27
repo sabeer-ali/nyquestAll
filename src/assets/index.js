@@ -81,7 +81,26 @@ const upsInfo2 = require('./upsInfoIcon/Group182.png');
 const supportExclamation = require('./commonIcons/supportExclamationIcon/mdi_contact_support.png');
 const customerSmallIcon = require('./customerSmallIcon/Vector.png');
 
+const icubeIcon = require('./icubeIcons/iCUBE-Blue2.png');
+const icubeHeaderIcon = require('./icubeHeaderIcons/Group155.png');
+
+const icubeConfigIcon = require('./icubeConfigIcon/Group.png');
+const icubeUnconfigIcon = require('./icubeunconfigurationIcon/Group.png');
+
+const finalSliderGreenImages = require('./finalSliderImages/Group151.png');
+const finalSliderRedImages = require('./finalSliderRedImage/Group152.png');
+const finalSliderBlueImages = require('./finalSliderBlueImages/Group153.png');
+const icubeStepsImage = require('./icubeStepsImage/image1.png');
+
 export {
+  icubeStepsImage,
+  finalSliderRedImages,
+  finalSliderBlueImages,
+  finalSliderGreenImages,
+  icubeUnconfigIcon,
+  icubeConfigIcon,
+  icubeHeaderIcon,
+  icubeIcon,
   customerSmallIcon,
   supportExclamation,
   upsInfo2,

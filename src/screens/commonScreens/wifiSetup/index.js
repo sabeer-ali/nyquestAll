@@ -17,7 +17,7 @@ import {
   DeviceCommunication_ExitConfig,
 } from '../../../utils/deviceConfigs/deviceConfig';
 import {getLocalDB, Loader} from '../../../utils/commonUtils';
-import {closeIcon, wifiIcon, iconLVIcon} from '../../../assets';
+import {closeIcon, wifiIcon, iconLVIcon, icubeIcon} from '../../../assets';
 import Styles from './styles';
 
 const DeviceInfo = ({
@@ -97,7 +97,13 @@ const DeviceInfo = ({
                 : 'NA'
             }
             colorChanged="#7AB78C"
-            icon={iconLVIcon}
+            // icon={iconLVIcon}
+            icon={
+              deviceDetails.dev_category === 'iCUBE 2000' ||
+              deviceDetails.description === 'iCUBE 1000'
+                ? icubeIcon
+                : iconLVIcon
+            }
             iconBgColor={'#C4C4C4'}
           />
         ) : (
@@ -115,7 +121,13 @@ const DeviceInfo = ({
             }
             // deviceConfigStatus={isData ? 'CONFIGURED' : 'NOT CONFIGURED'}
             colorChanged="#7AB78C"
-            icon={iconLVIcon}
+            // icon={iconLVIcon}
+            icon={
+              deviceDetails.dev_category === 'iCUBE 2000' ||
+              deviceDetails.description === 'iCUBE 1000'
+                ? icubeIcon
+                : iconLVIcon
+            }
             iconBgColor={'#C4C4C4'}
           />
         )}
@@ -355,6 +367,7 @@ const BottomSection = ({navigation, deviceDetails, isWifiUpdate}) => {
                               backgroundColor: '#E28534',
                               width: '90%',
                               alignSelf: 'center',
+                              height: 40,
                             },
                           ]}
                           labelStyle={CommonStyles.buttonTextStyle}

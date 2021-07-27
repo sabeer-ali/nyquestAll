@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {View, Text, Image, ScrollView, Alert} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Button, Menu, Divider, Provider} from 'react-native-paper';
@@ -624,9 +624,9 @@ const Form3 = ({setStep, deviceCommData, reconfigData}) => {
           validate.msg = 'Please Check the Range in LV 12V ';
         }
       } else if (deviceCommData.deviceType === 2) {
-        console.log('IN Type 2');
-        if (upsVA >= 1200 || upsVA <= 2000) {
-          console.log('IN Type 2 valid');
+        console.log('IN Type 2', upsVA, typeof upsVA);
+        if (parseInt(upsVA) >= 1200 && parseInt(upsVA) <= 2000) {
+          console.log('IN Type 2 valid', typeof parseInt(upsVA));
         } else {
           console.log('IN Type 2 invalid');
           validate.status = false;
@@ -1002,7 +1002,7 @@ const Form2 = ({setStep, deviceTypeApi, deviceCommData, reconfigData}) => {
       ranges: {maxVolt: {max: 137.5, min: 135}, minVolt: {max: 125, min: 120}},
     },
   ];
-  
+
   const listHV = [
     {
       name: '48V',
@@ -1471,7 +1471,14 @@ const Form2 = ({setStep, deviceTypeApi, deviceCommData, reconfigData}) => {
 
         <View style={Styles.wrappper}>
           <CustomDropdown
-            isDisable={deviceType === 1 || deviceType === 2 ? true : false}
+            isDisable={
+              deviceType === 1 ||
+              deviceType === 2 ||
+              deviceType === 5 ||
+              deviceType === 6
+                ? true
+                : false
+            }
             placeholder="Battery Volt"
             value={
               deviceDetailsFromQr !== null
@@ -1564,16 +1571,23 @@ const Form2 = ({setStep, deviceTypeApi, deviceCommData, reconfigData}) => {
 };
 
 const Form1 = ({step, setStep, deviceCommData, deviceTypeApi}) => {
-  console.log('deviceCommData in FORM 1 ==>  ', deviceCommData, deviceTypeApi);
+  console.log(
+    'deviceCommData in FORM 1 =-*********************************************************=>  ',
+    typeof deviceTypeApi,
+    deviceTypeApi,
+  );
   const [serverIp, setServerIp] = useState(SERVER_IP);
   const [serverPort, setServerPort] = useState(
-    deviceTypeApi === 'HV' ? SERVER_PORT_HV : SERVER_PORT,
+    deviceTypeApi !== 'HV' ? SERVER_PORT : SERVER_PORT_HV,
   );
   const [isLoading, setLoading] = useState(false);
   const [isDeviceConnected, setDeviceConnected] = useState(true);
 
+  useEffect(() => {
+    setServerPort(deviceTypeApi === 'HV' ? SERVER_PORT_HV : SERVER_PORT);
+  }, []);
+
   const handleContinue = () => {
-    console.log('deviceTypeApi in Form 1', deviceTypeApi);
     setLoading(true);
     AsyncStorage.getItem('@res_devCommunication_stage_1').then(resDb => {
       const jsonValue = JSON.parse(resDb);
@@ -1666,6 +1680,7 @@ const Forms = ({
         setLoader={setLoader}
         deviceCommData={deviceCommData}
         deviceTypeApi={deviceTypeApi}
+        serverData={deviceComServerData}
       />
     );
   } else if (step === 2) {

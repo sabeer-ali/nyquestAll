@@ -33,6 +33,8 @@ import {
   agentIcon,
   arrowBackIcon,
   iconLVIcon,
+  icubeIcon,
+  icubeStepsImage,
 } from '../../../assets';
 import {CommonStyles} from '../../../utils/CommonStyles';
 import {getLocalDB, Loader, StoreLocalDB} from '../../../utils/commonUtils';
@@ -117,26 +119,57 @@ const StepsComponent = ({navigation, setModal, selectedDevice}) => {
         borderTopRightRadius: 25,
       }}>
       <View style={Styles.headerSection}>
-        <CustomHeaderWithDesc headerText="Steps to follow" />
-      </View>
-      <View style={{paddingHorizontal: 25}}>
-        <CustomSteps
-          header="Step 01"
-          desc="Double press on the pushbutton inside the LED ring."
-        />
-        <CustomSteps
-          header="Step 02"
-          desc="LED start flashes magenta followed by a beep sound. LED colour become stable magenta after a few seconds. Now iCON becomes a master & created a hotspot."
-        />
-        <CustomSteps
-          header="Step 03"
-          desc="Go to Phone Settings > WiFi & connect to Wi-Fi network SOLICON. (Password - solicon123 )"
-        />
-        <CustomSteps
-          header="Step 04"
-          desc="Return to app for configuring your device."
+        <CustomHeaderWithDesc
+          headerText={
+            selectedDevice.dev_category === 'iCUBE 1000' ||
+            selectedDevice.dev_category === 'iCUBE 2000'
+              ? 'Steps to follow – iCUBE'
+              : 'Steps to follow'
+          }
         />
       </View>
+      {selectedDevice.dev_category === 'iCUBE 2000' ||
+      selectedDevice.dev_category === 'iCUBE 1000' ? (
+        <View style={{paddingHorizontal: 25}}>
+          <CustomSteps
+            header="Step 01"
+            desc="Double press on the pushbutton in the back side of the iCUBE.."
+          />
+          <Image source={icubeStepsImage} />
+          <CustomSteps
+            header="Step 02"
+            desc="LED ring on the front side starts flashes magenta followed by a beep sound.LED ring colour becomes stable magenta after a few seconds. Now iCON becomes a master & created a hotspot."
+          />
+          <CustomSteps
+            header="Step 03"
+            desc="Go to Phone Settings > WiFi & connect to WiFi network “iCUBE-XXXXX”.(Password – icube1234)"
+          />
+          <CustomSteps
+            header="Step 04"
+            desc="Return to App for configuring your device."
+          />
+        </View>
+      ) : (
+        <View style={{paddingHorizontal: 25}}>
+          <CustomSteps
+            header="Step 01"
+            desc="Double press on the pushbutton inside the LED ring."
+          />
+
+          <CustomSteps
+            header="Step 02"
+            desc="LED start flashes magenta followed by a beep sound. LED colour become stable magenta after a few seconds. Now iCON becomes a master & created a hotspot."
+          />
+          <CustomSteps
+            header="Step 03"
+            desc="Go to Phone Settings > WiFi & connect to Wi-Fi network SOLICON. (Password - solicon123 )"
+          />
+          <CustomSteps
+            header="Step 04"
+            desc="Return to app for configuring your device."
+          />
+        </View>
+      )}
       <CustomWrapper ph3 pv3>
         <CustomButton
           text="Configure"
@@ -245,7 +278,13 @@ const BottomSection = ({navigation, setModal, setSteps, setSelectedDevice}) => {
               }}
               //   navigation.push('dealerDeviceInfo', {deviceDetails: item})
               navigateNext
-              icon={iconLVIcon}
+              // icon={iconLVIcon}
+              icon={
+                item.dev_category === 'iCUBE 2000' ||
+                item.dev_category === 'iCUBE 1000'
+                  ? icubeIcon
+                  : iconLVIcon
+              }
               iconBgColor={'#C4C4C4'}
               // item.dev_category === 'L' ? '#DBD3EB' : '#C4C4C4'}
             />

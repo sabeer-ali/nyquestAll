@@ -33,6 +33,7 @@ import {
   notificationIcon,
   dashboardNoDeviceConfigImage,
   iconLVIcon,
+  icubeIcon,
 } from '../../../assets';
 import {getLocalDB, Loader, logOut} from '../../../utils/commonUtils';
 import {
@@ -195,7 +196,12 @@ const BottomSection = ({navigation, setData}) => {
         deviceId={item.dev_id}
         onpress={() => navigation.push('deviceDetails', {deviceDetails: item})}
         navigateNext
-        icon={iconLVIcon}
+        icon={
+          item.dev_category === 'iCUBE 2000' ||
+          item.dev_category === 'iCUBE 1000'
+            ? icubeIcon
+            : iconLVIcon
+        }
         iconBgColor={item.dev_category === 'L' ? '#DBD3EB' : '#C4C4C4'}
       />
     );

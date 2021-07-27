@@ -146,7 +146,7 @@ export default function DeviceDetailsScreen({
                     // legend: ['Solar Saving', 'Utility Saving'],
                     // datasets: [0, 100, 200, 300, 400],
                     data: result,
-                    barColors: ['#F5A266', '#839ACF'],
+                    barColors: ['#839ACF', '#F5A266'],
                   };
                   setGraphData(data);
                 } else {

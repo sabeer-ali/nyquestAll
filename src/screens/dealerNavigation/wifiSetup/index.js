@@ -178,6 +178,7 @@ const BottomSection = ({navigation}) => {
                           backgroundColor: '#E28534',
                           width: '90%',
                           alignSelf: 'center',
+                          height: 40,
                         },
                       ]}
                       labelStyle={CommonStyles.buttonTextStyle}

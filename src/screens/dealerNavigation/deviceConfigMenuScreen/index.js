@@ -26,6 +26,10 @@ import {
   deviceGreenIcon,
   deviceRedIcon,
   deviceBlueIcon,
+  finalSliderImages,
+  finalSliderGreenImages,
+  finalSliderRedImages,
+  finalSliderBlueImages,
 } from '../../../assets';
 import {
   MiddleWareForAuth,
@@ -40,7 +44,8 @@ import {
 import {DeviceCommunication_ExitConfig} from '../../../utils/deviceConfigs/deviceConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const ImagePreview = () => {
+const ImagePreview = ({deviceDetails}) => {
+  console.log('deviceDetails 99999', deviceDetails);
   return (
     <View
       style={{
@@ -48,7 +53,14 @@ const ImagePreview = () => {
         justifyContent: 'center',
         alignItems: 'center',
       }}>
-      <Image source={require('../../../assets/demo/iCONprecise1.png')} />
+      <Image
+        source={
+          deviceDetails.dev_category === 'iCUBE 2000' ||
+          deviceDetails.dev_category === 'iCUBE 1000'
+            ? require('../../../assets/icubeConfigMenuIcons/Group157.png')
+            : require('../../../assets/demo/iCONprecise1.png')
+        }
+      />
     </View>
   );
 };
@@ -396,7 +408,8 @@ const ConfigStatusPopUp = ({setNavTohome}) => {
             backgroundColor: '#E28534',
             width: '100%',
             borderRadius: 10,
-            height: 44,
+            // height: 35,
+            paddingVertical: 5,
           }}>
           Done
         </Button>
@@ -409,17 +422,17 @@ const data = [
   {
     body:
       'If the device LED becomes steady Green, then the connections from both the device to wifi router & router to server is a success.',
-    imgUrl: deviceGreenIcon,
+    imgUrl: finalSliderGreenImages,
   },
   {
     body:
       'If the LED color becomes steady Blue, then the connection from the device to wifi router is a success & router to server is a failure',
-    imgUrl: deviceBlueIcon,
+    imgUrl: finalSliderRedImages,
   },
   {
     body:
       'If the LED color becomes steady Red, then the connections from both the device to wifi router & router to the server is a failure. Please retry by configuring wifi again.',
-    imgUrl: deviceRedIcon,
+    imgUrl: finalSliderBlueImages,
   },
 ];
 
@@ -436,7 +449,7 @@ const CarouselCardItem = ({item, index}) => {
       key={index}>
       <View
         style={{
-          backgroundColor: '#7f91bb33',
+          // backgroundColor: '#7f91bb33',
           justifyContent: 'center',
           alignItems: 'center',
           borderRadius: 8,
@@ -531,7 +544,7 @@ const deviceConfigMenuScreen = ({route, navigation}) => {
         topHeight={0.5}
         bottomHeight={1}
         backButtonAction={() => navigation.goBack()}
-        topSection={<ImagePreview />}
+        topSection={<ImagePreview deviceDetails={route.params.deviceDetails} />}
         bottomSection={
           <DeviceInfo
             navigation={navigation}
