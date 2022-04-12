@@ -631,6 +631,9 @@ const LoginForm = ({
       if (data !== null && data.userName !== '' && data.password !== '') {
         setUserName(data.userName);
         setPassword(data.password);
+        setloggedIn(true);
+      } else {
+        setloggedIn(false);
       }
     };
     getData();

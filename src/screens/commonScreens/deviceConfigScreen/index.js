@@ -150,7 +150,7 @@ class DeviceConfigScreen extends React.Component {
   render() {
     const {isLoading} = this.state;
     return (
-      <View style={{flex: 1, backgroundColor: 'red'}}>
+      <View style={{flex: 1}}>
         <RNCamera
           ref={ref => {
             this.camera = ref;

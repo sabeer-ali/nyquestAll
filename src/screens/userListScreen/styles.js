@@ -35,7 +35,7 @@ const Styles = StyleSheet.create({
     fontSize: 22,
     color: '#212121',
     marginTop: 40,
-    lineHeight: 27,
+    lineHeight: 26.82,
   },
   loginDescription: {
     fontFamily: primaryFont,
